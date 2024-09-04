@@ -1,103 +1,79 @@
-// app/components/IdeaList.tsx
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useReducer } from 'react';
 import IdeaCard from './IdeaCard';
 import { Types } from 'mongoose';
-import io, { Socket } from 'socket.io-client';
+import { ideaReducer, initialState, IdeaAction } from '../reducers/ideaReducer';
+import { useSocket } from '../hooks/useSocket';
 
 interface Idea {
-  _id: Types.ObjectId;
+  _id: Types.ObjectId | string;
   title: string;
   description: string;
   upvotes: number;
 }
 
 const IdeaList: React.FC = () => {
-  const [ideas, setIdeas] = useState<Idea[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const [state, dispatch] = useReducer(ideaReducer, initialState);
+  const { ideas, loading, error } = state;
+  
+  const socket = useSocket(process.env.NEXT_PUBLIC_API_URL as string);
 
   const fetchIdeas = useCallback(async () => {
     try {
-      setLoading(true);
+      dispatch({ type: 'FETCH_IDEAS_START' });
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ideas`);
       if (!response.ok) {
         throw new Error('Failed to fetch ideas');
       }
       const data = await response.json();
-      setIdeas(data);
+      dispatch({ type: 'FETCH_IDEAS_SUCCESS', payload: data });
     } catch (err) {
-      setError('Error fetching ideas. Please try again later.');
-    } finally {
-      setLoading(false);
+      dispatch({ type: 'FETCH_IDEAS_ERROR', payload: 'Error fetching ideas. Please try again later.' });
     }
   }, []);
 
   useEffect(() => {
     fetchIdeas();
-
-    // Set up WebSocket connection
-    const newSocket = io(process.env.NEXT_PUBLIC_API_URL as string);
-    newSocket.on('connect', () => {
-      console.log('WebSocket connected');
-    });
-    setSocket(newSocket);
-
-    return () => {
-      newSocket.disconnect();
-    };
   }, [fetchIdeas]);
 
   useEffect(() => {
     if (!socket) return;
 
-    socket.on('newIdea', (newIdea: Idea) => {
+    const handleIdeaAdded = (newIdea: Idea) => {
       console.log('New idea received:', newIdea);
-      setIdeas(prevIdeas => [...prevIdeas, newIdea]);
-    });
+      dispatch({ type: 'ADD_IDEA', payload: newIdea });
+    };
 
-    socket.on('ideaDeleted', (deletedIdeaId) => {
-      setIdeas(prevIdeas => prevIdeas.filter(idea => idea._id !== deletedIdeaId));
-    });
+    const handleIdeaDeleted = (deletedIdeaId: string) => {
+      dispatch({ type: 'DELETE_IDEA', payload: deletedIdeaId });
+    };
 
-    socket.on('ideaUpdated', (updatedIdea: Idea) => {
-      setIdeas(prevIdeas => prevIdeas.map(idea => 
-        idea._id.toString() === updatedIdea._id.toString() ? updatedIdea : idea
-      ));
-      console.log('Idea updated:', updatedIdea);
-      console.log('Ideas:', ideas);
-    });
+    const handleIdeaUpdated = (updatedIdea: Idea) => {
+      dispatch({ type: 'UPDATE_IDEA', payload: updatedIdea });
+    };
+
+    socket.on('ideaAdded', handleIdeaAdded);
+    socket.on('ideaDeleted', handleIdeaDeleted);
+    socket.on('ideaUpdated', handleIdeaUpdated);
 
     return () => {
-      socket.off('ideaAdded');
-      socket.off('ideaDeleted');
-      socket.off('ideaUpdated');
+      socket.off('ideaAdded', handleIdeaAdded);
+      socket.off('ideaDeleted', handleIdeaDeleted);
+      socket.off('ideaUpdated', handleIdeaUpdated);
     };
   }, [socket]);
 
-  useEffect(() => {
-    console.log('Ideas state updated:', ideas);
-  }, [ideas]);
-
   const handleUpvote = async (id: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ideas/${id}`);
-      if (!response.ok) throw new Error('Failed to fetch idea');
-      const idea = await response.json();
-
-      const updatedIdea = { ...idea, upvotes: idea.upvotes + 1 };
-
-      const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ideas/${id}/upvote`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ideas/${id}/upvote`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedIdea),
       });
-      if (!updateResponse.ok) throw new Error('Failed to update idea');
-
-      setIdeas(prevIdeas => prevIdeas.map(i => i._id.toString() === id ? updatedIdea : i));
+      if (!response.ok) throw new Error('Failed to upvote idea');
+      const updatedIdea = await response.json();
+      dispatch({ type: 'UPDATE_IDEA', payload: updatedIdea });
     } catch (error) {
       console.error('Error upvoting idea:', error);
-      // Optionally set an error state here
+      // Optionally dispatch an error action here
     }
   };
 
@@ -109,7 +85,11 @@ const IdeaList: React.FC = () => {
       {ideas
         .sort((a, b) => b.upvotes - a.upvotes)
         .map((idea) => (
-          <IdeaCard key={idea._id.toString()} idea={idea} onUpvote={handleUpvote} />
+          <IdeaCard 
+            key={idea._id instanceof Types.ObjectId ? idea._id.toString() : idea._id} 
+            idea={idea} 
+            onUpvote={handleUpvote} 
+          />
         ))}
     </div>
   );

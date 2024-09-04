@@ -4,37 +4,31 @@ import axios from 'axios';
 
 interface IdeaSubmissionFormProps {
   onSubmit: (input: string) => void;
-  onIdeaAdded: () => void;  // Add this new prop
+  onIdeaAdded: () => void;
 }
 
 const IdeaSubmissionForm: React.FC<IdeaSubmissionFormProps> = ({ onSubmit, onIdeaAdded }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const defaultUsername = 'Anonymous';
 
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!input.trim()) {
-      return;
-    }
+    if (!input.trim()) return;
 
     setIsLoading(true);
     setError(null);
-    
-    const data = {
-      title: input.trim(),
-      username: defaultUsername
-    };
 
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/ideas`, data, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/ideas`, {
+        title: input.trim(),
+        username: 'Anonymous'
+      }, {
         headers: { 'Content-Type': 'application/json' }
       });
       onSubmit(input);
       setInput('');
-      onIdeaAdded();  // Call this after successful submission
+      onIdeaAdded();
     } catch (err) {
       setError('Failed to submit idea. Please try again.');
     } finally {
