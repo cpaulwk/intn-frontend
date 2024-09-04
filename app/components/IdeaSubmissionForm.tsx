@@ -4,9 +4,10 @@ import axios from 'axios';
 
 interface IdeaSubmissionFormProps {
   onSubmit: (input: string) => void;
+  onIdeaAdded: () => void;  // Add this new prop
 }
 
-const IdeaSubmissionForm: React.FC<IdeaSubmissionFormProps> = ({ onSubmit }) => {
+const IdeaSubmissionForm: React.FC<IdeaSubmissionFormProps> = ({ onSubmit, onIdeaAdded }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +24,7 @@ const IdeaSubmissionForm: React.FC<IdeaSubmissionFormProps> = ({ onSubmit }) => 
     setError(null);
     
     const data = {
-      content: input.trim(),
+      title: input.trim(),
       username: defaultUsername
     };
 
@@ -33,12 +34,13 @@ const IdeaSubmissionForm: React.FC<IdeaSubmissionFormProps> = ({ onSubmit }) => 
       });
       onSubmit(input);
       setInput('');
+      onIdeaAdded();  // Call this after successful submission
     } catch (err) {
       setError('Failed to submit idea. Please try again.');
     } finally {
       setIsLoading(false);
     }
-  }, [input, onSubmit]);
+  }, [input, onSubmit, onIdeaAdded]);
 
   return (
     <form onSubmit={handleSubmit} className="mt-4">
