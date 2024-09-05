@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback, useReducer } from 'react';
+import React, { useEffect, useCallback, useReducer } from 'react';
 import IdeaCard from './IdeaCard';
-import { Types } from 'mongoose';
-import { ideaReducer, initialState, IdeaAction } from '../reducers/ideaReducer';
+import { ideaReducer, initialState } from '../reducers/ideaReducer';
 import { useSocket } from '../hooks/useSocket';
 import { Idea } from '../types';
 import axios from 'axios';
@@ -71,7 +70,7 @@ const IdeaList: React.FC = () => {
         .sort((a, b) => b.upvotes - a.upvotes)
         .map((idea) => (
           <IdeaCard 
-            key={idea._id instanceof Types.ObjectId ? idea._id.toString() : idea._id} 
+            key={typeof idea._id === 'string' ? idea._id : idea._id.toString()} 
             idea={idea} 
             onUpvote={handleUpvote} 
           />
