@@ -1,13 +1,9 @@
 // app/components/IdeaSubmissionForm.tsx
 import React, { useState, useCallback } from 'react';
 import axios from 'axios';
+import { Idea } from '../types';
 
-interface IdeaSubmissionFormProps {
-  onSubmit: (input: string) => void;
-  onIdeaAdded: () => void;
-}
-
-const IdeaSubmissionForm: React.FC<IdeaSubmissionFormProps> = ({ onSubmit, onIdeaAdded }) => {
+const IdeaSubmissionForm: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,21 +16,29 @@ const IdeaSubmissionForm: React.FC<IdeaSubmissionFormProps> = ({ onSubmit, onIde
     setError(null);
 
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/ideas`, {
+      const { data } = await axios.post<Idea>(`${process.env.NEXT_PUBLIC_API_URL}/ideas`, {
         title: input.trim(),
-        username: 'Anonymous'
+        username: 'Anonymous' // You might want to change this if you have user authentication
       }, {
         headers: { 'Content-Type': 'application/json' }
       });
-      onSubmit(input);
+      
+      console.log("New idea submitted:", data);
       setInput('');
-      onIdeaAdded();
+      // Optionally, you could emit an event or use a callback to notify parent components
+      // For example: onIdeaSubmitted(data);
     } catch (err) {
-      setError('Failed to submit idea. Please try again.');
+      if (axios.isAxiosError(err)) {
+        console.error('Axios error:', err.response?.data || err.message);
+        setError(`Failed to submit idea: ${err.response?.data?.message || err.message}`);
+      } else {
+        console.error('Unexpected error:', err);
+        setError('An unexpected error occurred. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [input, onSubmit, onIdeaAdded]);
+  }, [input]);
 
   return (
     <form onSubmit={handleSubmit} className="mt-4">

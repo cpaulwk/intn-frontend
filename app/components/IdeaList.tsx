@@ -28,18 +28,9 @@ const IdeaList: React.FC = () => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleIdeaCreated = (createdIdea: Idea) => {
-      console.log('New idea received:', createdIdea);
-      dispatch({ type: 'CREATE_IDEA', payload: createdIdea });
-    };
-
-    const handleIdeaDeleted = (deletedIdeaId: string) => {
-      dispatch({ type: 'DELETE_IDEA', payload: deletedIdeaId });
-    };
-
-    const handleIdeaUpdated = (updatedIdea: Idea) => {
-      dispatch({ type: 'UPDATE_IDEA', payload: updatedIdea });
-    };
+    const handleIdeaCreated = (createdIdea: Idea) => dispatch({ type: 'CREATE_IDEA', payload: createdIdea });
+    const handleIdeaDeleted = (deletedIdeaId: string) => dispatch({ type: 'DELETE_IDEA', payload: deletedIdeaId });
+    const handleIdeaUpdated = (updatedIdea: Idea) => dispatch({ type: 'UPDATE_IDEA', payload: updatedIdea });
 
     socket.on('ideaCreated', handleIdeaCreated);
     socket.on('ideaDeleted', handleIdeaDeleted);
