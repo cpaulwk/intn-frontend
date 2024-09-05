@@ -3,13 +3,8 @@ import IdeaCard from './IdeaCard';
 import { Types } from 'mongoose';
 import { ideaReducer, initialState, IdeaAction } from '../reducers/ideaReducer';
 import { useSocket } from '../hooks/useSocket';
-
-interface Idea {
-  _id: Types.ObjectId | string;
-  title: string;
-  description: string;
-  upvotes: number;
-}
+import { Idea } from '../types';
+import axios from 'axios';
 
 const IdeaList: React.FC = () => {
   const [state, dispatch] = useReducer(ideaReducer, initialState);
@@ -20,11 +15,7 @@ const IdeaList: React.FC = () => {
   const fetchIdeas = useCallback(async () => {
     try {
       dispatch({ type: 'FETCH_IDEAS_START' });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ideas`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch ideas');
-      }
-      const data = await response.json();
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/ideas`);
       dispatch({ type: 'FETCH_IDEAS_SUCCESS', payload: data });
     } catch (err) {
       dispatch({ type: 'FETCH_IDEAS_ERROR', payload: 'Error fetching ideas. Please try again later.' });
@@ -38,9 +29,9 @@ const IdeaList: React.FC = () => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleIdeaAdded = (newIdea: Idea) => {
-      console.log('New idea received:', newIdea);
-      dispatch({ type: 'ADD_IDEA', payload: newIdea });
+    const handleIdeaCreated = (createdIdea: Idea) => {
+      console.log('New idea received:', createdIdea);
+      dispatch({ type: 'CREATE_IDEA', payload: createdIdea });
     };
 
     const handleIdeaDeleted = (deletedIdeaId: string) => {
@@ -51,12 +42,12 @@ const IdeaList: React.FC = () => {
       dispatch({ type: 'UPDATE_IDEA', payload: updatedIdea });
     };
 
-    socket.on('ideaAdded', handleIdeaAdded);
+    socket.on('ideaCreated', handleIdeaCreated);
     socket.on('ideaDeleted', handleIdeaDeleted);
     socket.on('ideaUpdated', handleIdeaUpdated);
 
     return () => {
-      socket.off('ideaAdded', handleIdeaAdded);
+      socket.off('ideaCreated', handleIdeaCreated);
       socket.off('ideaDeleted', handleIdeaDeleted);
       socket.off('ideaUpdated', handleIdeaUpdated);
     };
@@ -64,16 +55,10 @@ const IdeaList: React.FC = () => {
 
   const handleUpvote = async (id: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ideas/${id}/upvote`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (!response.ok) throw new Error('Failed to upvote idea');
-      const updatedIdea = await response.json();
-      dispatch({ type: 'UPDATE_IDEA', payload: updatedIdea });
+      const { data } = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/ideas/${id}/upvote`);
+      dispatch({ type: 'UPDATE_IDEA', payload: data });
     } catch (error) {
       console.error('Error upvoting idea:', error);
-      // Optionally dispatch an error action here
     }
   };
 

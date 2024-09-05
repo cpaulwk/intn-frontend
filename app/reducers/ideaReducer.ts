@@ -1,11 +1,4 @@
-import { Types } from 'mongoose';
-
-export interface Idea {
-  _id: Types.ObjectId | string;
-  title: string;
-  description: string;
-  upvotes: number;
-}
+import { Idea } from '../types';
 
 export interface IdeaState {
   ideas: Idea[];
@@ -17,7 +10,7 @@ export type IdeaAction =
   | { type: 'FETCH_IDEAS_START' }
   | { type: 'FETCH_IDEAS_SUCCESS'; payload: Idea[] }
   | { type: 'FETCH_IDEAS_ERROR'; payload: string }
-  | { type: 'ADD_IDEA'; payload: Idea }
+  | { type: 'CREATE_IDEA'; payload: Idea }
   | { type: 'DELETE_IDEA'; payload: string }
   | { type: 'UPDATE_IDEA'; payload: Idea };
 
@@ -35,7 +28,7 @@ export const ideaReducer = (state: IdeaState, action: IdeaAction): IdeaState => 
       return { ...state, loading: false, ideas: action.payload };
     case 'FETCH_IDEAS_ERROR':
       return { ...state, loading: false, error: action.payload };
-    case 'ADD_IDEA':
+    case 'CREATE_IDEA':
       return { ...state, ideas: [...state.ideas, action.payload] };
     case 'DELETE_IDEA':
       return { ...state, ideas: state.ideas.filter(idea => idea._id.toString() !== action.payload) };

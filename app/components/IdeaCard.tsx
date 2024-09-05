@@ -1,13 +1,6 @@
 // app/components/IdeaCard.tsx
 import React from 'react';
-import { Types } from 'mongoose';
-
-interface Idea {
-  _id: Types.ObjectId;
-  title: string;
-  description: string;
-  upvotes: number;
-}
+import { Idea } from '../types';
 
 interface IdeaCardProps {
   idea: Idea;
