@@ -4,10 +4,13 @@ import { ideaReducer, initialState } from '../reducers/ideaReducer';
 import { useSocket } from '../hooks/useSocket';
 import { Idea } from '../types';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
 
 const IdeaList: React.FC = () => {
   const [state, dispatch] = useReducer(ideaReducer, initialState);
   const { ideas, loading, error } = state;
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   
   const socket = useSocket(process.env.NEXT_PUBLIC_API_URL as string);
 
@@ -46,6 +49,10 @@ const IdeaList: React.FC = () => {
   }, [socket, dispatch]);
 
   const handleUpvote = async (id: string) => {
+    if (!isAuthenticated) {
+      console.log('User must be authenticated to upvote');
+      return;
+    }
     try {
       const { data } = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/ideas/${id}/upvote`);
       dispatch({ type: 'UPDATE_IDEA', payload: data });
