@@ -37,11 +37,13 @@ const IdeaList: React.FC = () => {
     socket.on('ideaUpdated', handleIdeaUpdated);
 
     return () => {
-      socket.off('ideaCreated', handleIdeaCreated);
-      socket.off('ideaDeleted', handleIdeaDeleted);
-      socket.off('ideaUpdated', handleIdeaUpdated);
+      if (socket) {
+        socket.off('ideaCreated', handleIdeaCreated);
+        socket.off('ideaDeleted', handleIdeaDeleted);
+        socket.off('ideaUpdated', handleIdeaUpdated);
+      }
     };
-  }, [socket]);
+  }, [socket, dispatch]);
 
   const handleUpvote = async (id: string) => {
     try {

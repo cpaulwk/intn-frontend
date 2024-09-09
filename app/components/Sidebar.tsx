@@ -1,5 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
+import { useSelector, useDispatch } from 'react-redux';
+import { clearUser } from '../features/auth/authSlice';
+import { AppDispatch, RootState } from '../store';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -7,8 +10,27 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
   const handleGoogleLogin = () => {
-      window.location.href = `${process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL}`;
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/google/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        dispatch(clearUser());
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
 
   return (
@@ -43,15 +65,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       </div>
       <div className="absolute bottom-0 left-0 w-full p-4 bg-gray-200">
         <div className="flex items-center justify-between">
-          <button
-            onClick={handleGoogleLogin}
-            className="flex items-center bg-white text-gray-700 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
-          >
-            <div className="w-8 h-8 bg-blue-500 rounded-full mr-2 flex items-center justify-center text-white">
-              G
-            </div>
-            <span>Login with Google</span>
-          </button>
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className="flex items-center bg-white text-gray-700 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+            >
+              <span>Logout</span>
+            </button>
+          ) : (
+            <button
+              onClick={handleGoogleLogin}
+              className="flex items-center bg-white text-gray-700 px-4 py-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+            >
+              <div className="w-8 h-8 bg-blue-500 rounded-full mr-2 flex items-center justify-center text-white">
+                G
+              </div>
+              <span>Login with Google</span>
+            </button>
+          )}
           <button className="text-gray-600 hover:text-gray-800">
             🔔
           </button>

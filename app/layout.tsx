@@ -1,6 +1,7 @@
 // app/layout.tsx
 import './globals.css';
 import React from 'react';
+import { Providers } from './Providers';
 
 export const metadata = {
   title: 'I Need That Now',
@@ -14,7 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-gray-100">{children}</body>
+      <body className="bg-gray-100">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
