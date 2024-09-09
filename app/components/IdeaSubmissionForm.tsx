@@ -26,7 +26,6 @@ const IdeaSubmissionForm: React.FC = () => {
         headers: { 'Content-Type': 'application/json' }
       });
       
-      console.log("New idea submitted:", data);
       setInput('');
     } catch (err) {
       if (axios.isAxiosError(err)) {

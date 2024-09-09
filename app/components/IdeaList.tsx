@@ -1,18 +1,23 @@
 import React, { useEffect, useCallback, useReducer } from 'react';
 import IdeaCard from './IdeaCard';
 import { ideaReducer, initialState } from '../reducers/ideaReducer';
-import { useSocket } from '../hooks/useSocket';
 import { Idea } from '../types';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
-
+import { setUpvotedIdeas } from '../features/auth/upvotedIdeasSlice';
+import { io } from 'socket.io-client';
+import { addUpvotedIdea, removeUpvotedIdea } from '../features/auth/upvotedIdeasSlice';
 const IdeaList: React.FC = () => {
   const [state, dispatch] = useReducer(ideaReducer, initialState);
   const { ideas, loading, error } = state;
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const upvotedIdeas = useSelector((state: RootState) => state.upvotedIdeas.upvotedIdeas);
+  const dispatchRedux = useDispatch();
   
-  const socket = useSocket(process.env.NEXT_PUBLIC_API_URL as string);
+  const socket = io(process.env.NEXT_PUBLIC_API_URL as string, {
+    withCredentials: true,
+  });
 
   const fetchIdeas = useCallback(async () => {
     try {
@@ -48,16 +53,40 @@ const IdeaList: React.FC = () => {
     };
   }, [socket, dispatch]);
 
-  const handleUpvote = async (id: string) => {
+  useEffect(() => {
+    const fetchUpvotedIdeas = async () => {
+      if (isAuthenticated) {
+        try {
+          const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/upvoted-ideas`, 
+             {withCredentials: true }
+          );
+          dispatchRedux(setUpvotedIdeas(data));
+        } catch (error) {
+        }
+      }
+    };
+
+    fetchUpvotedIdeas();
+  }, [isAuthenticated, dispatchRedux]);
+
+  const handleUpvote = async (ideaId: string, isUpvoted: boolean) => {
     if (!isAuthenticated) {
       console.log('User must be authenticated to upvote');
       return;
     }
+
     try {
-      const { data } = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/ideas/${id}/upvote`);
+      const { data } = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/ideas/${ideaId}/toggle-upvote`, {}, { withCredentials: true });
+      
+      if (isUpvoted) {
+        dispatchRedux(removeUpvotedIdea(ideaId));
+      } else {
+        dispatchRedux(addUpvotedIdea(ideaId));
+      }
+
       dispatch({ type: 'UPDATE_IDEA', payload: data });
     } catch (error) {
-      console.error('Error upvoting idea:', error);
+      console.error('Error toggling upvote:', error);
     }
   };
 
@@ -72,7 +101,9 @@ const IdeaList: React.FC = () => {
           <IdeaCard 
             key={typeof idea._id === 'string' ? idea._id : idea._id.toString()} 
             idea={idea} 
-            onUpvote={handleUpvote} 
+            handleUpvote={handleUpvote}
+            isAuthenticated={isAuthenticated}
+            upvotedIdeas={upvotedIdeas}
           />
         ))}
     </div>

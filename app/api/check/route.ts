@@ -5,7 +5,6 @@ export async function GET() {
   try {
     const cookieStore = cookies();
     const authToken = cookieStore.get('auth_token');
-    console.log("authToken", authToken);
 
     if (!authToken) {
       return NextResponse.json({ isAuthenticated: false, user: null });
@@ -16,7 +15,6 @@ export async function GET() {
         'Cookie': `auth_token=${authToken.value}`,
       },
     });
-    console.log("response", response);
 
     if (!response.ok) {
       throw new Error('Authentication check failed');

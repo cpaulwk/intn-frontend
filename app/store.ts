@@ -2,20 +2,27 @@ import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authReducer from './features/auth/authSlice';
+import upvotedIdeasReducer from './features/auth/upvotedIdeasSlice';
 
-const persistConfig = {
-  key: 'root',
+const authPersistConfig = {
+  key: 'auth',
   version: 1,
   storage,
-  whitelist: ['auth'], // only persist auth
 };
 
-const persistedReducer = persistReducer(persistConfig, authReducer);
+const upvotedIdeasPersistConfig = {
+  key: 'upvotedIdeas',
+  version: 1,
+  storage,
+};
+
+const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
+const persistedUpvotedIdeasReducer = persistReducer(upvotedIdeasPersistConfig, upvotedIdeasReducer);;
 
 export const store = configureStore({
   reducer: {
-    auth: persistedReducer,
-    // other reducers...
+    auth: persistedAuthReducer,
+    upvotedIdeas: persistedUpvotedIdeasReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
