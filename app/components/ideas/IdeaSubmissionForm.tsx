@@ -1,9 +1,9 @@
 // app/components/IdeaSubmissionForm.tsx
 import React, { useState, useCallback } from 'react';
 import axios from 'axios';
-import { Idea } from '../types';
+import { Idea } from '../../types';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store';
+import { RootState } from '../../store';
 
 const IdeaSubmissionForm: React.FC = () => {
   const [input, setInput] = useState('');
@@ -39,7 +39,6 @@ const IdeaSubmissionForm: React.FC = () => {
       setIsLoading(false);
     }
   }, [input, isAuthenticated]);
-
   return (
     <form onSubmit={handleSubmit} className="relative">
       <input

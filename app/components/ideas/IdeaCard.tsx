@@ -1,11 +1,11 @@
 // app/components/IdeaCard.tsx
 import React, { useState } from 'react';
-import { Idea } from '../types';
+import { Idea } from '../../types';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store';
+import { RootState } from '../../store';
 import { useDispatch } from 'react-redux';
-import { addUpvotedIdea, removeUpvotedIdea } from '../features/auth/upvotedIdeasSlice';
-import { AppDispatch } from '../store';
+import { addUpvotedIdea, removeUpvotedIdea } from '../../features/auth/upvotedIdeasSlice';
+import { AppDispatch } from '../../store';
 import axios from 'axios';
 
 interface IdeaCardProps {

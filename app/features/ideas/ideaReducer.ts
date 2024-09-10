@@ -1,4 +1,4 @@
-import { Idea } from '../types';
+import { Idea } from '../../types';
 
 export interface IdeaState {
   ideas: Idea[];

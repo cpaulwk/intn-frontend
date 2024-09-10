@@ -1,17 +1,11 @@
-"use client"
-
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AppDispatch } from './store';
-import { setUser } from './features/auth/authSlice';
-import { checkAuthStatus } from './utils/auth';
-import MainLayout from './components/layout/MainLayout';
-import Header from './components/common/Header';
-import IdeaList from './components/ideas/IdeaList';
-import IdeaSubmissionForm from './components/ideas/IdeaSubmissionForm';
+import { AppDispatch } from '../store';
+import { setUser } from '../features/auth/authSlice';
+import { checkAuthStatus } from '../utils/auth';
 
-export default function Home() {
+export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -32,12 +26,4 @@ export default function Home() {
       }
     }
   }, [searchParams, router, dispatch]);
-
-  return (
-    <MainLayout>
-      <Header />
-      <IdeaList />
-      <IdeaSubmissionForm />
-    </MainLayout>
-  );
-}
+};

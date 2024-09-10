@@ -1,13 +1,14 @@
 import React, { useEffect, useCallback, useReducer } from 'react';
 import IdeaCard from './IdeaCard';
-import { ideaReducer, initialState } from '../reducers/ideaReducer';
-import { Idea } from '../types';
+import { ideaReducer, initialState } from '../../features/ideas/ideaReducer';
+import { Idea } from '../../types';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store';
-import { setUpvotedIdeas } from '../features/auth/upvotedIdeasSlice';
+import { RootState } from '../../store';
+import { setUpvotedIdeas } from '../../features/auth/upvotedIdeasSlice';
 import { io } from 'socket.io-client';
-import { addUpvotedIdea, removeUpvotedIdea } from '../features/auth/upvotedIdeasSlice';
+import { addUpvotedIdea, removeUpvotedIdea } from '../../features/auth/upvotedIdeasSlice';
+
 const IdeaList: React.FC = () => {
   const [state, dispatch] = useReducer(ideaReducer, initialState);
   const { ideas, loading, error } = state;
@@ -52,7 +53,6 @@ const IdeaList: React.FC = () => {
       }
     };
   }, [socket, dispatch]);
-
   useEffect(() => {
     const fetchUpvotedIdeas = async () => {
       if (isAuthenticated) {
