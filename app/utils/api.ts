@@ -9,7 +9,6 @@ export const fetchIdeas = async () => {
 };
 
 export const createIdea = async (title: string, username: string) => {
-  console.log('Creating idea with title:', title, 'and username:', username);
   const response = await axios.post<Idea>(
     `${API_URL}/ideas`,
     { title, username },

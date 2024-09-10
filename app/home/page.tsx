@@ -3,13 +3,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AppDispatch } from './store';
-import { setUser } from './features/auth/authSlice';
-import { checkAuthStatus } from './utils/auth';
-import Header from './components/common/Header';
-import IdeaList from './components/ideas/IdeaList';
-import IdeaSubmissionForm from './components/ideas/IdeaSubmissionForm';
-import PageLayout from './components/layout/PageLayout';
+import { AppDispatch } from '../store';
+import { setUser } from '../features/auth/authSlice';
+import { checkAuthStatus } from '../utils/auth';
+import MainLayout from '../components/layout/PageLayout';
+import Header from '../components/common/Header';
+import IdeaList from '../components/ideas/IdeaList';
+import IdeaSubmissionForm from '../components/ideas/IdeaSubmissionForm';
 
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
@@ -34,10 +34,10 @@ export default function Home() {
   }, [searchParams, router, dispatch]);
 
   return (
-    <PageLayout>
+    <MainLayout>
       <Header />
       <IdeaList />
       <IdeaSubmissionForm />
-    </PageLayout>
+    </MainLayout>
   );
 }

@@ -14,7 +14,6 @@ const IdeaSubmissionForm: React.FC = () => {
   const username = useSelector((state: RootState) => state.auth.user?.email);
 
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log('Submitting idea with title:', input.trim(), 'and username:', username);
     e.preventDefault();
     if (!input.trim() || !isAuthenticated || !username) return;
 

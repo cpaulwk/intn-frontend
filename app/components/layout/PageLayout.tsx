@@ -1,12 +1,11 @@
-"use client"
-
-import React, { useState } from 'react';
-import Header from '../common/Header';
+import React, { ReactNode, useState } from 'react';
 import Sidebar from '../common/Sidebar';
-import IdeaList from '../ideas/IdeaList';
-import IdeaSubmissionForm from '../ideas/IdeaSubmissionForm';
 
-const MainLayout: React.FC = () => {
+interface PageLayoutProps {
+  children: ReactNode;
+}
+
+const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -25,16 +24,12 @@ const MainLayout: React.FC = () => {
         )}
         <div className="flex-1 overflow-y-auto">
           <div className={`max-w-2xl mx-auto p-4 ${isSidebarOpen ? 'w-[calc(100%-16rem)]' : 'w-full'}`}>
-            <Header />
-            <IdeaList />
+            {children}
           </div>
-        </div>
-        <div className={`max-w-3xl mx-auto mb-6 ${isSidebarOpen ? 'w-[calc(100%-16rem)]' : 'w-full'}`}>
-          <IdeaSubmissionForm />
         </div>
       </div>
     </div>
   );
 };
 
-export default MainLayout;
+export default PageLayout;
