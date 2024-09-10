@@ -1,111 +1,85 @@
-import React, { useEffect, useCallback, useReducer } from 'react';
-import IdeaCard from './IdeaCard';
-import { ideaReducer, initialState } from '../../features/ideas/ideaReducer';
-import { Idea } from '../../types';
-import axios from 'axios';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
-import { setUpvotedIdeas } from '../../features/auth/upvotedIdeasSlice';
-import { io } from 'socket.io-client';
-import { addUpvotedIdea, removeUpvotedIdea } from '../../features/auth/upvotedIdeasSlice';
+import { RootState, AppDispatch } from '../../store';
+import IdeaListItem from './IdeaListItem';
+import { fetchIdeasStart, fetchIdeasSuccess, fetchIdeasError, updateIdea } from '../../features/auth/ideaSlice';
+import { setUpvotedIdeas, addUpvotedIdea, removeUpvotedIdea } from '../../features/auth/upvotedIdeasSlice';
+import { fetchIdeas, fetchUpvotedIdeas, toggleUpvoteIdea } from '../../utils/api';
 
 const IdeaList: React.FC = () => {
-  const [state, dispatch] = useReducer(ideaReducer, initialState);
-  const { ideas, loading, error } = state;
+  const dispatch = useDispatch<AppDispatch>();
+  const { ideas, loading, error } = useSelector((state: RootState) => state.ideas);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const upvotedIdeas = useSelector((state: RootState) => state.upvotedIdeas.upvotedIdeas);
-  const dispatchRedux = useDispatch();
-  
-  const socket = io(process.env.NEXT_PUBLIC_API_URL as string, {
-    withCredentials: true,
-  });
-
-  const fetchIdeas = useCallback(async () => {
-    try {
-      dispatch({ type: 'FETCH_IDEAS_START' });
-      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/ideas`);
-      dispatch({ type: 'FETCH_IDEAS_SUCCESS', payload: data });
-    } catch (err) {
-      dispatch({ type: 'FETCH_IDEAS_ERROR', payload: 'Error fetching ideas. Please try again later.' });
-    }
-  }, []);
 
   useEffect(() => {
-    fetchIdeas();
-  }, [fetchIdeas]);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleIdeaCreated = (createdIdea: Idea) => dispatch({ type: 'CREATE_IDEA', payload: createdIdea });
-    const handleIdeaDeleted = (deletedIdeaId: string) => dispatch({ type: 'DELETE_IDEA', payload: deletedIdeaId });
-    const handleIdeaUpdated = (updatedIdea: Idea) => dispatch({ type: 'UPDATE_IDEA', payload: updatedIdea });
-
-    socket.on('ideaCreated', handleIdeaCreated);
-    socket.on('ideaDeleted', handleIdeaDeleted);
-    socket.on('ideaUpdated', handleIdeaUpdated);
-
-    return () => {
-      if (socket) {
-        socket.off('ideaCreated', handleIdeaCreated);
-        socket.off('ideaDeleted', handleIdeaDeleted);
-        socket.off('ideaUpdated', handleIdeaUpdated);
+    const loadIdeas = async () => {
+      dispatch(fetchIdeasStart());
+      try {
+        const ideasData = await fetchIdeas();
+        dispatch(fetchIdeasSuccess(ideasData));
+      } catch (error) {
+        dispatch(fetchIdeasError(error as string));
       }
     };
-  }, [socket, dispatch]);
+
+    loadIdeas();
+  }, [dispatch]);
+
   useEffect(() => {
-    const fetchUpvotedIdeas = async () => {
+    const loadUpvotedIdeas = async () => {
       if (isAuthenticated) {
         try {
-          const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/upvoted-ideas`, 
-             {withCredentials: true }
-          );
-          dispatchRedux(setUpvotedIdeas(data));
+          const upvotedIdeasData = await fetchUpvotedIdeas();
+          dispatch(setUpvotedIdeas(upvotedIdeasData));
         } catch (error) {
+          console.error('Error fetching upvoted ideas:', error);
         }
       }
     };
 
-    fetchUpvotedIdeas();
-  }, [isAuthenticated, dispatchRedux]);
+    loadUpvotedIdeas();
+  }, [isAuthenticated, dispatch]);
 
-  const handleUpvote = async (ideaId: string, isUpvoted: boolean) => {
+  const handleUpvote = useCallback(async (ideaId: string, isUpvoted: boolean) => {
     if (!isAuthenticated) {
       console.log('User must be authenticated to upvote');
       return;
     }
 
     try {
-      const { data } = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/ideas/${ideaId}/toggle-upvote`, {}, { withCredentials: true });
+      const updatedIdea = await toggleUpvoteIdea(ideaId);
+      dispatch(updateIdea(updatedIdea));
       
       if (isUpvoted) {
-        dispatchRedux(removeUpvotedIdea(ideaId));
+        dispatch(removeUpvotedIdea(ideaId));
       } else {
-        dispatchRedux(addUpvotedIdea(ideaId));
+        dispatch(addUpvotedIdea(ideaId));
       }
-
-      dispatch({ type: 'UPDATE_IDEA', payload: data });
     } catch (error) {
       console.error('Error toggling upvote:', error);
     }
-  };
+  }, [isAuthenticated, dispatch]);
+
+  const sortedIdeas = useMemo(() => 
+    [...ideas].sort((a, b) => b.upvotes - a.upvotes),
+    [ideas]
+  );
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <div className="idea-list">
-      {ideas
-        .sort((a, b) => b.upvotes - a.upvotes)
-        .map((idea) => (
-          <IdeaCard 
-            key={typeof idea._id === 'string' ? idea._id : idea._id.toString()} 
-            idea={idea} 
-            handleUpvote={handleUpvote}
-            isAuthenticated={isAuthenticated}
-            upvotedIdeas={upvotedIdeas}
-          />
-        ))}
+      {sortedIdeas.map((idea) => (
+        <IdeaListItem
+          key={idea._id.toString()}
+          idea={idea}
+          handleUpvote={handleUpvote}
+          isAuthenticated={isAuthenticated}
+          upvotedIdeas={upvotedIdeas}
+        />
+      ))}
     </div>
   );
 };

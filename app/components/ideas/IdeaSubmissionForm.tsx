@@ -1,44 +1,39 @@
 // app/components/IdeaSubmissionForm.tsx
 import React, { useState, useCallback } from 'react';
-import axios from 'axios';
-import { Idea } from '../../types';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../../store';
+import { createIdea } from '../../features/auth/ideaSlice';
+import { createIdea as createIdeaApi } from '../../utils/api';
 
 const IdeaSubmissionForm: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const username = useSelector((state: RootState) => state.auth.user?.email);
 
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log('Submitting idea with title:', input.trim(), 'and username:', username);
     e.preventDefault();
-    if (!input.trim() || !isAuthenticated) return;
+    if (!input.trim() || !isAuthenticated || !username) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const { data } = await axios.post<Idea>(`${process.env.NEXT_PUBLIC_API_URL}/ideas`, {
-        title: input.trim(),
-        username: 'Anonymous' // You might want to change this if you have user authentication
-      }, {
-        headers: { 'Content-Type': 'application/json' }
-      });
-      
+      const newIdea = await createIdeaApi(input.trim(), username);
+      console.log('New idea created:', newIdea);
+      dispatch(createIdea(newIdea));
       setInput('');
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        console.error('Axios error:', err.response?.data || err.message);
-        setError(`Failed to submit idea: ${err.response?.data?.message || err.message}`);
-      } else {
-        console.error('Unexpected error:', err);
-        setError('An unexpected error occurred. Please try again.');
-      }
+      console.error('Error creating idea:', err);
+      setError('Failed to submit idea. Please try again.');
     } finally {
       setIsLoading(false);
     }
-  }, [input, isAuthenticated]);
+  }, [input, isAuthenticated, username, dispatch]);
+
   return (
     <form onSubmit={handleSubmit} className="relative">
       <input

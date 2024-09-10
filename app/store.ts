@@ -3,6 +3,7 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import storage from 'redux-persist/lib/storage';
 import authReducer from './features/auth/authSlice';
 import upvotedIdeasReducer from './features/auth/upvotedIdeasSlice';
+import ideasReducer from './features/auth/ideaSlice';
 
 const authPersistConfig = {
   key: 'auth',
@@ -16,13 +17,21 @@ const upvotedIdeasPersistConfig = {
   storage,
 };
 
+const ideasPersistConfig = {
+  key: 'ideas',
+  version: 1,
+  storage,
+};
+
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 const persistedUpvotedIdeasReducer = persistReducer(upvotedIdeasPersistConfig, upvotedIdeasReducer);;
+const persistedIdeasReducer = persistReducer(ideasPersistConfig, ideasReducer);
 
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
     upvotedIdeas: persistedUpvotedIdeasReducer,
+    ideas: persistedIdeasReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
