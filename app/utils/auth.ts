@@ -15,3 +15,18 @@ export const checkAuthStatus = async (dispatch: AppDispatch) => {
     dispatch(clearUser());
   }
 };
+
+export const handleGoogleLogin = () => {
+  window.location.href = `${process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL}`;
+};
+
+export const handleLogout = async (dispatch: AppDispatch) => {
+  try {
+    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/google/logout`, {}, { withCredentials: true });
+  } catch (error) {
+    console.error('Error during logout:', error);
+  } finally {
+    // Always clear the user data, regardless of the server response
+    dispatch(clearUser());
+  }
+};
