@@ -1,32 +1,67 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { Idea } from '../types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const fetchIdeas = async () => {
-  const response = await axios.get<Idea[]>(`${API_URL}/ideas`);
-  return response.data;
+const handleApiError = (error: unknown) => {
+  if (axios.isAxiosError(error)) {
+    const axiosError = error as AxiosError;
+    if (axiosError.response) {
+      throw new Error(`API error: ${axiosError.response.status} - ${axiosError.response.data}`);
+    } else if (axiosError.request) {
+      throw new Error('No response received from the server');
+    } else {
+      throw new Error(`Error setting up the request: ${axiosError.message}`);
+    }
+  } else {
+    throw new Error('An unexpected error occurred');
+  }
 };
 
-export const createIdea = async (title: string, username: string) => {
-  const response = await axios.post<Idea>(
-    `${API_URL}/ideas`,
-    { title, username },
-    { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-  );
-  return response.data;
+export const fetchIdeas = async (): Promise<Idea[]> => {
+  try {
+    const response = await axios.get<Idea[]>(`${API_URL}/ideas`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
 };
 
-export const toggleUpvoteIdea = async (ideaId: string) => {
-  const response = await axios.put<Idea>(
-    `${API_URL}/ideas/${ideaId}/toggle-upvote`,
-    {},
-    { withCredentials: true }
-  );
-  return response.data;
+export const createIdea = async (title: string, username: string): Promise<Idea> => {
+  try {
+    const response = await axios.post<Idea>(
+      `${API_URL}/ideas`,
+      { title, username },
+      { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
 };
 
-export const fetchUpvotedIdeas = async () => {
-  const response = await axios.get<string[]>(`${API_URL}/users/upvoted-ideas`, { withCredentials: true });
-  return response.data;
+export const toggleUpvoteIdea = async (ideaId: string): Promise<Idea> => {
+  try {
+    const response = await axios.put<Idea>(
+      `${API_URL}/ideas/${ideaId}/toggle-upvote`,
+      {},
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};
+
+export const fetchUpvotedIdeas = async (): Promise<string[]> => {
+  try {
+    const response = await axios.get<string[]>(`${API_URL}/users/upvoted-ideas`, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
 };
