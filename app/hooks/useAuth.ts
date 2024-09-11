@@ -1,14 +1,15 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AppDispatch } from '../store';
-import { setUser } from '../features/auth/authSlice';
+import { AppDispatch, RootState } from '../store';
+import { setUser } from '../slices/authSlice';
 import { checkAuthStatus } from '../utils/auth';
 
 export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   useEffect(() => {
     checkAuthStatus(dispatch);
@@ -26,4 +27,6 @@ export const useAuth = () => {
       }
     }
   }, [searchParams, router, dispatch]);
+
+  return { isAuthenticated };
 };

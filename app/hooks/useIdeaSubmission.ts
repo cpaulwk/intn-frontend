@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
-import { createIdea } from '../features/auth/ideaSlice';
+import { createIdea } from '../slices/ideaSlice';
 import { createIdea as createIdeaApi } from '../utils/api';
 
 export const useIdeaSubmission = () => {

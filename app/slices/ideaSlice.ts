@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Idea } from '../../types';
+import { Idea } from '../types';
 
 interface IdeasState {
   ideas: Idea[];

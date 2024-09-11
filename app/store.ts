@@ -1,9 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import authReducer from './features/auth/authSlice';
-import upvotedIdeasReducer from './features/auth/upvotedIdeasSlice';
-import ideasReducer from './features/auth/ideaSlice';
+import authReducer from './slices/authSlice';
+import upvotedIdeasReducer from './slices/upvotedIdeasSlice';
+import ideasReducer from './slices/ideaSlice';
+import sidebarReducer from './slices/sidebarSlice';
 
 const authPersistConfig = {
   key: 'auth',
@@ -11,27 +12,14 @@ const authPersistConfig = {
   storage,
 };
 
-const upvotedIdeasPersistConfig = {
-  key: 'upvotedIdeas',
-  version: 1,
-  storage,
-};
-
-const ideasPersistConfig = {
-  key: 'ideas',
-  version: 1,
-  storage,
-};
-
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
-const persistedUpvotedIdeasReducer = persistReducer(upvotedIdeasPersistConfig, upvotedIdeasReducer);;
-const persistedIdeasReducer = persistReducer(ideasPersistConfig, ideasReducer);
 
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
-    upvotedIdeas: persistedUpvotedIdeasReducer,
-    ideas: persistedIdeasReducer,
+    upvotedIdeas: upvotedIdeasReducer,
+    ideas: ideasReducer,
+    sidebar: sidebarReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -7,14 +7,13 @@ import Header from '../components/common/Header';
 import FilteredIdeaList from '../components/ideas/FilteredIdeaList';
 import PageLayout from '../components/layout/PageLayout';
 import { fetchUpvotedIdeas } from '../utils/api';
-import { setUpvotedIdeas } from '../features/auth/upvotedIdeasSlice';
+import { setUpvotedIdeas } from '../slices/upvotedIdeasSlice';
 
 const MyFavorites: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector((state: RootState) => state.auth.user);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const ideas = useSelector((state: RootState) => state.ideas.ideas);
   const upvotedIdeas = useSelector((state: RootState) => state.upvotedIdeas.upvotedIdeas);
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   useEffect(() => {
     const loadUpvotedIdeas = async () => {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Idea } from '../types';
 import { AppDispatch } from '../store';
-import { addUpvotedIdea, removeUpvotedIdea } from '../features/auth/upvotedIdeasSlice';
+import { addUpvotedIdea, removeUpvotedIdea } from '../slices/upvotedIdeasSlice';
 
 export const toggleUpvote = async (
   ideaId: string,

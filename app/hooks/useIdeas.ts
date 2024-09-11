@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
-import { fetchIdeasStart, fetchIdeasSuccess, fetchIdeasError, updateIdea } from '../features/auth/ideaSlice';
-import { setUpvotedIdeas, addUpvotedIdea, removeUpvotedIdea } from '../features/auth/upvotedIdeasSlice';
+import { fetchIdeasStart, fetchIdeasSuccess, fetchIdeasError, updateIdea } from '../slices/ideaSlice';
+import { setUpvotedIdeas, addUpvotedIdea, removeUpvotedIdea } from '../slices/upvotedIdeasSlice';
 import { fetchIdeas, fetchUpvotedIdeas, toggleUpvoteIdea } from '../utils/api';
 
 export const useIdeas = () => {

@@ -1,5 +1,5 @@
 import { AppDispatch } from '../store';
-import { setUser, clearUser } from '../features/auth/authSlice';
+import { setUser, clearUser } from '../slices/authSlice';
 import axios from 'axios';
 
 export const checkAuthStatus = async (dispatch: AppDispatch) => {
@@ -17,7 +17,9 @@ export const checkAuthStatus = async (dispatch: AppDispatch) => {
 };
 
 export const handleGoogleLogin = () => {
-  window.location.href = `${process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL}`;
+  if (typeof window !== 'undefined') {
+    window.location.href = `${process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL}`;
+  }
 };
 
 export const handleLogout = async (dispatch: AppDispatch) => {

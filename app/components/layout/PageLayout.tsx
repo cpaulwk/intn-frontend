@@ -1,4 +1,7 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../store';
+import { toggleSidebar } from '../../slices/sidebarSlice';
 import Sidebar from '../common/Sidebar';
 
 interface PageLayoutProps {
@@ -6,18 +9,17 @@ interface PageLayoutProps {
 }
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const dispatch = useDispatch();
+  const isSidebarOpen = useSelector((state: RootState) => state.sidebar.isOpen);
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <Sidebar />
       <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
         {!isSidebarOpen && (
           <button
             className="fixed top-4 left-4 z-20 p-2 text-gray-600 hover:text-gray-800"
-            onClick={toggleSidebar}
+            onClick={() => dispatch(toggleSidebar())}
           >
             ☰
           </button>

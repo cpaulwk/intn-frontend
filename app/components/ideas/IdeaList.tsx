@@ -14,7 +14,7 @@ const IdeaList: React.FC = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="idea-list grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+    <div className="idea-list w-full">
       {ideas.map((idea) => (
         <IdeaListItem
           key={idea._id.toString()}
