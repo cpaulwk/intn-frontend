@@ -1,6 +1,10 @@
 // app/components/IdeaCard.tsx
 import React, { useState, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { Idea } from '../../types';
+import { addRecentlyViewed } from '../../slices/addRecentlyViewed';
+import { addViewedIdea } from '../../utils/api';
+import Link from 'next/link';
 
 interface IdeaCardProps {
   idea: Idea;
@@ -12,9 +16,43 @@ interface IdeaCardProps {
 const IdeaCard: React.FC<IdeaCardProps> = React.memo(({ idea, handleUpvote, isAuthenticated, upvotedIdeas }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const isUpvoted = Array.isArray(upvotedIdeas) && upvotedIdeas.includes(idea._id.toString());
+  const dispatch = useDispatch();
 
-  const toggleExpand = useCallback(() => setIsExpanded(prev => !prev), []);
-  const onUpvote = useCallback(() => handleUpvote(idea._id.toString(), isUpvoted), [handleUpvote, idea._id, isUpvoted]);
+  const toggleExpand = useCallback(async () => {
+    setIsExpanded(prev => !prev);
+    if (isAuthenticated) {
+      dispatch(addRecentlyViewed(idea));
+      try {
+        await addViewedIdea(idea);
+      } catch (error) {
+        console.error('Error adding viewed idea:', error);
+      }
+    }
+  }, [dispatch, idea, isAuthenticated]);
+
+  const onUpvote = useCallback(async () => {
+    if (isAuthenticated) {
+      try {
+        await handleUpvote(idea._id.toString(), isUpvoted);
+        dispatch(addRecentlyViewed(idea));
+        await addViewedIdea(idea);
+      } catch (error) {
+        console.error('Error toggling upvote:', error);
+      }
+    } else {
+      console.log('User must be authenticated to upvote');
+    }
+  }, [handleUpvote, idea, isUpvoted, dispatch, isAuthenticated]);
+
+  const handleIdeaClick = async () => {
+    if (isAuthenticated) {
+      try {
+        await addViewedIdea(idea);
+      } catch (error) {
+        console.error('Error adding viewed idea:', error);
+      }
+    }
+  };
 
   return (
     <div className="flex items-center bg-gradient-to-r from-blue-500 to-purple-500 text-black p-4 rounded-xl mb-4">

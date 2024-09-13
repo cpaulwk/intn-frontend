@@ -1,14 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
+import { RootState, AppDispatch } from '../../store';
 import { toggleSidebar } from '../../slices/sidebarSlice';
+import { Idea } from '../../types';
+import { fetchViewedIdeas } from '../../utils/api';
+import { addRecentlyViewed } from '../../slices/addRecentlyViewed';
 import { useSidebar } from '../../hooks/useSideBar';
 
 const Sidebar: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const recentlyViewedIdeas = useSelector((state: RootState) => state.recentlyViewed.ideas);
+  const { onGoogleLogin, onLogout } = useSidebar();
   const isOpen = useSelector((state: RootState) => state.sidebar.isOpen);
-  const { isAuthenticated, onGoogleLogin, onLogout } = useSidebar();
+
+  useEffect(() => {
+    const loadViewedIdeas = async () => {
+      if (isAuthenticated) {
+        try {
+          const viewedIdeas = await fetchViewedIdeas();
+          viewedIdeas.forEach(idea => dispatch(addRecentlyViewed(idea)));
+        } catch (error) {
+          console.error('Error fetching viewed ideas:', error);
+        }
+      }
+    };
+
+    loadViewedIdeas();
+  }, [isAuthenticated, dispatch]);
 
   return (
     <div className={`fixed top-0 left-0 h-full w-64 bg-gray-100 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out z-10`}>
@@ -38,9 +58,19 @@ const Sidebar: React.FC = () => {
       <section className="p-4">
         <h2 className="text-xl font-bold mb-4">Recently Viewed</h2>
         <ul>
-          <li className="mb-2"><Link href="#" className="text-blue-600 hover:underline">Recently viewed idea 1</Link></li>
-          <li className="mb-2"><Link href="#" className="text-blue-600 hover:underline">Recently viewed idea 2</Link></li>
-          <li className="mb-2"><Link href="#" className="text-blue-600 hover:underline">Recently viewed idea 3</Link></li>
+          {recentlyViewedIdeas.map(idea => (
+            idea._id ? (
+              <li key={idea._id.toString()} className="mb-2">
+                <Link
+                  href={`/ideas/${idea._id.toString()}`}
+                  className="text-blue-600 hover:underline block whitespace-nowrap overflow-hidden text-ellipsis"
+                  title={idea.title}
+                >
+                  {idea.title}
+                </Link>
+              </li>
+            ) : null
+          ))}
         </ul>
       </section>
       <div className="absolute bottom-0 left-0 w-full p-4 bg-gray-200">
@@ -48,7 +78,7 @@ const Sidebar: React.FC = () => {
           {isAuthenticated ? (
             <button onClick={onLogout} className="flex items-center bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition-colors duration-200">
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
               <span>Logout</span>
             </button>

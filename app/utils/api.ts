@@ -1,5 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { Idea } from '../types';
+import { store } from '../store';
+import { addRecentlyViewed } from '../slices/addRecentlyViewed';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -59,6 +61,30 @@ export const toggleUpvoteIdea = async (ideaId: string): Promise<Idea> => {
 export const fetchUpvotedIdeas = async (): Promise<string[]> => {
   try {
     const response = await axios.get<string[]>(`${API_URL}/users/upvoted-ideas`, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};
+
+export const addViewedIdea = async (idea: Idea): Promise<void> => {
+  try {
+    await axios.post(
+      `${API_URL}/ideas/viewed`,
+      { ideaId: idea._id },
+      { withCredentials: true }
+    );
+    store.dispatch(addRecentlyViewed(idea));
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};
+
+export const fetchViewedIdeas = async (): Promise<Idea[]> => {
+  try {
+    const response = await axios.get<Idea[]>(`${API_URL}/ideas/viewed`, { withCredentials: true });
     return response.data;
   } catch (error) {
     handleApiError(error);
