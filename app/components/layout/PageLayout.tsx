@@ -29,7 +29,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
           </button>
         )}
         <div
-          className={`flex-1 overflow-hidden ${isSidebarOpen ? 'w-[calc(100%-16rem)]' : 'px-20'}`}
+          className={`flex-1 overflow-hidden ${isSidebarOpen ? 'mx-auto w-[calc(100%-16rem)]' : 'px-20'}`}
         >
           {children}
         </div>
