@@ -88,7 +88,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(({ idea, handleUpvote, isAu
           </button>
         )}
       </div>
-      <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 mt-2 sm:mt-0">
+      <div className="flex flex-row sm:flex-col items-center gap-y-2">
         <button
           onClick={onUpvote}
           className={`

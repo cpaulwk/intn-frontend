@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import { createIdea } from '../slices/ideaSlice';
 import { createIdea as createIdeaApi } from '../utils/api';
-
+import { addUpvotedIdea } from '../slices/upvotedIdeasSlice';
 export const useIdeaSubmission = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -22,6 +22,7 @@ export const useIdeaSubmission = () => {
     try {
       const newIdea = await createIdeaApi(input.trim(), username);
       dispatch(createIdea(newIdea));
+      dispatch(addUpvotedIdea(newIdea._id.toString()));
       setInput('');
     } catch (err) {
       console.error('Error creating idea:', err);
