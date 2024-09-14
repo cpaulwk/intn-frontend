@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import { handleGoogleLogin, handleLogout, checkAuthStatus } from '../utils/auth';
+import { clearRecentlyViewed } from '../slices/addRecentlyViewed';
 
 export const useSidebar = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,6 +21,7 @@ export const useSidebar = () => {
   const onLogout = useCallback(async () => {
     try {
       await handleLogout(dispatch);
+      dispatch(clearRecentlyViewed());
     } catch (error) {
       console.error('Error during logout:', error);
     }

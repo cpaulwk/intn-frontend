@@ -1,10 +1,10 @@
 // app/components/IdeaCard.tsx
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Idea } from '../../types';
 import { addRecentlyViewed } from '../../slices/addRecentlyViewed';
 import { addViewedIdea } from '../../utils/api';
-import Link from 'next/link';
+import { Rocket, ChevronDown } from 'lucide-react';
 
 interface IdeaCardProps {
   idea: Idea;
@@ -15,20 +15,27 @@ interface IdeaCardProps {
 
 const IdeaCard: React.FC<IdeaCardProps> = React.memo(({ idea, handleUpvote, isAuthenticated, upvotedIdeas }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const isUpvoted = Array.isArray(upvotedIdeas) && upvotedIdeas.includes(idea._id.toString());
+  const [contentHeight, setContentHeight] = useState('auto');
+  const contentRef = useRef<HTMLParagraphElement>(null);
   const dispatch = useDispatch();
 
-  const toggleExpand = useCallback(async () => {
+  const toggleExpand = useCallback(() => {
     setIsExpanded(prev => !prev);
     if (isAuthenticated) {
       dispatch(addRecentlyViewed(idea));
-      try {
-        await addViewedIdea(idea);
-      } catch (error) {
-        console.error('Error adding viewed idea:', error);
-      }
+      addViewedIdea(idea).catch(error => console.error('Error adding viewed idea:', error));
     }
   }, [dispatch, idea, isAuthenticated]);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      const lineHeight = parseInt(window.getComputedStyle(contentRef.current).lineHeight);
+      const scrollHeight = contentRef.current.scrollHeight;
+      setContentHeight(isExpanded ? `${scrollHeight}px` : `${lineHeight * 2}px`);
+    }
+  }, [isExpanded]);
+
+  const isUpvoted = Array.isArray(upvotedIdeas) && upvotedIdeas.includes(idea._id.toString());
 
   const onUpvote = useCallback(async () => {
     if (isAuthenticated) {
@@ -55,34 +62,50 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(({ idea, handleUpvote, isAu
   };
 
   return (
-    <div className="flex items-center bg-gradient-to-r from-blue-500 to-purple-500 text-black p-4 rounded-xl mb-4">
-      <div className="flex-grow">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center min-w-[230px] w-full bg-bg-100 border border-primary-100 text-black backdrop-blur-md hover:bg-[#e1ffff]/80 transition-all duration-300 p-4 rounded-xl mb-4 shadow-md hover:shadow-lg hover:shadow-[#0085ff]/20 hover:-translate-y-1 gap-4">
+      <div className="flex-grow w-full sm:w-auto">
         <h3 className="text-xl font-bold mb-2">{idea.title}</h3>
-        <p className={`text-sm ${isExpanded ? '' : 'line-clamp-3'}`}>
-          {idea.description}
-        </p>
-        {idea.description.length > 280 && (
+        <div className="overflow-hidden transition-[height] duration-300 ease-in-out" style={{ height: contentHeight }}>
+          <p
+            ref={contentRef}
+            className="text-sm"
+          >
+            {idea.description}
+          </p>
+        </div>
+        {idea.description.length > 185 && (
           <button
             onClick={toggleExpand}
-            className="text-sm text-blue-800 hover:underline mt-1"
+            className="text-sm mt-1 flex items-center justify-center hover:bg-[#0085ff]/20 rounded-md transition-colors duration-200 group w-8 h-8"
             aria-expanded={isExpanded}
+            aria-label={isExpanded ? "Show less" : "Show more"}
           >
-            {isExpanded ? 'Show less' : 'Show more'}
+            <ChevronDown 
+              className={`w-5 h-5 text-[#0085ff] group-hover:text-[#0066cc] transition-transform duration-300 ${
+                isExpanded ? 'rotate-180' : ''
+              }`}
+            />
           </button>
         )}
       </div>
-      <button
-        onClick={onUpvote}
-        className="flex flex-col items-center text-sm font-semibold mt-2 mx-1 py-2 rounded"
-        disabled={!isAuthenticated}
-        aria-label={`${isUpvoted ? 'Downvote' : 'Upvote'} idea: ${idea.title}`}
-        aria-pressed={isUpvoted}
-      >
-        <span className={`whitespace-nowrap ${isAuthenticated ? 'text-black' : 'text-gray-400'}`}>
-          {isUpvoted ? '▼ Downvote' : '▲ Upvote'}
-        </span>
-        <span>{idea.upvotes}</span>
-      </button>
+      <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 mt-2 sm:mt-0">
+        <button
+          onClick={onUpvote}
+          className={`
+            rounded-full p-2 w-12 h-12 flex items-center justify-center group
+            ${isAuthenticated
+              ? isUpvoted
+                ? 'bg-[#0085ff] text-[#FFFFFF]'
+                : 'bg-[#FFFFFF] text-[#0085ff] border border-[#0085ff] hover:bg-[#e1ffff] transition-all duration-300'
+              : 'bg-gray-300 text-gray-500'
+            }
+          `}
+          disabled={!isAuthenticated}
+        >
+          <Rocket className={`h-6 w-6 transform ${isUpvoted ? '-rotate-45' : ''} transition-transform duration-300`} />
+        </button>
+        <span className="bg-[#e1ffff] text-[#0085ff] font-mono text-lg sm:text-xl font-semibold px-3 py-1 rounded-full">{idea.upvotes}</span>
+      </div>
     </div>
   );
 });

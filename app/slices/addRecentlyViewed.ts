@@ -23,8 +23,11 @@ const recentlyViewedSlice = createSlice({
         state.ideas.pop();
       }
     },
+    clearRecentlyViewed: (state) => {
+      state.ideas = [];
+    },
   },
 });
 
-export const { addRecentlyViewed } = recentlyViewedSlice.actions;
+export const { addRecentlyViewed, clearRecentlyViewed } = recentlyViewedSlice.actions;
 export default recentlyViewedSlice.reducer;

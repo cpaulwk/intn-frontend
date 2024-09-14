@@ -4,8 +4,38 @@
 @tailwind utilities;
 
 /* You can add your custom global styles here */
+
+@layer base {
+  :root {
+    /* Light theme */
+    --primary-100: #0078e6;
+    --primary-200: #5aa8ff;
+    --primary-300: #e8f7ff;
+    --accent-100: #0062e6;
+    --accent-200: #f0f9ff;
+    --text-100: #212121;
+    --text-200: #5a5a5a;
+    --bg-100: #ffffff;
+    --bg-200: #f0f0f0;
+    --bg-300: #e0e0e0;
+  }
+
+  .dark {
+    /* Dark theme */
+    --primary-100: #0078e6;
+    --primary-200: #5aa8ff;
+    --primary-300: #d1f6ff;
+    --accent-100: #0062e6;
+    --accent-200: #d4f2ff;
+    --text-100: #f8f8f8;
+    --text-200: #a9a9a9;
+    --bg-100: #212121;
+    --bg-200: #333333;
+    --bg-300: #4a4a4a;
+  }
+}
+
 body {
-  @apply bg-gray-100 text-gray-800;
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
@@ -15,17 +45,13 @@ h1, h2, h3, h4, h5, h6 {
   @apply font-bold;
 }
 
-a {
-  @apply text-blue-500 hover:underline;
-}
-
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-300;
+  /* @apply bg-gray-300; */
 }
 
 ::-webkit-scrollbar-thumb {
