@@ -19,10 +19,13 @@ const upvotedIdeasSlice = createSlice({
       state.upvotedIdeas.push(action.payload);
     },
     removeUpvotedIdea: (state, action: PayloadAction<string>) => {
-      state.upvotedIdeas = state.upvotedIdeas.filter(id => id !== action.payload);
+      state.upvotedIdeas = state.upvotedIdeas.filter(
+        (id) => id !== action.payload
+      );
     },
   },
 });
 
-export const { setUpvotedIdeas, addUpvotedIdea, removeUpvotedIdea } = upvotedIdeasSlice.actions;
+export const { setUpvotedIdeas, addUpvotedIdea, removeUpvotedIdea } =
+  upvotedIdeasSlice.actions;
 export default upvotedIdeasSlice.reducer;

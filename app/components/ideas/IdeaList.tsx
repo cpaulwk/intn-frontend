@@ -1,22 +1,25 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import IdeaListItem from './IdeaListItem';
+import IdeaCard from './IdeaCard';
 import { useIdeas } from '../../hooks/useIdeas';
 
 const IdeaList: React.FC = () => {
-  const { ideas, loading, error } = useIdeas();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const upvotedIdeas = useSelector((state: RootState) => state.upvotedIdeas.upvotedIdeas);
-  const { handleUpvote } = useIdeas();
+  const { ideas, loading, error, handleUpvote } = useIdeas();
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
+  const upvotedIdeas = useSelector(
+    (state: RootState) => state.upvotedIdeas.upvotedIdeas
+  );
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="overflow-y-auto max-w-3xl mx-auto pt-2 max-h-[78vh]">
+    <div className="mx-auto max-h-[78vh] max-w-3xl overflow-y-auto pt-2">
       {ideas.map((idea) => (
-        <IdeaListItem
+        <IdeaCard
           key={idea._id.toString()}
           idea={idea}
           isAuthenticated={isAuthenticated}

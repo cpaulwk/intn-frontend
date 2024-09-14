@@ -9,7 +9,9 @@ const handleApiError = (error: unknown) => {
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError;
     if (axiosError.response) {
-      throw new Error(`API error: ${axiosError.response.status} - ${axiosError.response.data}`);
+      throw new Error(
+        `API error: ${axiosError.response.status} - ${axiosError.response.data}`
+      );
     } else if (axiosError.request) {
       throw new Error('No response received from the server');
     } else {
@@ -30,7 +32,10 @@ export const fetchIdeas = async (): Promise<Idea[]> => {
   }
 };
 
-export const createIdea = async (title: string, username: string): Promise<Idea> => {
+export const createIdea = async (
+  title: string,
+  username: string
+): Promise<Idea> => {
   try {
     const response = await axios.post<Idea>(
       `${API_URL}/ideas`,
@@ -60,7 +65,10 @@ export const toggleUpvoteIdea = async (ideaId: string): Promise<Idea> => {
 
 export const fetchUpvotedIdeas = async (): Promise<string[]> => {
   try {
-    const response = await axios.get<string[]>(`${API_URL}/users/upvoted-ideas`, { withCredentials: true });
+    const response = await axios.get<string[]>(
+      `${API_URL}/users/upvoted-ideas`,
+      { withCredentials: true }
+    );
     return response.data;
   } catch (error) {
     handleApiError(error);
@@ -84,7 +92,9 @@ export const addViewedIdea = async (idea: Idea): Promise<void> => {
 
 export const fetchViewedIdeas = async (): Promise<Idea[]> => {
   try {
-    const response = await axios.get<Idea[]>(`${API_URL}/ideas/viewed`, { withCredentials: true });
+    const response = await axios.get<Idea[]>(`${API_URL}/ideas/viewed`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     handleApiError(error);

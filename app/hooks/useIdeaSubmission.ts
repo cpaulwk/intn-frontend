@@ -9,28 +9,33 @@ export const useIdeaSubmission = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
   const username = useSelector((state: RootState) => state.auth.user?.email);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!input.trim() || !isAuthenticated || !username) return;
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (!input.trim() || !isAuthenticated || !username) return;
 
-    setIsLoading(true);
-    setError(null);
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const newIdea = await createIdeaApi(input.trim(), username);
-      dispatch(createIdea(newIdea));
-      dispatch(addUpvotedIdea(newIdea._id.toString()));
-      setInput('');
-    } catch (err) {
-      console.error('Error creating idea:', err);
-      setError('Failed to submit idea. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [input, isAuthenticated, username, dispatch]);
+      try {
+        const newIdea = await createIdeaApi(input.trim(), username);
+        dispatch(createIdea(newIdea));
+        dispatch(addUpvotedIdea(newIdea._id.toString()));
+        setInput('');
+      } catch (err) {
+        console.error('Error creating idea:', err);
+        setError('Failed to submit idea. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [input, isAuthenticated, username, dispatch]
+  );
 
   return {
     input,
@@ -38,6 +43,6 @@ export const useIdeaSubmission = () => {
     isLoading,
     error,
     isAuthenticated,
-    handleSubmit
+    handleSubmit,
   };
 };

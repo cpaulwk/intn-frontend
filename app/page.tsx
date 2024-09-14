@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -35,9 +35,9 @@ export default function Home() {
 
   return (
     <PageLayout>
-        <Header />
-        <IdeaList />
-        <IdeaSubmissionForm />
+      <Header />
+      <IdeaList />
+      <IdeaSubmissionForm />
     </PageLayout>
   );
 }

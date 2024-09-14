@@ -33,12 +33,12 @@ const ideasSlice = createSlice({
       state.ideas.push(action.payload);
     },
     updateIdea: (state, action: PayloadAction<Idea>) => {
-      state.ideas = state.ideas.map(idea =>
+      state.ideas = state.ideas.map((idea) =>
         idea._id === action.payload._id ? action.payload : idea
       );
     },
     deleteIdea: (state, action: PayloadAction<string>) => {
-      state.ideas = state.ideas.filter(idea => idea._id !== action.payload);
+      state.ideas = state.ideas.filter((idea) => idea._id !== action.payload);
     },
   },
 });

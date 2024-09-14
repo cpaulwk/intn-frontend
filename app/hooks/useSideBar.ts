@@ -1,12 +1,18 @@
 import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
-import { handleGoogleLogin, handleLogout, checkAuthStatus } from '../utils/auth';
+import {
+  handleGoogleLogin,
+  handleLogout,
+  checkAuthStatus,
+} from '../utils/auth';
 import { clearRecentlyViewed } from '../slices/addRecentlyViewed';
 
 export const useSidebar = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
 
   const onGoogleLogin = useCallback(async () => {
     try {
@@ -30,6 +36,6 @@ export const useSidebar = () => {
   return {
     isAuthenticated,
     onGoogleLogin,
-    onLogout
+    onLogout,
   };
 };
