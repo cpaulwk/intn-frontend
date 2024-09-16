@@ -19,14 +19,16 @@ const FilteredIdeaList: React.FC<FilteredIdeaListProps> = ({
   const upvotedIdeas = useSelector(
     (state: RootState) => state.upvotedIdeas.upvotedIdeas
   );
-
+  const isSidebarOpen = useSelector((state: RootState) => state.sidebar.isOpen);
   const sortedIdeas = useMemo(
     () => [...ideas].sort((a, b) => b.upvotes - a.upvotes),
     [ideas]
   );
 
   return (
-    <div className="mx-auto grid max-h-[78vh] max-w-3xl grid-cols-1 gap-4 overflow-y-auto pt-2 md:grid-cols-2 lg:grid-cols-3">
+    <div
+      className={`${isSidebarOpen ? 'px-10' : 'px-16'} grid max-h-[78vh] grid-cols-1 gap-x-4 overflow-y-auto pt-2 md:grid-cols-2 lg:grid-cols-3`}
+    >
       {sortedIdeas.map((idea) => (
         <IdeaCard
           key={idea._id.toString()}

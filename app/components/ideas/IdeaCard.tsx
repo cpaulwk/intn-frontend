@@ -1,6 +1,7 @@
 // app/components/IdeaCard.tsx
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
 import { Idea } from '../../types';
 import { addRecentlyViewed } from '../../slices/addRecentlyViewed';
 import { addViewedIdea } from '../../utils/api';
@@ -19,7 +20,9 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
     const [contentHeight, setContentHeight] = useState('auto');
     const contentRef = useRef<HTMLParagraphElement>(null);
     const dispatch = useDispatch();
-
+    const isSidebarOpen = useSelector(
+      (state: RootState) => state.sidebar.isOpen
+    );
     const toggleExpand = useCallback(() => {
       setIsExpanded((prev) => !prev);
       if (isAuthenticated) {
@@ -70,7 +73,9 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
     };
 
     return (
-      <div className="mb-4 flex w-full min-w-[230px] flex-col items-start gap-4 rounded-xl border border-primary-100 bg-bg-100 p-4 text-black shadow-md backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:bg-[#e1ffff]/80 hover:shadow-lg hover:shadow-[#0085ff]/20 sm:flex-row sm:items-center">
+      <div
+        className={`mb-4 flex min-w-[230px] max-w-2xl flex-col items-start gap-4 rounded-xl border border-primary-100 bg-bg-100 p-4 text-black shadow-md backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:bg-[#e1ffff]/80 hover:shadow-lg hover:shadow-[#0085ff]/20 sm:flex-row sm:items-center`}
+      >
         <div className="w-full flex-grow sm:w-auto">
           <h3 className="mb-2 text-xl font-bold">{idea.title}</h3>
           <div

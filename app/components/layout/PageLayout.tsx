@@ -28,11 +28,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
             <Menu size={24} />
           </button>
         )}
-        <div
-          className={`flex-1 overflow-hidden ${isSidebarOpen ? 'mx-auto w-[calc(100%-16rem)]' : 'px-20'}`}
-        >
-          {children}
-        </div>
+        <div className={`flex-1 flex-col items-center`}>{children}</div>
       </div>
     </div>
   );

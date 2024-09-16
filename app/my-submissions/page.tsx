@@ -22,19 +22,21 @@ const MySubmissions: React.FC = () => {
       <h2 className="mb-6 mt-4 text-center text-2xl font-bold">
         My Submissions
       </h2>
-      {isAuthenticated ? (
-        userIdeas.length > 0 ? (
-          <FilteredIdeaList ideas={userIdeas} handleUpvote={handleUpvote} />
+      <div className="w-fulljustify-center flex-1">
+        {isAuthenticated ? (
+          userIdeas.length > 0 ? (
+            <FilteredIdeaList ideas={userIdeas} handleUpvote={handleUpvote} />
+          ) : (
+            <p className="text-center text-gray-600">
+              You haven't submitted any ideas yet.
+            </p>
+          )
         ) : (
           <p className="text-center text-gray-600">
-            You haven't submitted any ideas yet.
+            Please log in to view your submissions.
           </p>
-        )
-      ) : (
-        <p className="text-center text-gray-600">
-          Please log in to view your submissions.
-        </p>
-      )}
+        )}
+      </div>
     </PageLayout>
   );
 };
