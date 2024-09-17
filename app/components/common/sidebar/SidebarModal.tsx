@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
-import { toggleSidebar } from '../../slices/sidebarSlice';
-import BaseSidebar from './sidebar/BaseSidebar';
+import { RootState } from '../../../store';
+import { toggleSidebar } from '../../../slices/sidebarSlice';
+import BaseSidebar from './BaseSidebar';
 
 const SidebarModal: React.FC = () => {
   const dispatch = useDispatch();

@@ -2,8 +2,9 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import { toggleSidebar } from '../../slices/sidebarSlice';
-import Sidebar from '../common/Sidebar';
-import SidebarModal from '../common/SidebarModal';
+import Sidebar from '../common/sidebar/Sidebar';
+import SidebarModal from '../common/sidebar/SidebarModal';
+import { useScreenSize } from '../../hooks/useScreenSize';
 import { Menu } from 'lucide-react';
 
 interface PageLayoutProps {
@@ -13,17 +14,7 @@ interface PageLayoutProps {
 const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   const dispatch = useDispatch();
   const isSidebarOpen = useSelector((state: RootState) => state.sidebar.isOpen);
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 640); // 640px is the default 'sm' breakpoint in Tailwind
-    };
-
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+  const isSmallScreen = useScreenSize();
 
   return (
     <div className="flex h-screen overflow-hidden bg-gradient-to-br from-[#e0ffff]">

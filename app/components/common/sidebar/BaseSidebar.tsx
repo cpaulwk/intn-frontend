@@ -1,9 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../../store';
-import { toggleSidebar } from '../../slices/sidebarSlice';
-import { useSidebar } from '../../hooks/useSideBar';
+import { RootState, AppDispatch } from '../../../store';
+import { toggleSidebar } from '../../../slices/sidebarSlice';
+import { useSidebar } from '../../../hooks/useSideBar';
 import { Menu, LogOut } from 'lucide-react';
 
 interface BaseSidebarProps {
@@ -26,7 +26,7 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-50 w-72 transform bg-[#c7e7f6] transition-transform duration-300 ease-in-out ${
+      className={`fixed inset-y-0 left-0 z-50 ${isModal ? 'w-72' : 'w-64'} transform bg-[#c7e7f6] transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >

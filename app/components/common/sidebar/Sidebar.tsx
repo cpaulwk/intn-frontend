@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import { RootState } from '../../../store';
 import BaseSidebar from './BaseSidebar';
 
 const Sidebar: React.FC = () => {
