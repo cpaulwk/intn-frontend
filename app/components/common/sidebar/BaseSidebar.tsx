@@ -19,14 +19,17 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
-  const recentlyViewedIdeas = useSelector(
-    (state: RootState) => state.recentlyViewed.ideas
-  );
+  const recentlyViewedIdeas = useSelector((state: RootState) => {
+    const ideas = state.recentlyViewed.ideas;
+    return Array.isArray(ideas) && ideas.length > 0 ? ideas : [];
+  });
   const { onGoogleLogin, onLogout } = useSidebar();
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-50 ${isModal ? 'w-72' : 'w-64'} transform bg-[#c7e7f6] transition-transform duration-300 ease-in-out ${
+      className={`fixed inset-y-0 left-0 z-50 ${
+        isModal ? 'w-72' : 'w-64'
+      } flex transform flex-col bg-[#c7e7f6] transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
@@ -39,13 +42,13 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
           <Menu size={24} />
         </button>
       </div>
-      <nav className="p-4">
+      <nav className="flex flex-col p-4">
         <h2 className="mb-4 text-xl font-bold">Navigation</h2>
-        <ul className="">
+        <ul className="space-y">
           <li>
             <Link
               href="/"
-              className="block w-full rounded-md p-2 transition-colors duration-200 hover:bg-[#0078e6]/20"
+              className="flex w-full items-center rounded-md p-2 transition-colors duration-200 hover:bg-[#0078e6]/20"
             >
               Home
             </Link>
@@ -53,7 +56,7 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
           <li>
             <Link
               href="/my-submissions"
-              className="block w-full rounded-md p-2 transition-colors duration-200 hover:bg-[#0078e6]/20"
+              className="flex w-full items-center rounded-md p-2 transition-colors duration-200 hover:bg-[#0078e6]/20"
             >
               My Submissions
             </Link>
@@ -61,33 +64,35 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
           <li>
             <Link
               href="/my-favorites"
-              className="block w-full rounded-md p-2 transition-colors duration-200 hover:bg-[#0078e6]/20"
+              className="flex w-full items-center rounded-md p-2 transition-colors duration-200 hover:bg-[#0078e6]/20"
             >
               My Favorites
             </Link>
           </li>
         </ul>
       </nav>
-      <section className="p-4">
+      <section className="flex flex-grow flex-col overflow-hidden px-4">
         <h2 className="mb-4 text-xl font-bold">Recently Viewed</h2>
-        <ul>
-          {recentlyViewedIdeas.map((idea) =>
-            idea._id ? (
-              <li key={idea._id.toString()} className="">
+        {recentlyViewedIdeas.length > 0 ? (
+          <ul className="space-y flex flex-col overflow-y-auto">
+            {recentlyViewedIdeas.map((idea) => (
+              <li key={idea._id?.toString() || 'placeholder'}>
                 <Link
-                  href={`/ideas/${idea._id.toString()}`}
-                  className="block w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-md p-2 transition-colors duration-200 hover:bg-[#0078e6]/20"
-                  title={idea.title}
+                  href={`/ideas/${idea._id?.toString() || ''}`}
+                  className="flex w-full items-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md p-2 transition-colors duration-200 hover:bg-[#0078e6]/20"
+                  title={idea.title || 'Untitled Idea'}
                 >
-                  {idea.title}
+                  {idea.title || 'Untitled Idea'}
                 </Link>
               </li>
-            ) : null
-          )}
-        </ul>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-600">No recently viewed ideas</p>
+        )}
       </section>
-      <div className="absolute bottom-0 left-0 w-full p-4">
-        <div className="flex items-center justify-between">
+      <div className="p-4">
+        <div className="flex items-center justify-center">
           {isAuthenticated ? (
             <button
               onClick={onLogout}
