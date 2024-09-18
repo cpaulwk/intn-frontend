@@ -13,7 +13,7 @@ import { useAuth } from '../hooks/useAuth';
 
 const MyFavorites: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { ideas, handleUpvote, upvotedIdeas } = useIdeas();
+  const { ideas, toggleUpvote, upvotedIdeas } = useIdeas();
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -41,7 +41,11 @@ const MyFavorites: React.FC = () => {
       <h2 className="mb-6 mt-4 text-center text-2xl font-bold">My Favorites</h2>
       {isAuthenticated ? (
         favoriteIdeas.length > 0 ? (
-          <FilteredIdeaList ideas={favoriteIdeas} handleUpvote={handleUpvote} />
+          <FilteredIdeaList
+            ideas={favoriteIdeas}
+            toggleUpvote={toggleUpvote}
+            upvotedIdeas={upvotedIdeas}
+          />
         ) : (
           <p className="text-center text-gray-600">
             You haven't upvoted any ideas yet.

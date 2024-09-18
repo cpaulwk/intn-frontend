@@ -5,7 +5,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useSidebar } from '../../hooks/useSideBar';
 
 const IdeaList: React.FC = () => {
-  const { ideas, loading, error, handleUpvote, upvotedIdeas } = useIdeas();
+  const { ideas, loading, error, toggleUpvote, upvotedIdeas } = useIdeas();
   const { isAuthenticated } = useAuth();
   const { isSidebarOpen } = useSidebar();
 
@@ -22,7 +22,7 @@ const IdeaList: React.FC = () => {
           idea={idea}
           isAuthenticated={isAuthenticated}
           upvotedIdeas={upvotedIdeas}
-          handleUpvote={handleUpvote}
+          toggleUpvote={toggleUpvote}
         />
       ))}
     </div>

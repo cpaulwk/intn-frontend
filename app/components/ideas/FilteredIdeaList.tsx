@@ -3,19 +3,19 @@ import IdeaCard from './IdeaCard';
 import { Idea } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { useSidebar } from '../../hooks/useSideBar';
-import { useIdeas } from '../../hooks/useIdeas';
 
 interface FilteredIdeaListProps {
   ideas: Idea[];
-  handleUpvote: (ideaId: string, isUpvoted: boolean) => Promise<void>;
+  toggleUpvote: (ideaId: string) => Promise<void>;
+  upvotedIdeas: string[];
 }
 
 const FilteredIdeaList: React.FC<FilteredIdeaListProps> = ({
   ideas,
-  handleUpvote,
+  toggleUpvote,
+  upvotedIdeas,
 }) => {
   const { isAuthenticated } = useAuth();
-  const { upvotedIdeas } = useIdeas();
   const { isSidebarOpen } = useSidebar();
   const sortedIdeas = useMemo(
     () => [...ideas].sort((a, b) => b.upvotes - a.upvotes),
@@ -30,7 +30,7 @@ const FilteredIdeaList: React.FC<FilteredIdeaListProps> = ({
         <IdeaCard
           key={idea._id.toString()}
           idea={idea}
-          handleUpvote={handleUpvote}
+          toggleUpvote={toggleUpvote}
           isAuthenticated={isAuthenticated}
           upvotedIdeas={upvotedIdeas}
         />

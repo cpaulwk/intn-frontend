@@ -102,6 +102,31 @@ export const useIdeas = () => {
     [isAuthenticated, dispatch]
   );
 
+  const toggleUpvote = useCallback(
+    async (ideaId: string) => {
+      if (!isAuthenticated) {
+        console.log('User must be authenticated to upvote');
+        return;
+      }
+
+      const isCurrentlyUpvoted = upvotedIdeas.includes(ideaId);
+
+      try {
+        const updatedIdea = await toggleUpvoteIdea(ideaId);
+        dispatch(updateIdea(updatedIdea));
+
+        if (isCurrentlyUpvoted) {
+          dispatch(removeUpvotedIdea(ideaId));
+        } else {
+          dispatch(addUpvotedIdea(ideaId));
+        }
+      } catch (error) {
+        console.error('Error toggling upvote:', error);
+      }
+    },
+    [isAuthenticated, upvotedIdeas, dispatch]
+  );
+
   const sortedIdeas = useMemo(
     () => [...ideas].sort((a, b) => b.upvotes - a.upvotes),
     [ideas]
@@ -112,6 +137,7 @@ export const useIdeas = () => {
     loading,
     error,
     handleUpvote,
+    toggleUpvote,
     upvotedIdeas,
     recentlyViewedIdeas,
   };

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../../store';
@@ -19,7 +19,7 @@ const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useAuth();
-  const { handleUpvote } = useIdeas();
+  const { toggleUpvote } = useIdeas();
   const [activeModal, setActiveModal] = useState<boolean>(false);
   const [modalPosition, setModalPosition] = useState<{
     top: number;
@@ -57,10 +57,10 @@ const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
     setModalPosition(null);
   };
 
-  const onUpvote = useCallback(async () => {
+  const handleUpvote = async () => {
     if (isAuthenticated) {
       try {
-        await handleUpvote(idea._id.toString(), false);
+        await toggleUpvote(idea._id.toString());
         dispatch(addRecentlyViewed(idea));
         await addViewedIdea(idea);
       } catch (error) {
@@ -69,7 +69,7 @@ const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
     } else {
       console.log('User must be authenticated to upvote');
     }
-  }, [handleUpvote, idea, dispatch, isAuthenticated]);
+  };
 
   const handleDelete = () => {
     console.log('Delete clicked for idea:', idea._id);
@@ -100,7 +100,7 @@ const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
         isOpen={activeModal}
         onClose={closeModal}
         onUpvote={() => {
-          onUpvote();
+          handleUpvote();
           closeModal();
         }}
         onDelete={() => {

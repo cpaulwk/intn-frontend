@@ -10,13 +10,13 @@ import { formatUpvoteCount } from '../../utils/formatUtils';
 
 interface IdeaCardProps {
   idea: Idea;
-  handleUpvote: (ideaId: string, isUpvoted: boolean) => Promise<void>;
+  toggleUpvote: (ideaId: string) => Promise<void>;
   isAuthenticated: boolean;
   upvotedIdeas: string[];
 }
 
 const IdeaCard: React.FC<IdeaCardProps> = React.memo(
-  ({ idea, handleUpvote, isAuthenticated, upvotedIdeas }) => {
+  ({ idea, toggleUpvote, isAuthenticated, upvotedIdeas }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [exceedsTwoLines, setExceedsTwoLines] = useState(false);
     const [contentHeight, setContentHeight] = useState('auto');
@@ -53,7 +53,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
     const onUpvote = useCallback(async () => {
       if (isAuthenticated) {
         try {
-          await handleUpvote(idea._id.toString(), isUpvoted);
+          await toggleUpvote(idea._id.toString());
           dispatch(addRecentlyViewed(idea));
           await addViewedIdea(idea);
         } catch (error) {
@@ -62,7 +62,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
       } else {
         console.log('User must be authenticated to upvote');
       }
-    }, [handleUpvote, idea, isUpvoted, dispatch, isAuthenticated]);
+    }, [toggleUpvote, idea, dispatch, isAuthenticated]);
 
     const handleIdeaClick = async () => {
       if (isAuthenticated) {

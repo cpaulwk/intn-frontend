@@ -8,7 +8,7 @@ import { useIdeas } from '../hooks/useIdeas';
 import { useAuth } from '../hooks/useAuth';
 const MySubmissions: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
-  const { ideas, handleUpvote } = useIdeas();
+  const { ideas, toggleUpvote, upvotedIdeas } = useIdeas();
   const userIdeas = ideas.filter((idea) => idea.username === user?.email);
 
   return (
@@ -20,7 +20,11 @@ const MySubmissions: React.FC = () => {
       <div className="w-fulljustify-center flex-1">
         {isAuthenticated ? (
           userIdeas.length > 0 ? (
-            <FilteredIdeaList ideas={userIdeas} handleUpvote={handleUpvote} />
+            <FilteredIdeaList
+              ideas={userIdeas}
+              toggleUpvote={toggleUpvote}
+              upvotedIdeas={upvotedIdeas}
+            />
           ) : (
             <p className="text-center text-gray-600">
               You haven't submitted any ideas yet.
