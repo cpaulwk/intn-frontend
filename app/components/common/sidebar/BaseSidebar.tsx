@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../../store';
 import { toggleSidebar } from '../../../slices/sidebarSlice';
 import { useSidebar } from '../../../hooks/useSideBar';
-import { Menu, LogOut } from 'lucide-react';
+import { Menu, LogOut, Ellipsis } from 'lucide-react';
 
 interface BaseSidebarProps {
   isOpen: boolean;
@@ -29,7 +29,7 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
     <div
       className={`fixed inset-y-0 left-0 z-50 ${
         isModal ? 'w-72' : 'w-64'
-      } flex transform flex-col bg-[#c7e7f6] transition-transform duration-300 ease-in-out ${
+      } flex transform flex-col bg-[#e9f9fa] transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
@@ -76,15 +76,30 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
         {recentlyViewedIdeas.length > 0 ? (
           <ul className="space-y flex flex-col overflow-y-auto">
             {recentlyViewedIdeas.map((idea) => (
-              <li key={idea._id?.toString() || 'placeholder'}>
-                <Link
-                  href={`/ideas/${idea._id?.toString() || ''}`}
-                  className="flex w-full items-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md p-2 transition-colors duration-200 hover:bg-[#0078e6]/20"
-                  title={idea.title || 'Untitled Idea'}
-                >
-                  {idea.title || 'Untitled Idea'}
-                </Link>
-              </li>
+              <div
+                key={idea._id?.toString() || 'placeholder'}
+                className="group relative overflow-hidden rounded-md"
+              >
+                <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-l from-[#e9f9fa] via-[#e9f9fa] via-5% to-transparent to-25% to-35% transition-colors duration-200 group-hover:bg-gradient-to-l group-hover:from-[#e9f9fa] group-hover:via-[#e9f9fa] group-hover:via-15% group-hover:to-transparent"></div>
+                <div className="pointer-events-none absolute inset-0 z-20 transition-colors duration-200 group-hover:bg-[#0078e6]/20"></div>
+                <li className="relative">
+                  <button
+                    onClick={() => {
+                      console.log('clicked');
+                    }}
+                    className="absolute inset-y-0 right-0 z-30 flex items-center justify-end p-2 opacity-0 duration-200 group-hover:opacity-100"
+                  >
+                    <Ellipsis size={20} />
+                  </button>
+                  <Link
+                    href={`/ideas/${idea._id?.toString() || ''}`}
+                    className="block overflow-hidden whitespace-nowrap p-2 transition-colors duration-200"
+                    title={idea.title || 'Untitled Idea'}
+                  >
+                    {idea.title || 'Untitled Idea'}
+                  </Link>
+                </li>
+              </div>
             ))}
           </ul>
         ) : (
