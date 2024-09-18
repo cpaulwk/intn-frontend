@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { Idea } from '../types';
+import { RootState } from '../store';
 
 interface RecentlyViewedState {
   ideas: Idea[];
@@ -36,4 +37,11 @@ const recentlyViewedSlice = createSlice({
 
 export const { setRecentlyViewed, addRecentlyViewed, clearRecentlyViewed } =
   recentlyViewedSlice.actions;
+
+// Memoized selector
+export const selectRecentlyViewedIdeas = createSelector(
+  (state: RootState) => state.recentlyViewed.ideas,
+  (ideas) => ideas
+);
+
 export default recentlyViewedSlice.reducer;

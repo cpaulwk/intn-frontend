@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import {
@@ -18,7 +18,10 @@ import {
   toggleUpvoteIdea,
   fetchViewedIdeas,
 } from '../utils/api';
-import { setRecentlyViewed } from '../slices/recentlyViewedSlice';
+import {
+  setRecentlyViewed,
+  selectRecentlyViewedIdeas,
+} from '../slices/recentlyViewedSlice';
 
 export const useIdeas = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,6 +34,10 @@ export const useIdeas = () => {
   const upvotedIdeas = useSelector(
     (state: RootState) => state.upvotedIdeas.upvotedIdeas
   );
+  const recentlyViewedIdeas = useSelector((state: RootState) => {
+    const ideas = state.recentlyViewed.ideas;
+    return Array.isArray(ideas) && ideas.length > 0 ? ideas : [];
+  });
 
   useEffect(() => {
     const loadIdeas = async () => {
@@ -61,46 +68,48 @@ export const useIdeas = () => {
     loadUpvotedIdeas();
   }, [isAuthenticated, dispatch]);
 
-  const handleUpvote = async (ideaId: string, isUpvoted: boolean) => {
-    if (!isAuthenticated) {
-      console.log('User must be authenticated to upvote');
-      return;
-    }
-
-    try {
-      const updatedIdea = await toggleUpvoteIdea(ideaId);
-      dispatch(updateIdea(updatedIdea));
-
-      if (isUpvoted) {
-        dispatch(removeUpvotedIdea(ideaId));
-      } else {
-        dispatch(addUpvotedIdea(ideaId));
+  useEffect(() => {
+    const loadRecentlyViewedIdeas = async () => {
+      if (isAuthenticated) {
+        try {
+          const recentlyViewedIdeasData = await fetchViewedIdeas();
+          dispatch(setRecentlyViewed(recentlyViewedIdeasData));
+        } catch (error) {
+          console.error('Error fetching recently viewed ideas:', error);
+        }
       }
-    } catch (error) {
-      console.error('Error toggling upvote:', error);
-    }
-  };
+    };
+
+    loadRecentlyViewedIdeas();
+  }, [isAuthenticated, dispatch]);
+
+  const handleUpvote = useCallback(
+    async (ideaId: string, isUpvoted: boolean) => {
+      if (!isAuthenticated) {
+        console.log('User must be authenticated to upvote');
+        return;
+      }
+
+      try {
+        const updatedIdea = await toggleUpvoteIdea(ideaId);
+        dispatch(updateIdea(updatedIdea));
+
+        if (isUpvoted) {
+          dispatch(removeUpvotedIdea(ideaId));
+        } else {
+          dispatch(addUpvotedIdea(ideaId));
+        }
+      } catch (error) {
+        console.error('Error toggling upvote:', error);
+      }
+    },
+    [isAuthenticated, dispatch]
+  );
 
   const sortedIdeas = useMemo(
     () => [...ideas].sort((a, b) => b.upvotes - a.upvotes),
     [ideas]
   );
-
-  const fetchRecentlyViewedIdeas = async () => {
-    if (isAuthenticated) {
-      try {
-        const recentlyViewedIdeasData = await fetchViewedIdeas();
-        console.log('Recently viewed ideas:', recentlyViewedIdeasData);
-        // dispatch(setRecentlyViewed(recentlyViewedIdeasData));
-      } catch (error) {
-        console.error('Error fetching recently viewed ideas:', error);
-      }
-    }
-  };
-
-  // useEffect(() => {
-  //   fetchRecentlyViewedIdeas();
-  // }, [isAuthenticated]);
 
   return {
     ideas: sortedIdeas,
@@ -109,5 +118,6 @@ export const useIdeas = () => {
     handleUpvote,
     isAuthenticated,
     upvotedIdeas,
+    recentlyViewedIdeas,
   };
 };

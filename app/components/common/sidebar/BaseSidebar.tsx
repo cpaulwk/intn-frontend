@@ -6,6 +6,7 @@ import { toggleSidebar } from '../../../slices/sidebarSlice';
 import { useSidebar } from '../../../hooks/useSideBar';
 import { Menu, LogOut, Ellipsis, Rocket, Trash2 } from 'lucide-react';
 import ViewedIdeaModal from './modal/ViewedIdeaModal';
+import { useIdeas } from '../../../hooks/useIdeas';
 
 interface BaseSidebarProps {
   isOpen: boolean;
@@ -20,10 +21,6 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
-  const recentlyViewedIdeas = useSelector((state: RootState) => {
-    const ideas = state.recentlyViewed.ideas;
-    return Array.isArray(ideas) && ideas.length > 0 ? ideas : [];
-  });
   const { onGoogleLogin, onLogout } = useSidebar();
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [modalPosition, setModalPosition] = useState<{
@@ -34,7 +31,7 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
   const ellipsisRefs = useRef<{
     [key: string]: React.RefObject<HTMLButtonElement>;
   }>({});
-
+  const { recentlyViewedIdeas } = useIdeas();
   const toggleModal = (ideaId: string, event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent the click from immediately closing the modal
 
@@ -80,7 +77,7 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
       ref={sidebarRef}
       className={`fixed inset-y-0 left-0 z-50 ${
         isModal ? 'w-72' : 'w-64'
-      } flex transform flex-col bg-[#e9f9fa] transition-transform duration-300 ease-in-out ${
+      } flex flex-col bg-[#e9f9fa] transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
@@ -122,10 +119,10 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
           </li>
         </ul>
       </nav>
-      <section className="flex flex-grow flex-col overflow-hidden px-4">
+      <section className="flex-1 overflow-y-hidden px-4">
         <h2 className="mb-4 text-xl font-bold">Recently Viewed</h2>
         {recentlyViewedIdeas.length > 0 ? (
-          <ul className="space-y flex flex-col overflow-y-auto">
+          <ul className="h-full overflow-y-auto">
             {recentlyViewedIdeas.map((idea) => {
               const ideaId = idea._id?.toString() || 'placeholder';
               if (!ellipsisRefs.current[ideaId]) {

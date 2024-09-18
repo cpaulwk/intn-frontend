@@ -1,5 +1,6 @@
 import { AppDispatch } from '../store';
 import { setUser, clearUser } from '../slices/authSlice';
+import { clearRecentlyViewed } from '../slices/recentlyViewedSlice';
 import axios from 'axios';
 
 export const checkAuthStatus = async (dispatch: AppDispatch) => {
@@ -35,7 +36,7 @@ export const handleLogout = async (dispatch: AppDispatch) => {
   } catch (error) {
     console.error('Error during logout:', error);
   } finally {
-    // Always clear the user data, regardless of the server response
     dispatch(clearUser());
+    dispatch(clearRecentlyViewed());
   }
 };
