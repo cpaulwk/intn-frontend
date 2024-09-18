@@ -12,7 +12,13 @@ import {
   addUpvotedIdea,
   removeUpvotedIdea,
 } from '../slices/upvotedIdeasSlice';
-import { fetchIdeas, fetchUpvotedIdeas, toggleUpvoteIdea } from '../utils/api';
+import {
+  fetchIdeas,
+  fetchUpvotedIdeas,
+  toggleUpvoteIdea,
+  fetchViewedIdeas,
+} from '../utils/api';
+import { setRecentlyViewed } from '../slices/recentlyViewedSlice';
 
 export const useIdeas = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -79,6 +85,22 @@ export const useIdeas = () => {
     () => [...ideas].sort((a, b) => b.upvotes - a.upvotes),
     [ideas]
   );
+
+  const fetchRecentlyViewedIdeas = async () => {
+    if (isAuthenticated) {
+      try {
+        const recentlyViewedIdeasData = await fetchViewedIdeas();
+        console.log('Recently viewed ideas:', recentlyViewedIdeasData);
+        // dispatch(setRecentlyViewed(recentlyViewedIdeasData));
+      } catch (error) {
+        console.error('Error fetching recently viewed ideas:', error);
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   fetchRecentlyViewedIdeas();
+  // }, [isAuthenticated]);
 
   return {
     ideas: sortedIdeas,

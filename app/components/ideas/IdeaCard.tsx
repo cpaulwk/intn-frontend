@@ -3,7 +3,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { Idea } from '../../types';
-import { addRecentlyViewed } from '../../slices/addRecentlyViewed';
+import { addRecentlyViewed } from '../../slices/recentlyViewedSlice';
 import { addViewedIdea } from '../../utils/api';
 import { Rocket, ChevronDown } from 'lucide-react';
 
@@ -20,9 +20,6 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
     const [contentHeight, setContentHeight] = useState('auto');
     const contentRef = useRef<HTMLParagraphElement>(null);
     const dispatch = useDispatch();
-    const isSidebarOpen = useSelector(
-      (state: RootState) => state.sidebar.isOpen
-    );
     const toggleExpand = useCallback(() => {
       setIsExpanded((prev) => !prev);
       if (isAuthenticated) {

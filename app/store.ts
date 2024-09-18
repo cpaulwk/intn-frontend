@@ -14,7 +14,7 @@ import authReducer from './slices/authSlice';
 import upvotedIdeasReducer from './slices/upvotedIdeasSlice';
 import ideasReducer from './slices/ideaSlice';
 import sidebarReducer from './slices/sidebarSlice';
-import recentlyViewedReducer from './slices/addRecentlyViewed';
+import recentlyViewedReducer from './slices/recentlyViewedSlice';
 
 const authPersistConfig = {
   key: 'auth',

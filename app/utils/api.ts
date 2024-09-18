@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { Idea } from '../types';
 import { store } from '../store';
-import { addRecentlyViewed } from '../slices/addRecentlyViewed';
+import { addRecentlyViewed } from '../slices/recentlyViewedSlice';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 

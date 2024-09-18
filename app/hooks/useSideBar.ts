@@ -6,7 +6,7 @@ import {
   handleLogout,
   checkAuthStatus,
 } from '../utils/auth';
-import { clearRecentlyViewed } from '../slices/addRecentlyViewed';
+import { clearRecentlyViewed } from '../slices/recentlyViewedSlice';
 
 export const useSidebar = () => {
   const dispatch = useDispatch<AppDispatch>();
