@@ -51,17 +51,29 @@ h6 {
 
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: auto;
 }
 
 ::-webkit-scrollbar-track {
-  /* @apply bg-gray-300; */
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-blue-500;
+  background-color: rgba(0, 120, 230, 0.2);
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-blue-700;
+  background-color: rgba(0, 120, 230, 0.5);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: rgba(0, 120, 230, 0.2) transparent;
+}
+
+*:hover {
+  scrollbar-color: rgba(0, 120, 230, 0.5) transparent;
 }
