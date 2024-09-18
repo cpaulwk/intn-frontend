@@ -22,7 +22,17 @@ const authPersistConfig = {
   storage,
 };
 
+const recentlyViewedPersistConfig = {
+  key: 'recentlyViewed',
+  version: 1,
+  storage,
+};
+
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
+const persistedRecentlyViewedReducer = persistReducer(
+  recentlyViewedPersistConfig,
+  recentlyViewedReducer
+);
 
 export const store = configureStore({
   reducer: {
@@ -30,7 +40,7 @@ export const store = configureStore({
     upvotedIdeas: upvotedIdeasReducer,
     ideas: ideasReducer,
     sidebar: sidebarReducer,
-    recentlyViewed: recentlyViewedReducer,
+    recentlyViewed: persistedRecentlyViewedReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -13,6 +13,9 @@ const recentlyViewedSlice = createSlice({
   name: 'recentlyViewed',
   initialState,
   reducers: {
+    setRecentlyViewed: (state, action: PayloadAction<Idea[]>) => {
+      state.ideas = action.payload;
+    },
     addRecentlyViewed: (state, action: PayloadAction<Idea>) => {
       const existingIndex = state.ideas.findIndex(
         (idea) => idea._id === action.payload._id
@@ -25,15 +28,12 @@ const recentlyViewedSlice = createSlice({
         state.ideas.pop();
       }
     },
-    setRecentlyViewed: (state, action: PayloadAction<Idea[]>) => {
-      state.ideas = action.payload;
-    },
     clearRecentlyViewed: (state) => {
       state.ideas = [];
     },
   },
 });
 
-export const { addRecentlyViewed, setRecentlyViewed, clearRecentlyViewed } =
+export const { setRecentlyViewed, addRecentlyViewed, clearRecentlyViewed } =
   recentlyViewedSlice.actions;
 export default recentlyViewedSlice.reducer;
