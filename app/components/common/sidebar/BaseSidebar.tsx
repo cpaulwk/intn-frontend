@@ -5,9 +5,9 @@ import { AppDispatch } from '../../../store';
 import { toggleSidebar } from '../../../slices/sidebarSlice';
 import { useSidebar } from '../../../hooks/useSideBar';
 import { Menu, LogOut, Ellipsis, Rocket, Trash2 } from 'lucide-react';
-import ViewedIdeaModal from './modal/ViewedIdeaModal';
 import { useIdeas } from '../../../hooks/useIdeas';
 import { useAuth } from '../../../hooks/useAuth';
+import RecentlyViewedIdeaItem from './content/RecentlyViewedIdeaItem';
 
 interface BaseSidebarProps {
   isOpen: boolean;
@@ -21,55 +21,8 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useAuth();
   const { onGoogleLogin, onLogout } = useSidebar();
-  const [activeModal, setActiveModal] = useState<string | null>(null);
-  const [modalPosition, setModalPosition] = useState<{
-    top: number;
-    left: number;
-  } | null>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const ellipsisRefs = useRef<{
-    [key: string]: React.RefObject<HTMLButtonElement>;
-  }>({});
   const { recentlyViewedIdeas } = useIdeas();
-  const toggleModal = (ideaId: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent the click from immediately closing the modal
-
-    if (activeModal === ideaId) {
-      closeModal();
-    } else {
-      const rect = event.currentTarget.getBoundingClientRect();
-      const modalWidth = 98; // Approximate width of the modal
-      const viewportWidth = window.innerWidth;
-
-      let left;
-      if (rect.right + modalWidth > viewportWidth) {
-        left = rect.left - modalWidth;
-      } else {
-        left = rect.right - 30;
-      }
-
-      setModalPosition({
-        top: rect.bottom,
-        left: left,
-      });
-      setActiveModal(ideaId);
-    }
-  };
-
-  const closeModal = () => {
-    setActiveModal(null);
-    setModalPosition(null);
-  };
-
-  const handleUpvote = (ideaId: string) => {
-    console.log('Upvote clicked for idea:', ideaId);
-    // Implement upvote logic here
-  };
-
-  const handleDelete = (ideaId: string) => {
-    console.log('Delete clicked for idea:', ideaId);
-    // Implement delete logic here
-  };
 
   return (
     <div
@@ -122,38 +75,9 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
         <h2 className="mb-4 text-xl font-bold">Recently Viewed</h2>
         {recentlyViewedIdeas.length > 0 ? (
           <ul className="h-full overflow-y-auto">
-            {recentlyViewedIdeas.map((idea) => {
-              const ideaId = idea._id?.toString() || 'placeholder';
-              if (!ellipsisRefs.current[ideaId]) {
-                ellipsisRefs.current[ideaId] =
-                  React.createRef<HTMLButtonElement>();
-              }
-              return (
-                <div
-                  key={ideaId}
-                  className="group relative overflow-hidden rounded-md"
-                >
-                  <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-l from-[#e9f9fa] via-[#e9f9fa] via-5% to-transparent to-25% transition-colors duration-200 group-hover:bg-gradient-to-l group-hover:from-[#e9f9fa] group-hover:via-[#e9f9fa] group-hover:via-15% group-hover:to-transparent group-hover:to-35%"></div>
-                  <div className="pointer-events-none absolute inset-0 z-20 transition-colors duration-200 group-hover:bg-[#0078e6]/20"></div>
-                  <li className="relative">
-                    <button
-                      ref={ellipsisRefs.current[ideaId]}
-                      onClick={(e) => toggleModal(ideaId, e)}
-                      className="absolute inset-y-0 right-0 z-30 flex items-center justify-end p-2 opacity-0 duration-100 group-hover:opacity-100"
-                    >
-                      <Ellipsis size={20} />
-                    </button>
-                    <Link
-                      href={`/ideas/${ideaId}`}
-                      className="block overflow-hidden whitespace-nowrap p-2 transition-colors duration-200"
-                      title={idea.title || 'Untitled Idea'}
-                    >
-                      {idea.title || 'Untitled Idea'}
-                    </Link>
-                  </li>
-                </div>
-              );
-            })}
+            {recentlyViewedIdeas.map((idea) => (
+              <RecentlyViewedIdeaItem key={idea._id.toString()} idea={idea} />
+            ))}
           </ul>
         ) : (
           <p className="text-gray-600">No recently viewed ideas</p>
@@ -187,20 +111,6 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
           )}
         </div>
       </div>
-      <ViewedIdeaModal
-        isOpen={activeModal !== null}
-        onClose={closeModal}
-        onUpvote={() => {
-          handleUpvote(activeModal || '');
-          closeModal();
-        }}
-        onDelete={() => {
-          handleDelete(activeModal || '');
-          closeModal();
-        }}
-        position={modalPosition}
-        triggerRef={activeModal ? ellipsisRefs.current[activeModal] : undefined}
-      />
     </div>
   );
 };
