@@ -1,12 +1,11 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../store';
 import BaseSidebar from './BaseSidebar';
+import { useSidebar } from '../../../hooks/useSideBar';
 
 const Sidebar: React.FC = () => {
-  const isOpen = useSelector((state: RootState) => state.sidebar.isOpen);
+  const { isSidebarOpen } = useSidebar();
 
-  return <BaseSidebar isOpen={isOpen} />;
+  return <BaseSidebar isOpen={isSidebarOpen} />;
 };
 
 export default Sidebar;

@@ -1,11 +1,11 @@
-import React, { ReactNode, useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
+import React, { ReactNode } from 'react';
+import { useDispatch } from 'react-redux';
 import { toggleSidebar } from '../../slices/sidebarSlice';
 import Sidebar from '../common/sidebar/Sidebar';
 import SidebarModal from '../common/sidebar/SidebarModal';
 import { useScreenSize } from '../../hooks/useScreenSize';
 import { Menu } from 'lucide-react';
+import { useSidebar } from '../../hooks/useSideBar';
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -13,7 +13,7 @@ interface PageLayoutProps {
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   const dispatch = useDispatch();
-  const isSidebarOpen = useSelector((state: RootState) => state.sidebar.isOpen);
+  const { isSidebarOpen } = useSidebar();
   const isSmallScreen = useScreenSize();
 
   return (

@@ -1,13 +1,12 @@
 import React from 'react';
 import { useIdeaSubmission } from '../../hooks/useIdeaSubmission';
 import { ArrowUp, Loader2 } from 'lucide-react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import { useSidebar } from '../../hooks/useSideBar';
 
 const IdeaSubmissionForm: React.FC = () => {
   const { input, setInput, isLoading, error, isAuthenticated, handleSubmit } =
     useIdeaSubmission();
-  const isSidebarOpen = useSelector((state: RootState) => state.sidebar.isOpen);
+  const { isSidebarOpen } = useSidebar();
 
   return (
     <div

@@ -7,12 +7,12 @@ import {
   checkAuthStatus,
 } from '../utils/auth';
 import { clearRecentlyViewed } from '../slices/recentlyViewedSlice';
+import { useAuth } from './useAuth';
 
 export const useSidebar = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
+  const { isAuthenticated } = useAuth();
+  const isSidebarOpen = useSelector((state: RootState) => state.sidebar.isOpen);
 
   const onGoogleLogin = useCallback(async () => {
     try {
@@ -35,6 +35,7 @@ export const useSidebar = () => {
 
   return {
     isAuthenticated,
+    isSidebarOpen,
     onGoogleLogin,
     onLogout,
   };

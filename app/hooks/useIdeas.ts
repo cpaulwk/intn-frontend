@@ -18,19 +18,15 @@ import {
   toggleUpvoteIdea,
   fetchViewedIdeas,
 } from '../utils/api';
-import {
-  setRecentlyViewed,
-  selectRecentlyViewedIdeas,
-} from '../slices/recentlyViewedSlice';
+import { setRecentlyViewed } from '../slices/recentlyViewedSlice';
+import { useAuth } from './useAuth';
 
 export const useIdeas = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { ideas, loading, error } = useSelector(
     (state: RootState) => state.ideas
   );
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
+  const { isAuthenticated } = useAuth();
   const upvotedIdeas = useSelector(
     (state: RootState) => state.upvotedIdeas.upvotedIdeas
   );
@@ -116,7 +112,6 @@ export const useIdeas = () => {
     loading,
     error,
     handleUpvote,
-    isAuthenticated,
     upvotedIdeas,
     recentlyViewedIdeas,
   };

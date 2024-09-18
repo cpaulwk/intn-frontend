@@ -1,19 +1,14 @@
 'use client';
 
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store';
 import Header from '../components/common/Header';
 import FilteredIdeaList from '../components/ideas/FilteredIdeaList';
 import PageLayout from '../components/layout/PageLayout';
 import { useIdeas } from '../hooks/useIdeas';
-
+import { useAuth } from '../hooks/useAuth';
 const MySubmissions: React.FC = () => {
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
+  const { isAuthenticated, user } = useAuth();
   const { ideas, handleUpvote } = useIdeas();
-  const user = useSelector((state: RootState) => state.auth.user);
   const userIdeas = ideas.filter((idea) => idea.username === user?.email);
 
   return (

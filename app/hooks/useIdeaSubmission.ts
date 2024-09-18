@@ -1,18 +1,17 @@
 import { useState, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../store';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../store';
 import { createIdea } from '../slices/ideaSlice';
 import { createIdea as createIdeaApi } from '../utils/api';
 import { addUpvotedIdea } from '../slices/upvotedIdeasSlice';
+import { useAuth } from './useAuth';
+
 export const useIdeaSubmission = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
-  const username = useSelector((state: RootState) => state.auth.user?.email);
+  const { isAuthenticated, username } = useAuth();
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {

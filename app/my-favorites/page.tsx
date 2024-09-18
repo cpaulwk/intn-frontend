@@ -1,23 +1,20 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../store';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../store';
 import Header from '../components/common/Header';
 import FilteredIdeaList from '../components/ideas/FilteredIdeaList';
 import PageLayout from '../components/layout/PageLayout';
 import { fetchUpvotedIdeas } from '../utils/api';
 import { setUpvotedIdeas } from '../slices/upvotedIdeasSlice';
 import { useIdeas } from '../hooks/useIdeas';
+import { useAuth } from '../hooks/useAuth';
+
 const MyFavorites: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { ideas, handleUpvote } = useIdeas();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
-  const upvotedIdeas = useSelector(
-    (state: RootState) => state.upvotedIdeas.upvotedIdeas
-  );
+  const { ideas, handleUpvote, upvotedIdeas } = useIdeas();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const loadUpvotedIdeas = async () => {

@@ -1,22 +1,22 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../../store';
+import { useDispatch } from 'react-redux';
 import { toggleSidebar } from '../../../slices/sidebarSlice';
 import BaseSidebar from './BaseSidebar';
+import { useSidebar } from '../../../hooks/useSideBar';
 
 const SidebarModal: React.FC = () => {
   const dispatch = useDispatch();
-  const isOpen = useSelector((state: RootState) => state.sidebar.isOpen);
+  const { isSidebarOpen } = useSidebar();
 
   return (
     <>
-      {isOpen && (
+      {isSidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity duration-300"
           onClick={() => dispatch(toggleSidebar())}
         />
       )}
-      <BaseSidebar isOpen={isOpen} isModal={true} />
+      <BaseSidebar isOpen={isSidebarOpen} isModal={true} />
     </>
   );
 };

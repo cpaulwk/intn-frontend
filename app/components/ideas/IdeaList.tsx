@@ -1,18 +1,13 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
 import IdeaCard from './IdeaCard';
 import { useIdeas } from '../../hooks/useIdeas';
+import { useAuth } from '../../hooks/useAuth';
+import { useSidebar } from '../../hooks/useSideBar';
 
 const IdeaList: React.FC = () => {
-  const { ideas, loading, error, handleUpvote } = useIdeas();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
-  const upvotedIdeas = useSelector(
-    (state: RootState) => state.upvotedIdeas.upvotedIdeas
-  );
-  const isSidebarOpen = useSelector((state: RootState) => state.sidebar.isOpen);
+  const { ideas, loading, error, handleUpvote, upvotedIdeas } = useIdeas();
+  const { isAuthenticated } = useAuth();
+  const { isSidebarOpen } = useSidebar();
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;

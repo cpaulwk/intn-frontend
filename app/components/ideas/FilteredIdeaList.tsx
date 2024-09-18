@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
 import IdeaCard from './IdeaCard';
 import { Idea } from '../../types';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import { useAuth } from '../../hooks/useAuth';
+import { useSidebar } from '../../hooks/useSideBar';
+import { useIdeas } from '../../hooks/useIdeas';
 
 interface FilteredIdeaListProps {
   ideas: Idea[];
@@ -13,13 +14,9 @@ const FilteredIdeaList: React.FC<FilteredIdeaListProps> = ({
   ideas,
   handleUpvote,
 }) => {
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
-  const upvotedIdeas = useSelector(
-    (state: RootState) => state.upvotedIdeas.upvotedIdeas
-  );
-  const isSidebarOpen = useSelector((state: RootState) => state.sidebar.isOpen);
+  const { isAuthenticated } = useAuth();
+  const { upvotedIdeas } = useIdeas();
+  const { isSidebarOpen } = useSidebar();
   const sortedIdeas = useMemo(
     () => [...ideas].sort((a, b) => b.upvotes - a.upvotes),
     [ideas]

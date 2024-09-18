@@ -1,12 +1,13 @@
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../../../store';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../store';
 import { toggleSidebar } from '../../../slices/sidebarSlice';
 import { useSidebar } from '../../../hooks/useSideBar';
 import { Menu, LogOut, Ellipsis, Rocket, Trash2 } from 'lucide-react';
 import ViewedIdeaModal from './modal/ViewedIdeaModal';
 import { useIdeas } from '../../../hooks/useIdeas';
+import { useAuth } from '../../../hooks/useAuth';
 
 interface BaseSidebarProps {
   isOpen: boolean;
@@ -18,9 +19,7 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
   isModal = false,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
+  const { isAuthenticated } = useAuth();
   const { onGoogleLogin, onLogout } = useSidebar();
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [modalPosition, setModalPosition] = useState<{
