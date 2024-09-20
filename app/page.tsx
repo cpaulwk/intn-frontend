@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AppDispatch } from './store';
 import { setUser } from './slices/authSlice';
-import { checkAuthStatus } from './utils/auth';
 import Header from './components/common/Header';
 import IdeaList from './components/ideas/IdeaList';
 import IdeaSubmissionForm from './components/ideas/IdeaSubmissionForm';
@@ -15,10 +14,6 @@ export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  useEffect(() => {
-    checkAuthStatus(dispatch);
-  }, [dispatch]);
 
   useEffect(() => {
     const userDataParam = searchParams.get('userData');

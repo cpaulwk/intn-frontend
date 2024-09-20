@@ -12,7 +12,7 @@ export const silentRefresh = async (dispatch: AppDispatch) => {
       {},
       { withCredentials: true }
     );
-    if (response.data.message === 'Tokens refreshed successfully') {
+    if (response.data.message === 'Access token refreshed successfully') {
       await checkAuthStatus(dispatch);
       scheduleNextRefresh(dispatch);
     } else {
@@ -20,36 +20,42 @@ export const silentRefresh = async (dispatch: AppDispatch) => {
     }
   } catch (error) {
     console.error('Silent refresh failed:', error);
-    clearUser();
-    clearRecentlyViewed();
+    if (refreshTimeout) clearTimeout(refreshTimeout);
+    await handleLogout(dispatch);
   }
 };
 
 const scheduleNextRefresh = (dispatch: AppDispatch) => {
   if (refreshTimeout) clearTimeout(refreshTimeout);
-  refreshTimeout = setInterval(
+  refreshTimeout = setTimeout(
     () => silentRefresh(dispatch),
-    14 * 60 * 1000
+    14 * 60 * 1000 // 14 minutes
   ) as unknown as NodeJS.Timeout;
 };
 
-export const checkAuthStatus = async (dispatch: AppDispatch) => {
+export const checkAuthStatus = async (
+  dispatch: AppDispatch
+): Promise<boolean> => {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/google/check`,
       { withCredentials: true }
     );
+
     if (response.data.isAuthenticated) {
       dispatch(setUser(response.data.user));
       scheduleNextRefresh(dispatch);
+      return true;
     } else {
       dispatch(clearUser());
       dispatch(clearRecentlyViewed());
+      return false;
     }
   } catch (error) {
     console.error('Auth check failed:', error);
     dispatch(clearUser());
     dispatch(clearRecentlyViewed());
+    return false;
   }
 };
 
