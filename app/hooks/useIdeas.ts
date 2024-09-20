@@ -20,6 +20,12 @@ import {
 } from '../utils/api';
 import { setRecentlyViewed } from '../slices/recentlyViewedSlice';
 import { useAuth } from './useAuth';
+import { createSelector } from '@reduxjs/toolkit';
+
+const selectRecentlyViewedIdeas = createSelector(
+  (state: RootState) => state.recentlyViewed.ideas,
+  (ideas) => (Array.isArray(ideas) && ideas.length > 0 ? ideas : [])
+);
 
 export const useIdeas = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -30,10 +36,7 @@ export const useIdeas = () => {
   const upvotedIdeas = useSelector(
     (state: RootState) => state.upvotedIdeas.upvotedIdeas
   );
-  const recentlyViewedIdeas = useSelector((state: RootState) => {
-    const ideas = state.recentlyViewed.ideas;
-    return Array.isArray(ideas) && ideas.length > 0 ? ideas : [];
-  });
+  const recentlyViewedIdeas = useSelector(selectRecentlyViewedIdeas);
 
   useEffect(() => {
     const loadIdeas = async () => {

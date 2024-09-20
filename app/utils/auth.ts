@@ -3,6 +3,36 @@ import { setUser, clearUser } from '../slices/authSlice';
 import { clearRecentlyViewed } from '../slices/recentlyViewedSlice';
 import axios from 'axios';
 
+let refreshTimeout: NodeJS.Timeout | null = null;
+
+export const silentRefresh = async (dispatch: AppDispatch) => {
+  try {
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/google/refresh`,
+      {},
+      { withCredentials: true }
+    );
+    if (response.data.message === 'Tokens refreshed successfully') {
+      await checkAuthStatus(dispatch);
+      scheduleNextRefresh(dispatch);
+    } else {
+      throw new Error('Token refresh failed');
+    }
+  } catch (error) {
+    console.error('Silent refresh failed:', error);
+    clearUser();
+    clearRecentlyViewed();
+  }
+};
+
+const scheduleNextRefresh = (dispatch: AppDispatch) => {
+  if (refreshTimeout) clearTimeout(refreshTimeout);
+  refreshTimeout = setInterval(
+    () => silentRefresh(dispatch),
+    14 * 60 * 1000
+  ) as unknown as NodeJS.Timeout;
+};
+
 export const checkAuthStatus = async (dispatch: AppDispatch) => {
   try {
     const response = await axios.get(
@@ -11,12 +41,15 @@ export const checkAuthStatus = async (dispatch: AppDispatch) => {
     );
     if (response.data.isAuthenticated) {
       dispatch(setUser(response.data.user));
+      scheduleNextRefresh(dispatch);
     } else {
       dispatch(clearUser());
+      dispatch(clearRecentlyViewed());
     }
   } catch (error) {
     console.error('Auth check failed:', error);
     dispatch(clearUser());
+    dispatch(clearRecentlyViewed());
   }
 };
 

@@ -9,11 +9,9 @@ export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
+  const { isAuthenticated, user } = useSelector(
+    (state: RootState) => state.auth
   );
-  const username = useSelector((state: RootState) => state.auth.user?.email);
-  const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     checkAuthStatus(dispatch);
@@ -32,5 +30,5 @@ export const useAuth = () => {
     }
   }, [searchParams, router, dispatch]);
 
-  return { isAuthenticated, username, user };
+  return { isAuthenticated, user };
 };
