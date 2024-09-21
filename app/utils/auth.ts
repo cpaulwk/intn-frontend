@@ -12,7 +12,7 @@ export const silentRefresh = async (dispatch: AppDispatch) => {
       {},
       { withCredentials: true }
     );
-    if (response.data.message === 'Access token refreshed successfully') {
+    if (response.data.message === 'Tokens refreshed successfully') {
       await checkAuthStatus(dispatch);
       scheduleNextRefresh(dispatch);
     } else {
