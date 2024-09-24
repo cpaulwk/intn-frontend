@@ -15,6 +15,7 @@ const IdeaSubmissionForm: React.FC = () => {
       <form onSubmit={handleSubmit} className="w-full max-w-4xl">
         <div className="relative">
           <input
+            id="idea-submission-input"
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
