@@ -38,49 +38,38 @@ export const useIdeas = () => {
   );
   const recentlyViewedIdeas = useSelector(selectRecentlyViewedIdeas);
 
-  useEffect(() => {
-    const loadIdeas = async () => {
-      dispatch(fetchIdeasStart());
-      try {
-        const ideasData = await fetchIdeas();
-        dispatch(fetchIdeasSuccess(ideasData));
-      } catch (error) {
-        dispatch(fetchIdeasError(error as string));
-      }
-    };
-
-    loadIdeas();
+  const loadIdeas = useCallback(async () => {
+    dispatch(fetchIdeasStart());
+    try {
+      const ideasData = await fetchIdeas();
+      dispatch(fetchIdeasSuccess(ideasData));
+    } catch (error) {
+      dispatch(fetchIdeasError(error as string));
+    }
   }, [dispatch]);
 
-  useEffect(() => {
-    const loadUpvotedIdeas = async () => {
-      if (isAuthenticated) {
-        try {
-          const upvotedIdeasData = await fetchUpvotedIdeas();
-          dispatch(setUpvotedIdeas(upvotedIdeasData));
-        } catch (error) {
-          console.error('Error fetching upvoted ideas:', error);
-        }
+  const loadUserData = useCallback(async () => {
+    if (isAuthenticated) {
+      try {
+        const [upvotedIdeasData, recentlyViewedIdeasData] = await Promise.all([
+          fetchUpvotedIdeas(),
+          fetchViewedIdeas(),
+        ]);
+        dispatch(setUpvotedIdeas(upvotedIdeasData));
+        dispatch(setRecentlyViewed(recentlyViewedIdeasData || []));
+      } catch (error) {
+        console.error('Error fetching user data:', error);
       }
-    };
-
-    loadUpvotedIdeas();
+    } else {
+      dispatch(setUpvotedIdeas([]));
+      dispatch(setRecentlyViewed([]));
+    }
   }, [isAuthenticated, dispatch]);
 
   useEffect(() => {
-    const loadRecentlyViewedIdeas = async () => {
-      if (isAuthenticated) {
-        try {
-          const recentlyViewedIdeasData = await fetchViewedIdeas();
-          dispatch(setRecentlyViewed(recentlyViewedIdeasData));
-        } catch (error) {
-          console.error('Error fetching recently viewed ideas:', error);
-        }
-      }
-    };
-
-    loadRecentlyViewedIdeas();
-  }, [isAuthenticated, dispatch]);
+    loadIdeas();
+    loadUserData();
+  }, [loadIdeas, loadUserData]);
 
   const handleUpvote = useCallback(
     async (ideaId: string, isUpvoted: boolean) => {
@@ -130,13 +119,8 @@ export const useIdeas = () => {
     [isAuthenticated, upvotedIdeas, dispatch]
   );
 
-  const sortedIdeas = useMemo(
-    () => [...ideas].sort((a, b) => b.upvotes - a.upvotes),
-    [ideas]
-  );
-
   return {
-    ideas: sortedIdeas,
+    ideas,
     loading,
     error,
     handleUpvote,

@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AppDispatch, RootState } from '../store';
-import { setUser } from '../slices/authSlice';
 import { checkAuthStatus } from '../utils/auth';
 
 export const useAuth = () => {
@@ -14,21 +13,17 @@ export const useAuth = () => {
   );
 
   useEffect(() => {
-    checkAuthStatus(dispatch);
-  }, [dispatch]);
-
-  useEffect(() => {
-    const userDataParam = searchParams.get('userData');
-    if (userDataParam) {
-      try {
-        const userData = JSON.parse(decodeURIComponent(userDataParam));
-        dispatch(setUser(userData));
+    const authSuccess = searchParams.get('auth') === 'success';
+    if (authSuccess) {
+      checkAuthStatus(dispatch).then(() => {
         router.replace(window.location.pathname);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
+      });
     }
   }, [searchParams, router, dispatch]);
+
+  useEffect(() => {
+    checkAuthStatus(dispatch);
+  }, [dispatch]);
 
   return { isAuthenticated, user };
 };

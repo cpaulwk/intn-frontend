@@ -4,17 +4,20 @@ import { cookies } from 'next/headers';
 export async function GET() {
   try {
     const cookieStore = cookies();
-    const authToken = cookieStore.get('auth_token');
+    const authToken = cookieStore.get('access_token');
 
     if (!authToken) {
       return NextResponse.json({ isAuthenticated: false, user: null });
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_GOOGLE_AUTH}/session`, {
-      headers: {
-        'Cookie': `auth_token=${authToken.value}`,
-      },
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_GOOGLE_AUTH}/session`,
+      {
+        headers: {
+          Cookie: `access_token=${authToken.value}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error('Authentication check failed');
@@ -25,7 +28,11 @@ export async function GET() {
   } catch (error) {
     console.error('Error checking authentication:', error);
     return NextResponse.json(
-      { isAuthenticated: false, user: null, error: 'Failed to check authentication status' },
+      {
+        isAuthenticated: false,
+        user: null,
+        error: 'Failed to check authentication status',
+      },
       { status: 500 }
     );
   }
