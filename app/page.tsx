@@ -16,6 +16,7 @@ export default function Home() {
 
   useEffect(() => {
     const authenticateUser = async () => {
+      console.log('Authenticating user');
       await checkAuthStatus(dispatch);
       router.replace(window.location.pathname);
     };

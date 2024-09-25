@@ -33,7 +33,6 @@ export const silentRefresh = async (dispatch: AppDispatch) => {
 const scheduleNextRefresh = (dispatch: AppDispatch) => {
   if (refreshInterval) clearInterval(refreshInterval);
   const timeUntilExpiry = getTimeUntilExpiry();
-  console.log('timeUntilExpiry', timeUntilExpiry);
   refreshInterval = setTimeout(
     () => {
       silentRefresh(dispatch);
