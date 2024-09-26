@@ -7,6 +7,7 @@ import {
   fetchIdeasError,
   updateIdea,
 } from '../slices/ideaSlice';
+import io from 'socket.io-client';
 import {
   setUpvotedIdeas,
   addUpvotedIdea,
@@ -32,11 +33,25 @@ export const useIdeas = () => {
   const { ideas, loading, error } = useSelector(
     (state: RootState) => state.ideas
   );
+  const [socket, setSocket] = useState<any>(null);
   const { isAuthenticated } = useAuth();
   const upvotedIdeas = useSelector(
     (state: RootState) => state.upvotedIdeas.upvotedIdeas
   );
-  const recentlyViewedIdeas = useSelector(selectRecentlyViewedIdeas);
+  useEffect(() => {
+    const newSocket = io(process.env.NEXT_PUBLIC_API_URL as string, {
+      withCredentials: true,
+    });
+    setSocket(newSocket);
+
+    newSocket.on('upvoteUpdate', ({ ideaId, upvotes }) => {
+      dispatch(updateIdea({ id: ideaId, changes: { upvotes } }));
+    });
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [dispatch]);
 
   const loadIdeas = useCallback(async () => {
     dispatch(fetchIdeasStart());
