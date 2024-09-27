@@ -22,7 +22,7 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
   const { isAuthenticated } = useAuth();
   const { onGoogleLogin, onLogout } = useSidebar();
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const { recentlyViewedIdeas } = useIdeas();
+  const { recentlyViewed } = useIdeas();
 
   return (
     <div
@@ -73,9 +73,9 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
       </nav>
       <section className="flex-1 overflow-y-hidden px-4">
         <h2 className="mb-4 text-xl font-bold">Recently Viewed</h2>
-        {recentlyViewedIdeas.length > 0 ? (
+        {recentlyViewed.length > 0 ? (
           <ul className="h-full overflow-y-auto">
-            {recentlyViewedIdeas.map((idea) => (
+            {recentlyViewed.map((idea) => (
               <RecentlyViewedIdeaItem key={idea._id.toString()} idea={idea} />
             ))}
           </ul>

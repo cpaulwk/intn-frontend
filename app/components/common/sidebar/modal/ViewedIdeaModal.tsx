@@ -5,19 +5,21 @@ import Modal from '../../modal/Modal';
 interface ViewedIdeaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpvote: () => void;
+  handleUpvote: (ideaId: string) => Promise<void>;
   onDelete: () => void;
   position: { top: number; left: number } | null;
   triggerRef: React.RefObject<HTMLButtonElement> | undefined;
+  ideaId: string;
 }
 
 const ViewedIdeaModal: React.FC<ViewedIdeaModalProps> = ({
   isOpen,
   onClose,
-  onUpvote,
+  handleUpvote,
   onDelete,
   position,
   triggerRef,
+  ideaId,
 }) => {
   return (
     <Modal
@@ -29,8 +31,8 @@ const ViewedIdeaModal: React.FC<ViewedIdeaModalProps> = ({
       <div className="w-32 px-2 py-3">
         <button
           className="flex w-full items-center rounded-md px-4 py-2 text-sm text-gray-700 hover:bg-[#0078e6]/20"
-          onClick={() => {
-            onUpvote();
+          onClick={async () => {
+            await handleUpvote(ideaId);
             onClose();
           }}
         >

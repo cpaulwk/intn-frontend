@@ -10,18 +10,46 @@ import { formatUpvoteCount } from '../../utils/formatUtils';
 
 interface IdeaCardProps {
   idea: Idea;
-  toggleUpvote: (ideaId: string) => Promise<void>;
+  handleUpvote: (ideaId: string) => Promise<void>;
   isAuthenticated: boolean;
   upvotedIdeas: string[];
 }
 
+const useContentHeight = (
+  contentRef: React.RefObject<HTMLParagraphElement>,
+  isExpanded: boolean
+) => {
+  const [exceedsTwoLines, setExceedsTwoLines] = useState(false);
+  const [contentHeight, setContentHeight] = useState('auto');
+
+  useEffect(() => {
+    if (contentRef.current) {
+      const lineHeight = parseInt(
+        window.getComputedStyle(contentRef.current).lineHeight
+      );
+      const scrollHeight = contentRef.current.scrollHeight;
+      const clientHeight = contentRef.current.clientHeight;
+
+      setExceedsTwoLines(scrollHeight > lineHeight * 2);
+      setContentHeight(
+        isExpanded ? `${scrollHeight}px` : `${lineHeight * 2}px`
+      );
+    }
+  }, [isExpanded, contentRef]);
+
+  return { exceedsTwoLines, contentHeight };
+};
+
 const IdeaCard: React.FC<IdeaCardProps> = React.memo(
-  ({ idea, toggleUpvote, isAuthenticated, upvotedIdeas }) => {
+  ({ idea, handleUpvote, isAuthenticated, upvotedIdeas }) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const [exceedsTwoLines, setExceedsTwoLines] = useState(false);
-    const [contentHeight, setContentHeight] = useState('auto');
     const contentRef = useRef<HTMLParagraphElement>(null);
     const dispatch = useDispatch();
+    const { exceedsTwoLines, contentHeight } = useContentHeight(
+      contentRef,
+      isExpanded
+    );
+
     const toggleExpand = useCallback(() => {
       setIsExpanded((prev) => !prev);
       if (isAuthenticated) {
@@ -32,28 +60,12 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
       }
     }, [dispatch, idea, isAuthenticated]);
 
-    useEffect(() => {
-      if (contentRef.current) {
-        const lineHeight = parseInt(
-          window.getComputedStyle(contentRef.current).lineHeight
-        );
-        const scrollHeight = contentRef.current.scrollHeight;
-        const clientHeight = contentRef.current.clientHeight;
-
-        setExceedsTwoLines(scrollHeight > lineHeight * 2);
-        setContentHeight(
-          isExpanded ? `${scrollHeight}px` : `${lineHeight * 2}px`
-        );
-      }
-    }, [isExpanded]);
-
-    const isUpvoted =
-      Array.isArray(upvotedIdeas) && upvotedIdeas.includes(idea._id.toString());
+    const isUpvoted = upvotedIdeas.includes(idea._id.toString());
 
     const onUpvote = useCallback(async () => {
       if (isAuthenticated) {
         try {
-          await toggleUpvote(idea._id.toString());
+          await handleUpvote(idea._id.toString());
           dispatch(addRecentlyViewed(idea));
           await addViewedIdea(idea);
         } catch (error) {
@@ -62,17 +74,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
       } else {
         console.log('User must be authenticated to upvote');
       }
-    }, [toggleUpvote, idea, dispatch, isAuthenticated]);
-
-    const handleIdeaClick = async () => {
-      if (isAuthenticated) {
-        try {
-          await addViewedIdea(idea);
-        } catch (error) {
-          console.error('Error adding viewed idea:', error);
-        }
-      }
-    };
+    }, [handleUpvote, idea, dispatch, isAuthenticated]);
 
     return (
       <div

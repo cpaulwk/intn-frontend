@@ -28,16 +28,10 @@ const recentlyViewedIdeas = createSelector(
   (ideas) => (Array.isArray(ideas) && ideas.length > 0 ? ideas : [])
 );
 
-export const useIdeas = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { ideas, loading, error } = useSelector(
-    (state: RootState) => state.ideas
-  );
+const useSocket = () => {
   const [socket, setSocket] = useState<any>(null);
-  const { isAuthenticated } = useAuth();
-  const upvotedIdeas = useSelector(
-    (state: RootState) => state.upvotedIdeas.upvotedIdeas
-  );
+  const dispatch = useDispatch<AppDispatch>();
+
   useEffect(() => {
     const newSocket = io(process.env.NEXT_PUBLIC_API_URL as string, {
       withCredentials: true,
@@ -52,6 +46,13 @@ export const useIdeas = () => {
       newSocket.disconnect();
     };
   }, [dispatch]);
+
+  return socket;
+};
+
+const useIdeasData = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { isAuthenticated } = useAuth();
 
   const loadIdeas = useCallback(async () => {
     dispatch(fetchIdeasStart());
@@ -86,52 +87,43 @@ export const useIdeas = () => {
     loadUserData();
   }, [loadIdeas, loadUserData]);
 
-  const handleUpvote = useCallback(
-    async (ideaId: string, isUpvoted: boolean) => {
-      if (!isAuthenticated) {
-        console.log('User must be authenticated to upvote');
-        return;
-      }
+  return { loadIdeas, loadUserData };
+};
 
-      try {
-        const updatedIdea = await toggleUpvoteIdea(ideaId);
-        dispatch(updateIdea(updatedIdea));
-
-        if (isUpvoted) {
-          dispatch(removeUpvotedIdea(ideaId));
-        } else {
-          dispatch(addUpvotedIdea(ideaId));
-        }
-      } catch (error) {
-        console.error('Error toggling upvote:', error);
-      }
-    },
-    [isAuthenticated, dispatch]
+export const useIdeas = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { ideas, loading, error } = useSelector(
+    (state: RootState) => state.ideas
   );
+  const { isAuthenticated } = useAuth();
+  const upvotedIdeas = useSelector(
+    (state: RootState) => state.upvotedIdeas.upvotedIdeas
+  );
+  const recentlyViewed = useSelector(recentlyViewedIdeas);
 
-  const toggleUpvote = useCallback(
+  useSocket();
+  useIdeasData();
+
+  const handleUpvote = useCallback(
     async (ideaId: string) => {
       if (!isAuthenticated) {
         console.log('User must be authenticated to upvote');
         return;
       }
 
-      const isCurrentlyUpvoted = upvotedIdeas.includes(ideaId);
-
       try {
         const updatedIdea = await toggleUpvoteIdea(ideaId);
         dispatch(updateIdea(updatedIdea));
-
-        if (isCurrentlyUpvoted) {
-          dispatch(removeUpvotedIdea(ideaId));
-        } else {
-          dispatch(addUpvotedIdea(ideaId));
-        }
+        dispatch(
+          upvotedIdeas.includes(ideaId)
+            ? removeUpvotedIdea(ideaId)
+            : addUpvotedIdea(ideaId)
+        );
       } catch (error) {
         console.error('Error toggling upvote:', error);
       }
     },
-    [isAuthenticated, upvotedIdeas, dispatch]
+    [isAuthenticated, dispatch, upvotedIdeas]
   );
 
   return {
@@ -139,8 +131,7 @@ export const useIdeas = () => {
     loading,
     error,
     handleUpvote,
-    toggleUpvote,
     upvotedIdeas,
-    recentlyViewedIdeas,
+    recentlyViewed,
   };
 };

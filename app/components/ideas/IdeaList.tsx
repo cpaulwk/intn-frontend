@@ -7,14 +7,14 @@ interface IdeaListProps {
   ideas: Idea[];
   isAuthenticated: boolean;
   upvotedIdeas: string[];
-  toggleUpvote: (ideaId: string) => Promise<void>;
+  handleUpvote: (ideaId: string) => Promise<void>;
 }
 
 const IdeaList: React.FC<IdeaListProps> = ({
   ideas,
   isAuthenticated,
   upvotedIdeas,
-  toggleUpvote,
+  handleUpvote,
 }) => {
   const { isSidebarOpen } = useSidebar();
 
@@ -30,7 +30,7 @@ const IdeaList: React.FC<IdeaListProps> = ({
           idea={idea}
           isAuthenticated={isAuthenticated}
           upvotedIdeas={upvotedIdeas}
-          toggleUpvote={toggleUpvote}
+          handleUpvote={handleUpvote}
         />
       ))}
     </div>

@@ -19,7 +19,7 @@ const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useAuth();
-  const { toggleUpvote } = useIdeas();
+  const { handleUpvote } = useIdeas();
   const [activeModal, setActiveModal] = useState<boolean>(false);
   const [modalPosition, setModalPosition] = useState<{
     top: number;
@@ -57,20 +57,6 @@ const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
     setModalPosition(null);
   };
 
-  const handleUpvote = async () => {
-    if (isAuthenticated) {
-      try {
-        await toggleUpvote(idea._id.toString());
-        dispatch(addRecentlyViewed(idea));
-        await addViewedIdea(idea);
-      } catch (error) {
-        console.error('Error toggling upvote:', error);
-      }
-    } else {
-      console.log('User must be authenticated to upvote');
-    }
-  };
-
   const handleDelete = () => {
     console.log('Delete clicked for idea:', idea._id);
     // Implement delete logic here
@@ -99,10 +85,8 @@ const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
       <ViewedIdeaModal
         isOpen={activeModal}
         onClose={closeModal}
-        onUpvote={() => {
-          handleUpvote();
-          closeModal();
-        }}
+        handleUpvote={handleUpvote}
+        ideaId={idea._id.toString()}
         onDelete={() => {
           handleDelete();
           closeModal();

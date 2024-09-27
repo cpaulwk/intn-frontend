@@ -9,7 +9,7 @@ import { useIdeas } from './hooks/useIdeas';
 import { useAuth } from './hooks/useAuth';
 
 export default function Home() {
-  const { ideas, loading, error, toggleUpvote, upvotedIdeas } = useIdeas();
+  const { ideas, loading, error, handleUpvote, upvotedIdeas } = useIdeas();
   const { isAuthenticated } = useAuth();
 
   return (
@@ -24,7 +24,7 @@ export default function Home() {
           ideas={ideas}
           isAuthenticated={isAuthenticated}
           upvotedIdeas={upvotedIdeas}
-          toggleUpvote={toggleUpvote}
+          handleUpvote={handleUpvote}
         />
       )}
       <IdeaSubmissionForm />
