@@ -13,7 +13,7 @@ import { useAuth } from '../hooks/useAuth';
 
 const MyFavorites: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { ideas, toggleUpvote, upvotedIdeas } = useIdeas();
+  const { ideas, handleUpvote, upvotedIdeas } = useIdeas();
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const MyFavorites: React.FC = () => {
             ideas={favoriteIdeas}
             isAuthenticated={isAuthenticated}
             upvotedIdeas={upvotedIdeas}
-            toggleUpvote={toggleUpvote}
+            handleUpvote={handleUpvote}
           />
         ) : (
           <p className="text-center text-gray-600">

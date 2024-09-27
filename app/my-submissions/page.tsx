@@ -6,9 +6,10 @@ import IdeaList from '../components/ideas/IdeaList';
 import PageLayout from '../components/layout/PageLayout';
 import { useIdeas } from '../hooks/useIdeas';
 import { useAuth } from '../hooks/useAuth';
+
 const MySubmissions: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
-  const { ideas, toggleUpvote, upvotedIdeas } = useIdeas();
+  const { ideas, handleUpvote, upvotedIdeas } = useIdeas();
   const userIdeas = ideas.filter((idea) => idea.username === user?.email);
 
   return (
@@ -24,7 +25,7 @@ const MySubmissions: React.FC = () => {
               ideas={userIdeas}
               isAuthenticated={isAuthenticated}
               upvotedIdeas={upvotedIdeas}
-              toggleUpvote={toggleUpvote}
+              handleUpvote={handleUpvote}
             />
           ) : (
             <p className="text-center text-gray-600">
