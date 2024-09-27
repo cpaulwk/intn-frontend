@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import {
@@ -23,7 +23,7 @@ import { setRecentlyViewed } from '../slices/recentlyViewedSlice';
 import { useAuth } from './useAuth';
 import { createSelector } from '@reduxjs/toolkit';
 
-const selectRecentlyViewedIdeas = createSelector(
+const recentlyViewedIdeas = createSelector(
   (state: RootState) => state.recentlyViewed.ideas,
   (ideas) => (Array.isArray(ideas) && ideas.length > 0 ? ideas : [])
 );
