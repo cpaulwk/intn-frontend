@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store';
 import Header from '../components/common/Header';
-import FilteredIdeaList from '../components/ideas/FilteredIdeaList';
+import IdeaList from '../components/ideas/IdeaList';
 import PageLayout from '../components/layout/PageLayout';
 import { fetchUpvotedIdeas } from '../utils/api';
 import { setUpvotedIdeas } from '../slices/upvotedIdeasSlice';
@@ -41,10 +41,11 @@ const MyFavorites: React.FC = () => {
       <h2 className="mb-6 mt-4 text-center text-2xl font-bold">My Favorites</h2>
       {isAuthenticated ? (
         favoriteIdeas.length > 0 ? (
-          <FilteredIdeaList
+          <IdeaList
             ideas={favoriteIdeas}
-            toggleUpvote={toggleUpvote}
+            isAuthenticated={isAuthenticated}
             upvotedIdeas={upvotedIdeas}
+            toggleUpvote={toggleUpvote}
           />
         ) : (
           <p className="text-center text-gray-600">

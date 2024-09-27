@@ -1,16 +1,24 @@
 import React from 'react';
 import IdeaCard from './IdeaCard';
-import { useIdeas } from '../../hooks/useIdeas';
-import { useAuth } from '../../hooks/useAuth';
+import { Idea } from '../../types';
 import { useSidebar } from '../../hooks/useSideBar';
 
-const IdeaList: React.FC = () => {
-  const { ideas, loading, error, toggleUpvote, upvotedIdeas } = useIdeas();
-  const { isAuthenticated } = useAuth();
+interface IdeaListProps {
+  ideas: Idea[];
+  isAuthenticated: boolean;
+  upvotedIdeas: string[];
+  toggleUpvote: (ideaId: string) => Promise<void>;
+}
+
+const IdeaList: React.FC<IdeaListProps> = ({
+  ideas,
+  isAuthenticated,
+  upvotedIdeas,
+  toggleUpvote,
+}) => {
   const { isSidebarOpen } = useSidebar();
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (ideas.length === 0) return <div>No ideas found.</div>;
 
   return (
     <div

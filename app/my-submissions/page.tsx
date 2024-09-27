@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Header from '../components/common/Header';
-import FilteredIdeaList from '../components/ideas/FilteredIdeaList';
+import IdeaList from '../components/ideas/IdeaList';
 import PageLayout from '../components/layout/PageLayout';
 import { useIdeas } from '../hooks/useIdeas';
 import { useAuth } from '../hooks/useAuth';
@@ -17,13 +17,14 @@ const MySubmissions: React.FC = () => {
       <h2 className="mb-6 mt-4 text-center text-2xl font-bold">
         My Submissions
       </h2>
-      <div className="w-fulljustify-center flex-1">
+      <div className="w-full flex-1 justify-center">
         {isAuthenticated ? (
           userIdeas.length > 0 ? (
-            <FilteredIdeaList
+            <IdeaList
               ideas={userIdeas}
-              toggleUpvote={toggleUpvote}
+              isAuthenticated={isAuthenticated}
               upvotedIdeas={upvotedIdeas}
+              toggleUpvote={toggleUpvote}
             />
           ) : (
             <p className="text-center text-gray-600">

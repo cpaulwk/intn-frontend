@@ -1,33 +1,32 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { useRouter } from 'next/navigation';
-import { AppDispatch } from './store';
+import React from 'react';
 import Header from './components/common/Header';
 import IdeaList from './components/ideas/IdeaList';
 import IdeaSubmissionForm from './components/ideas/IdeaSubmissionForm';
 import PageLayout from './components/layout/PageLayout';
-import { checkAuthStatus } from './utils/auth';
+import { useIdeas } from './hooks/useIdeas';
+import { useAuth } from './hooks/useAuth';
 
 export default function Home() {
-  const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
-
-  useEffect(() => {
-    const authenticateUser = async () => {
-      console.log('Authenticating user');
-      await checkAuthStatus(dispatch);
-      router.replace(window.location.pathname);
-    };
-
-    authenticateUser();
-  }, [dispatch, router]);
+  const { ideas, loading, error, toggleUpvote, upvotedIdeas } = useIdeas();
+  const { isAuthenticated } = useAuth();
 
   return (
     <PageLayout>
       <Header />
-      <IdeaList />
+      {loading ? (
+        <div>Loading...</div>
+      ) : error ? (
+        <div>{error}</div>
+      ) : (
+        <IdeaList
+          ideas={ideas}
+          isAuthenticated={isAuthenticated}
+          upvotedIdeas={upvotedIdeas}
+          toggleUpvote={toggleUpvote}
+        />
+      )}
       <IdeaSubmissionForm />
     </PageLayout>
   );
