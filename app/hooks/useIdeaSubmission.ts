@@ -11,18 +11,18 @@ export const useIdeaSubmission = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
-  const { isAuthenticated, username } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (!input.trim() || !isAuthenticated || !username) return;
+      if (!input.trim() || !isAuthenticated || !user) return;
 
       setIsLoading(true);
       setError(null);
 
       try {
-        const newIdea = await createIdeaApi(input.trim(), username);
+        const newIdea = await createIdeaApi(input.trim(), user.username);
         dispatch(createIdea(newIdea));
         dispatch(addUpvotedIdea(newIdea._id.toString()));
         setInput('');
@@ -33,7 +33,7 @@ export const useIdeaSubmission = () => {
         setIsLoading(false);
       }
     },
-    [input, isAuthenticated, username, dispatch]
+    [input, isAuthenticated, user, dispatch]
   );
 
   return {
