@@ -6,14 +6,12 @@ import { useSidebar } from '../../hooks/useSideBar';
 interface IdeaListProps {
   ideas: Idea[];
   isAuthenticated: boolean;
-  upvotedIdeas: string[];
   handleUpvote: (ideaId: string) => Promise<void>;
 }
 
 const IdeaList: React.FC<IdeaListProps> = ({
   ideas,
   isAuthenticated,
-  upvotedIdeas,
   handleUpvote,
 }) => {
   const { isSidebarOpen } = useSidebar();
@@ -29,7 +27,6 @@ const IdeaList: React.FC<IdeaListProps> = ({
           key={idea._id.toString()}
           idea={idea}
           isAuthenticated={isAuthenticated}
-          upvotedIdeas={upvotedIdeas}
           handleUpvote={handleUpvote}
         />
       ))}

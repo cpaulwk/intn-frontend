@@ -1,25 +1,27 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
+import { Idea } from '../types';
 interface UpvotedIdeasState {
-  upvotedIdeas: string[];
+  upvotedIdeas: Idea[];
+  upvotedIdeasIds: string[];
 }
 
 const initialState: UpvotedIdeasState = {
   upvotedIdeas: [],
+  upvotedIdeasIds: [],
 };
 
 const upvotedIdeasSlice = createSlice({
   name: 'upvotedIdeas',
   initialState,
   reducers: {
-    setUpvotedIdeas: (state, action: PayloadAction<string[]>) => {
+    setUpvotedIdeas: (state, action: PayloadAction<Idea[]>) => {
       state.upvotedIdeas = action.payload;
     },
     addUpvotedIdea: (state, action: PayloadAction<string>) => {
-      state.upvotedIdeas.push(action.payload);
+      state.upvotedIdeasIds.push(action.payload);
     },
     removeUpvotedIdea: (state, action: PayloadAction<string>) => {
-      state.upvotedIdeas = state.upvotedIdeas.filter(
+      state.upvotedIdeasIds = state.upvotedIdeasIds.filter(
         (id) => id !== action.payload
       );
     },

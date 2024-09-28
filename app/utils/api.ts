@@ -49,9 +49,11 @@ export const createIdea = async (
   }
 };
 
-export const toggleUpvoteIdea = async (ideaId: string): Promise<Idea> => {
+export const toggleUpvoteIdea = async (
+  ideaId: string
+): Promise<{ idea: Idea; isUpvoted: boolean }> => {
   try {
-    const response = await axios.put<Idea>(
+    const response = await axios.put<{ idea: Idea; isUpvoted: boolean }>(
       `${API_URL}/ideas/${ideaId}/toggle-upvote`,
       {},
       { withCredentials: true }
@@ -63,12 +65,11 @@ export const toggleUpvoteIdea = async (ideaId: string): Promise<Idea> => {
   }
 };
 
-export const fetchUpvotedIdeas = async (): Promise<string[]> => {
+export const fetchUpvotedIdeas = async (): Promise<Idea[]> => {
   try {
-    const response = await axios.get<string[]>(
-      `${API_URL}/users/upvoted-ideas`,
-      { withCredentials: true }
-    );
+    const response = await axios.get<Idea[]>(`${API_URL}/ideas/upvoted`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     handleApiError(error);

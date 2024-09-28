@@ -9,13 +9,8 @@ import {
 } from '../slices/ideaSlice';
 import io from 'socket.io-client';
 import {
-  setUpvotedIdeas,
-  addUpvotedIdea,
-  removeUpvotedIdea,
-} from '../slices/upvotedIdeasSlice';
-import {
   fetchIdeas,
-  fetchUpvotedIdeas,
+  fetchAuthenticatedIdeas,
   toggleUpvoteIdea,
   fetchViewedIdeas,
 } from '../utils/api';
@@ -96,9 +91,6 @@ export const useIdeas = () => {
     (state: RootState) => state.ideas
   );
   const { isAuthenticated } = useAuth();
-  const upvotedIdeas = useSelector(
-    (state: RootState) => state.upvotedIdeas.upvotedIdeas
-  );
   const recentlyViewed = useSelector(recentlyViewedIdeas);
 
   useSocket();
@@ -112,18 +104,13 @@ export const useIdeas = () => {
       }
 
       try {
-        const updatedIdea = await toggleUpvoteIdea(ideaId);
-        dispatch(updateIdea(updatedIdea));
-        dispatch(
-          upvotedIdeas.includes(ideaId)
-            ? removeUpvotedIdea(ideaId)
-            : addUpvotedIdea(ideaId)
-        );
+        const { idea: updatedIdea, isUpvoted } = await toggleUpvoteIdea(ideaId);
+        dispatch(updateIdea({ ...updatedIdea, isUpvoted }));
       } catch (error) {
         console.error('Error toggling upvote:', error);
       }
     },
-    [isAuthenticated, dispatch, upvotedIdeas]
+    [isAuthenticated, dispatch]
   );
 
   return {
@@ -131,7 +118,6 @@ export const useIdeas = () => {
     loading,
     error,
     handleUpvote,
-    upvotedIdeas,
     recentlyViewed,
   };
 };

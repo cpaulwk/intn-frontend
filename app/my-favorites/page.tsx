@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store';
 import Header from '../components/common/Header';
 import IdeaList from '../components/ideas/IdeaList';
 import PageLayout from '../components/layout/PageLayout';
@@ -13,15 +13,19 @@ import { useAuth } from '../hooks/useAuth';
 
 const MyFavorites: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { ideas, handleUpvote, upvotedIdeas } = useIdeas();
+  const { ideas, handleUpvote } = useIdeas();
   const { isAuthenticated } = useAuth();
+  const upvotedIdeas = useSelector(
+    (state: RootState) => state.upvotedIdeas.upvotedIdeas
+  );
 
   useEffect(() => {
     const loadUpvotedIdeas = async () => {
-      if (isAuthenticated && upvotedIdeas.length === 0) {
+      if (isAuthenticated) {
         try {
           const upvotedIdeasData = await fetchUpvotedIdeas();
           dispatch(setUpvotedIdeas(upvotedIdeasData));
+          console.log('upvotedIdeasData: ', upvotedIdeasData);
         } catch (error) {
           console.error('Error fetching upvoted ideas:', error);
         }
@@ -29,22 +33,17 @@ const MyFavorites: React.FC = () => {
     };
 
     loadUpvotedIdeas();
-  }, [isAuthenticated, dispatch, upvotedIdeas.length]);
-
-  const favoriteIdeas = ideas.filter((idea) =>
-    upvotedIdeas.includes(idea._id.toString())
-  );
+  }, [isAuthenticated, dispatch]);
 
   return (
     <PageLayout>
       <Header />
       <h2 className="mb-6 mt-4 text-center text-2xl font-bold">My Favorites</h2>
       {isAuthenticated ? (
-        favoriteIdeas.length > 0 ? (
+        upvotedIdeas.length > 0 ? (
           <IdeaList
-            ideas={favoriteIdeas}
+            ideas={upvotedIdeas}
             isAuthenticated={isAuthenticated}
-            upvotedIdeas={upvotedIdeas}
             handleUpvote={handleUpvote}
           />
         ) : (

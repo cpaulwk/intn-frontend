@@ -6,6 +6,7 @@ export interface Idea {
   description: string;
   upvotes: number;
   username: string;
+  isUpvoted?: boolean;
 }
 
 // Add other shared types and interfaces here
