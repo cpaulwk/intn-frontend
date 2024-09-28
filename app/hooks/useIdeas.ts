@@ -49,40 +49,26 @@ const useIdeasData = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated } = useAuth();
 
-  const loadIdeas = useCallback(async () => {
+  const loadData = useCallback(async () => {
     dispatch(fetchIdeasStart());
     try {
-      const ideasData = await fetchIdeas();
+      const [ideasData, recentlyViewedIdeasData] = await Promise.all([
+        isAuthenticated ? fetchAuthenticatedIdeas() : fetchIdeas(),
+        isAuthenticated ? fetchViewedIdeas() : Promise.resolve([]),
+      ]);
       dispatch(fetchIdeasSuccess(ideasData));
+      dispatch(setRecentlyViewed(recentlyViewedIdeasData || []));
     } catch (error) {
       dispatch(fetchIdeasError(error as string));
+      console.error('Error fetching data:', error);
     }
-  }, [dispatch]);
-
-  const loadUserData = useCallback(async () => {
-    if (isAuthenticated) {
-      try {
-        const [upvotedIdeasData, recentlyViewedIdeasData] = await Promise.all([
-          fetchUpvotedIdeas(),
-          fetchViewedIdeas(),
-        ]);
-        dispatch(setUpvotedIdeas(upvotedIdeasData));
-        dispatch(setRecentlyViewed(recentlyViewedIdeasData || []));
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    } else {
-      dispatch(setUpvotedIdeas([]));
-      dispatch(setRecentlyViewed([]));
-    }
-  }, [isAuthenticated, dispatch]);
+  }, [dispatch, isAuthenticated]);
 
   useEffect(() => {
-    loadIdeas();
-    loadUserData();
-  }, [loadIdeas, loadUserData]);
+    loadData();
+  }, [loadData]);
 
-  return { loadIdeas, loadUserData };
+  return { loadData };
 };
 
 export const useIdeas = () => {
@@ -94,7 +80,7 @@ export const useIdeas = () => {
   const recentlyViewed = useSelector(recentlyViewedIdeas);
 
   useSocket();
-  useIdeasData();
+  const { loadData } = useIdeasData();
 
   const handleUpvote = useCallback(
     async (ideaId: string) => {
@@ -119,5 +105,6 @@ export const useIdeas = () => {
     error,
     handleUpvote,
     recentlyViewed,
+    loadData,
   };
 };
