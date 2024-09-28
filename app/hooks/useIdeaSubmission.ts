@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store';
-import { createIdea } from '../slices/ideaSlice';
 import { createIdea as createIdeaApi } from '../utils/api';
+import { createIdea } from '../slices/ideaSlice';
+import { addSubmittedIdea } from '../slices/submittedIdeasSlice';
 import { addUpvotedIdea } from '../slices/upvotedIdeasSlice';
 import { useAuth } from './useAuth';
 
@@ -22,8 +23,9 @@ export const useIdeaSubmission = () => {
       setError(null);
 
       try {
-        const newIdea = await createIdeaApi(input.trim(), user.username);
+        const newIdea = await createIdeaApi(input.trim(), user.email);
         dispatch(createIdea(newIdea));
+        dispatch(addSubmittedIdea(newIdea._id.toString()));
         dispatch(addUpvotedIdea(newIdea._id.toString()));
         setInput('');
       } catch (err) {

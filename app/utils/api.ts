@@ -102,3 +102,30 @@ export const fetchViewedIdeas = async (): Promise<Idea[]> => {
     throw error;
   }
 };
+
+export const fetchAuthenticatedIdeas = async (): Promise<Idea[]> => {
+  try {
+    const response = await axios.get<Idea[]>(`${API_URL}/ideas/authenticated`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};
+
+export const fetchMySubmissions = async (): Promise<Idea[]> => {
+  try {
+    const response = await axios.get<Idea[]>(
+      `${API_URL}/ideas/my-submissions`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};
