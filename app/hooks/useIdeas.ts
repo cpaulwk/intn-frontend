@@ -7,6 +7,8 @@ import {
   fetchIdeasError,
   updateIdea,
   toggleUpvotedIdea,
+  setSubmittedIdeas,
+  setUpvotedIdeas,
 } from '../slices/ideaSlice';
 import io from 'socket.io-client';
 import {
@@ -14,6 +16,8 @@ import {
   fetchAuthenticatedIdeas,
   toggleUpvoteIdea,
   fetchViewedIdeas,
+  fetchMySubmissions,
+  fetchUpvotedIdeas,
 } from '../utils/api';
 import { setRecentlyViewed } from '../slices/recentlyViewedSlice';
 import { useAuth } from './useAuth';
@@ -83,6 +87,29 @@ export const useIdeas = () => {
   useSocket();
   const { loadData } = useIdeasData();
 
+  const loadMySubmissions = useCallback(async () => {
+    if (isAuthenticated) {
+      try {
+        const submissions = await fetchMySubmissions();
+        dispatch(setSubmittedIdeas(submissions));
+      } catch (err) {
+        console.error('Error fetching my submissions:', err);
+      } finally {
+      }
+    }
+  }, [dispatch, isAuthenticated]);
+
+  const loadUpvotedIdeas = useCallback(async () => {
+    if (isAuthenticated) {
+      try {
+        const upvotedIdeasData = await fetchUpvotedIdeas();
+        dispatch(setUpvotedIdeas(upvotedIdeasData));
+      } catch (error) {
+        console.error('Error fetching upvoted ideas:', error);
+      }
+    }
+  }, [dispatch, isAuthenticated]);
+
   const handleUpvote = useCallback(
     async (ideaId: string) => {
       if (!isAuthenticated) {
@@ -111,5 +138,7 @@ export const useIdeas = () => {
     loadData,
     submittedIdeas,
     upvotedIdeas,
+    loadMySubmissions,
+    loadUpvotedIdeas,
   };
 };
