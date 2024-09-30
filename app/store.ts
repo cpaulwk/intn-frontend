@@ -11,8 +11,6 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authReducer from './slices/authSlice';
-import upvotedIdeasReducer from './slices/upvotedIdeasSlice';
-import submittedIdeasReducer from './slices/submittedIdeasSlice';
 import ideasReducer from './slices/ideaSlice';
 import sidebarReducer from './slices/sidebarSlice';
 import recentlyViewedReducer from './slices/recentlyViewedSlice';
@@ -38,8 +36,6 @@ const persistedRecentlyViewedReducer = persistReducer(
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
-    upvotedIdeas: upvotedIdeasReducer,
-    submittedIdeas: submittedIdeasReducer,
     ideas: ideasReducer,
     sidebar: sidebarReducer,
     recentlyViewed: persistedRecentlyViewedReducer,
