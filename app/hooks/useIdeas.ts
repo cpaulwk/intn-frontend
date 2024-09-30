@@ -22,37 +22,22 @@ import {
 import { setRecentlyViewed } from '../slices/recentlyViewedSlice';
 import { useAuth } from './useAuth';
 import { createSelector } from '@reduxjs/toolkit';
+import { useSocket } from './useSocket';
 
 const recentlyViewedIdeas = createSelector(
   (state: RootState) => state.recentlyViewed.ideas,
   (ideas) => (Array.isArray(ideas) && ideas.length > 0 ? ideas : [])
 );
 
-const useSocket = () => {
-  const [socket, setSocket] = useState<any>(null);
+export const useIdeas = () => {
   const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    const newSocket = io(process.env.NEXT_PUBLIC_API_URL as string, {
-      withCredentials: true,
-    });
-    setSocket(newSocket);
-
-    newSocket.on('upvoteUpdate', ({ ideaId, upvotes }) => {
-      dispatch(updateIdea({ id: ideaId, changes: { upvotes } }));
-    });
-
-    return () => {
-      newSocket.disconnect();
-    };
-  }, [dispatch]);
-
-  return socket;
-};
-
-const useIdeasData = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const { ideas, loading, error, submittedIdeas, upvotedIdeas } = useSelector(
+    (state: RootState) => state.ideas
+  );
   const { isAuthenticated } = useAuth();
+  const recentlyViewed = useSelector(recentlyViewedIdeas);
+
+  useSocket();
 
   const loadData = useCallback(async () => {
     dispatch(fetchIdeasStart());
@@ -69,46 +54,49 @@ const useIdeasData = () => {
     }
   }, [dispatch, isAuthenticated]);
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  return { loadData };
-};
-
-export const useIdeas = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { ideas, loading, error, submittedIdeas, upvotedIdeas } = useSelector(
-    (state: RootState) => state.ideas
-  );
-  const { isAuthenticated } = useAuth();
-  const recentlyViewed = useSelector(recentlyViewedIdeas);
-
-  useSocket();
-  const { loadData } = useIdeasData();
-
   const loadMySubmissions = useCallback(async () => {
     if (isAuthenticated) {
+      dispatch(fetchIdeasStart());
       try {
         const submissions = await fetchMySubmissions();
         dispatch(setSubmittedIdeas(submissions));
+        dispatch(fetchIdeasSuccess(submissions));
       } catch (err) {
+        dispatch(fetchIdeasError(err as string));
         console.error('Error fetching my submissions:', err);
-      } finally {
       }
     }
   }, [dispatch, isAuthenticated]);
 
   const loadUpvotedIdeas = useCallback(async () => {
     if (isAuthenticated) {
+      dispatch(fetchIdeasStart());
       try {
         const upvotedIdeasData = await fetchUpvotedIdeas();
         dispatch(setUpvotedIdeas(upvotedIdeasData));
+        dispatch(fetchIdeasSuccess(upvotedIdeasData));
       } catch (error) {
+        dispatch(fetchIdeasError(error as string));
         console.error('Error fetching upvoted ideas:', error);
       }
     }
   }, [dispatch, isAuthenticated]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadMySubmissions();
+    }
+  }, [isAuthenticated, loadMySubmissions]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadUpvotedIdeas();
+    }
+  }, [isAuthenticated, loadUpvotedIdeas]);
 
   const handleUpvote = useCallback(
     async (ideaId: string) => {
@@ -135,10 +123,7 @@ export const useIdeas = () => {
     error,
     handleUpvote,
     recentlyViewed,
-    loadData,
     submittedIdeas,
     upvotedIdeas,
-    loadMySubmissions,
-    loadUpvotedIdeas,
   };
 };

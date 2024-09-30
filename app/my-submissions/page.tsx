@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import Header from '../components/common/Header';
 import IdeaList from '../components/ideas/IdeaList';
 import PageLayout from '../components/layout/PageLayout';
@@ -9,12 +9,7 @@ import { useAuth } from '../hooks/useAuth';
 
 const MySubmissions: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const { handleUpvote, loadMySubmissions, submittedIdeas, loading, error } =
-    useIdeas();
-
-  useEffect(() => {
-    loadMySubmissions();
-  }, [loadMySubmissions]);
+  const { handleUpvote, submittedIdeas, loading, error } = useIdeas();
 
   return (
     <PageLayout>
