@@ -6,6 +6,7 @@ import {
   fetchIdeasSuccess,
   fetchIdeasError,
   updateIdea,
+  toggleUpvotedIdea,
 } from '../slices/ideaSlice';
 import io from 'socket.io-client';
 import {
@@ -73,7 +74,7 @@ const useIdeasData = () => {
 
 export const useIdeas = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { ideas, loading, error } = useSelector(
+  const { ideas, loading, error, submittedIdeas, upvotedIdeas } = useSelector(
     (state: RootState) => state.ideas
   );
   const { isAuthenticated } = useAuth();
@@ -91,7 +92,9 @@ export const useIdeas = () => {
 
       try {
         const { idea: updatedIdea, isUpvoted } = await toggleUpvoteIdea(ideaId);
-        dispatch(updateIdea({ ...updatedIdea, isUpvoted }));
+        dispatch(
+          toggleUpvotedIdea({ ideaId: updatedIdea._id.toString(), isUpvoted })
+        );
       } catch (error) {
         console.error('Error toggling upvote:', error);
       }
@@ -106,5 +109,7 @@ export const useIdeas = () => {
     handleUpvote,
     recentlyViewed,
     loadData,
+    submittedIdeas,
+    upvotedIdeas,
   };
 };

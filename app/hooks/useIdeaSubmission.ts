@@ -3,8 +3,6 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store';
 import { createIdea as createIdeaApi } from '../utils/api';
 import { createIdea } from '../slices/ideaSlice';
-import { addSubmittedIdea } from '../slices/submittedIdeasSlice';
-import { addUpvotedIdea } from '../slices/upvotedIdeasSlice';
 import { useAuth } from './useAuth';
 
 export const useIdeaSubmission = () => {
@@ -25,8 +23,6 @@ export const useIdeaSubmission = () => {
       try {
         const newIdea = await createIdeaApi(input.trim(), user.email);
         dispatch(createIdea(newIdea));
-        dispatch(addSubmittedIdea(newIdea._id.toString()));
-        dispatch(addUpvotedIdea(newIdea._id.toString()));
         setInput('');
       } catch (err) {
         console.error('Error creating idea:', err);

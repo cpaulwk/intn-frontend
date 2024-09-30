@@ -7,7 +7,7 @@ import Header from '../components/common/Header';
 import IdeaList from '../components/ideas/IdeaList';
 import PageLayout from '../components/layout/PageLayout';
 import { fetchUpvotedIdeas } from '../utils/api';
-import { setUpvotedIdeas } from '../slices/upvotedIdeasSlice';
+import { setUpvotedIdeas } from '../slices/ideaSlice';
 import { useIdeas } from '../hooks/useIdeas';
 import { useAuth } from '../hooks/useAuth';
 
@@ -16,7 +16,7 @@ const MyFavorites: React.FC = () => {
   const { ideas, handleUpvote } = useIdeas();
   const { isAuthenticated } = useAuth();
   const upvotedIdeas = useSelector(
-    (state: RootState) => state.upvotedIdeas.upvotedIdeas
+    (state: RootState) => state.ideas.upvotedIdeas
   );
 
   useEffect(() => {
@@ -25,7 +25,6 @@ const MyFavorites: React.FC = () => {
         try {
           const upvotedIdeasData = await fetchUpvotedIdeas();
           dispatch(setUpvotedIdeas(upvotedIdeasData));
-          console.log('upvotedIdeasData: ', upvotedIdeasData);
         } catch (error) {
           console.error('Error fetching upvoted ideas:', error);
         }
