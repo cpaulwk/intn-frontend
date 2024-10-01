@@ -15,7 +15,7 @@ export const useSocket = () => {
     setSocket(newSocket);
 
     newSocket.on('upvoteUpdate', ({ ideaId, upvotes }) => {
-      dispatch(updateIdea({ id: ideaId, changes: { upvotes } }));
+      dispatch(updateIdea({ id: ideaId, changes: { upvotes } } as any));
     });
 
     return () => {
