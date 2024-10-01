@@ -5,7 +5,9 @@ interface IdeasState {
   ideas: Idea[];
   submittedIdeas: Idea[];
   upvotedIdeas: Idea[];
-  loading: boolean;
+  isLoadingIdeas: boolean;
+  isLoadingSubmissions: boolean;
+  isLoadingUpvoted: boolean;
   error: string | null;
 }
 
@@ -13,7 +15,9 @@ const initialState: IdeasState = {
   ideas: [],
   submittedIdeas: [],
   upvotedIdeas: [],
-  loading: false,
+  isLoadingIdeas: false,
+  isLoadingSubmissions: false,
+  isLoadingUpvoted: false,
   error: null,
 };
 
@@ -22,16 +26,40 @@ const ideasSlice = createSlice({
   initialState,
   reducers: {
     fetchIdeasStart: (state) => {
-      state.loading = true;
+      state.isLoadingIdeas = true;
       state.error = null;
     },
     fetchIdeasSuccess: (state, action: PayloadAction<Idea[]>) => {
       state.ideas = action.payload;
-      state.loading = false;
+      state.isLoadingIdeas = false;
     },
     fetchIdeasError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
-      state.loading = false;
+      state.isLoadingIdeas = false;
+    },
+    fetchSubmissionsStart: (state) => {
+      state.isLoadingSubmissions = true;
+      state.error = null;
+    },
+    fetchSubmissionsSuccess: (state, action: PayloadAction<Idea[]>) => {
+      state.submittedIdeas = action.payload;
+      state.isLoadingSubmissions = false;
+    },
+    fetchSubmissionsError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+      state.isLoadingSubmissions = false;
+    },
+    fetchUpvotedStart: (state) => {
+      state.isLoadingUpvoted = true;
+      state.error = null;
+    },
+    fetchUpvotedSuccess: (state, action: PayloadAction<Idea[]>) => {
+      state.upvotedIdeas = action.payload;
+      state.isLoadingUpvoted = false;
+    },
+    fetchUpvotedError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+      state.isLoadingUpvoted = false;
     },
     createIdea: (state, action: PayloadAction<Idea>) => {
       state.ideas.push(action.payload);

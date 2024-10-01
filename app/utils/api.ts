@@ -65,18 +65,6 @@ export const toggleUpvoteIdea = async (
   }
 };
 
-export const fetchUpvotedIdeas = async (): Promise<Idea[]> => {
-  try {
-    const response = await axios.get<Idea[]>(`${API_URL}/ideas/upvoted`, {
-      withCredentials: true,
-    });
-    return response.data;
-  } catch (error) {
-    handleApiError(error);
-    throw error;
-  }
-};
-
 export const addViewedIdea = async (idea: Idea): Promise<void> => {
   try {
     await axios.post(
@@ -85,18 +73,6 @@ export const addViewedIdea = async (idea: Idea): Promise<void> => {
       { withCredentials: true }
     );
     store.dispatch(addRecentlyViewed(idea));
-  } catch (error) {
-    handleApiError(error);
-    throw error;
-  }
-};
-
-export const fetchViewedIdeas = async (): Promise<Idea[]> => {
-  try {
-    const response = await axios.get<Idea[]>(`${API_URL}/ideas/viewed`, {
-      withCredentials: true,
-    });
-    return response.data;
   } catch (error) {
     handleApiError(error);
     throw error;
@@ -115,14 +91,32 @@ export const fetchAuthenticatedIdeas = async (): Promise<Idea[]> => {
   }
 };
 
-export const fetchMySubmissions = async (): Promise<Idea[]> => {
+export const fetchAllData = async (): Promise<{
+  ideas: Idea[];
+  recentlyViewed: Idea[];
+}> => {
   try {
-    const response = await axios.get<Idea[]>(
-      `${API_URL}/ideas/my-submissions`,
-      {
-        withCredentials: true,
-      }
+    const response = await axios.get<{ ideas: Idea[]; recentlyViewed: Idea[] }>(
+      `${API_URL}/ideas/all-data`,
+      { withCredentials: true }
     );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};
+
+export const fetchUserIdeas = async (): Promise<{
+  submittedIdeas: Idea[];
+  upvotedIdeas: Idea[];
+}> => {
+  try {
+    const response = await axios.get<{
+      submittedIdeas: Idea[];
+      upvotedIdeas: Idea[];
+    }>(`${API_URL}/ideas/user-ideas`, { withCredentials: true });
+    console.log('response.data: ', response.data);
     return response.data;
   } catch (error) {
     handleApiError(error);

@@ -1,79 +1,72 @@
-import { AppDispatch } from '../store';
+import { AppDispatch, RootState } from '../store';
 import { setUser, clearUser, setAuthenticated } from '../slices/authSlice';
 import { clearRecentlyViewed } from '../slices/recentlyViewedSlice';
 import axios from 'axios';
+import { createSelector } from '@reduxjs/toolkit';
 
-let refreshInterval: NodeJS.Timeout | null = null;
+const selectAuthState = (state: RootState) => state.auth;
 
-export const silentRefresh = async (dispatch: AppDispatch) => {
-  try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/google/refresh`,
-      {},
-      { withCredentials: true }
-    );
-    if (response.data.message === 'Tokens refreshed successfully') {
-      await checkAuthStatus(dispatch);
-    } else {
-      throw new Error('Token refresh failed');
-    }
-  } catch (error) {
-    console.error(
-      'Silent refresh failed:',
-      error instanceof Error ? error.message : String(error)
-    );
-    dispatch(setAuthenticated(false));
-    dispatch(clearUser());
-    dispatch(clearRecentlyViewed());
-    if (refreshInterval) clearInterval(refreshInterval);
-    await handleLogout(dispatch);
-  }
-};
+export const selectIsAuthenticated = createSelector(
+  [selectAuthState],
+  (auth) => auth.isAuthenticated
+);
 
-const scheduleNextRefresh = (dispatch: AppDispatch) => {
-  if (refreshInterval) clearInterval(refreshInterval);
-  const timeUntilExpiry = getTimeUntilExpiry();
-  refreshInterval = setTimeout(
-    () => {
-      silentRefresh(dispatch);
-    },
-    timeUntilExpiry - 60 * 1000 // Refresh 1 minute before expiry
-  ) as unknown as NodeJS.Timeout;
-};
+let authCheckPromise: Promise<boolean> | null = null;
+let refreshTimeout: NodeJS.Timeout | null = null;
 
 const getTimeUntilExpiry = () => {
   // Implement logic to calculate time until token expiry
-  // This could be based on the token's expiration claim or a fixed time
   return 15 * 60 * 1000; // 15 minutes for now, adjust as needed
 };
 
 export const checkAuthStatus = async (
   dispatch: AppDispatch
 ): Promise<boolean> => {
-  try {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/google/check`,
-      { withCredentials: true }
-    );
+  if (authCheckPromise) {
+    return authCheckPromise;
+  }
 
-    if (response.data.isAuthenticated) {
-      dispatch(setAuthenticated(true));
-      dispatch(setUser(response.data.user));
-      scheduleNextRefresh(dispatch); // Schedule the next refresh
-      return true;
-    } else {
+  authCheckPromise = new Promise(async (resolve) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/google/check`,
+        { withCredentials: true }
+      );
+
+      if (response.data.isAuthenticated) {
+        dispatch(setAuthenticated(true));
+        dispatch(setUser(response.data.user));
+        scheduleNextRefresh(dispatch);
+        resolve(true);
+      } else {
+        dispatch(setAuthenticated(false));
+        dispatch(clearUser());
+        dispatch(clearRecentlyViewed());
+        resolve(false);
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
       dispatch(setAuthenticated(false));
       dispatch(clearUser());
       dispatch(clearRecentlyViewed());
-      return false;
+      resolve(false);
+    } finally {
+      authCheckPromise = null;
     }
-  } catch (error) {
-    console.error('Auth check failed:', error);
-    dispatch(setAuthenticated(false));
-    dispatch(clearUser());
-    dispatch(clearRecentlyViewed());
-    return false;
+  });
+
+  return authCheckPromise;
+};
+
+const scheduleNextRefresh = (dispatch: AppDispatch) => {
+  if (refreshTimeout) {
+    clearTimeout(refreshTimeout);
   }
+
+  const timeUntilExpiry = getTimeUntilExpiry();
+  refreshTimeout = setTimeout(() => {
+    checkAuthStatus(dispatch);
+  }, timeUntilExpiry - 60000); // Refresh 1 minute before expiry
 };
 
 export const handleGoogleLogin = () => {

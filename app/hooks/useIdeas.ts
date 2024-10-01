@@ -1,23 +1,19 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import {
   fetchIdeasStart,
   fetchIdeasSuccess,
   fetchIdeasError,
-  updateIdea,
   toggleUpvotedIdea,
   setSubmittedIdeas,
   setUpvotedIdeas,
 } from '../slices/ideaSlice';
-import io from 'socket.io-client';
 import {
   fetchIdeas,
-  fetchAuthenticatedIdeas,
   toggleUpvoteIdea,
-  fetchViewedIdeas,
-  fetchMySubmissions,
-  fetchUpvotedIdeas,
+  fetchAllData,
+  fetchUserIdeas,
 } from '../utils/api';
 import { setRecentlyViewed } from '../slices/recentlyViewedSlice';
 import { useAuth } from './useAuth';
@@ -31,72 +27,83 @@ const recentlyViewedIdeas = createSelector(
 
 export const useIdeas = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { ideas, loading, error, submittedIdeas, upvotedIdeas } = useSelector(
-    (state: RootState) => state.ideas
-  );
+  const {
+    ideas,
+    isLoadingIdeas,
+    isLoadingSubmissions,
+    isLoadingUpvoted,
+    error,
+    submittedIdeas,
+    upvotedIdeas,
+  } = useSelector((state: RootState) => state.ideas);
   const { isAuthenticated } = useAuth();
   const recentlyViewed = useSelector(recentlyViewedIdeas);
 
-  useSocket();
+  // useSocket();
 
   const loadData = useCallback(async () => {
     dispatch(fetchIdeasStart());
     try {
-      const [ideasData, recentlyViewedIdeasData] = await Promise.all([
-        isAuthenticated ? fetchAuthenticatedIdeas() : fetchIdeas(),
-        isAuthenticated ? fetchViewedIdeas() : Promise.resolve([]),
-      ]);
-      dispatch(fetchIdeasSuccess(ideasData));
-      dispatch(setRecentlyViewed(recentlyViewedIdeasData || []));
+      const cachedData = localStorage.getItem('ideasData');
+      const lastFetchTime = localStorage.getItem('lastFetchTime');
+      const currentTime = new Date().getTime();
+
+      if (
+        cachedData &&
+        lastFetchTime &&
+        currentTime - parseInt(lastFetchTime) < 300000 &&
+        !isAuthenticated // Only use cache for non-authenticated users
+      ) {
+        // Use cached data if it's less than 5 minutes old
+        const parsedData = JSON.parse(cachedData);
+        dispatch(fetchIdeasSuccess(parsedData.ideas));
+        dispatch(setRecentlyViewed(parsedData.recentlyViewed || []));
+      } else {
+        // Fetch new data
+        const data = isAuthenticated
+          ? await fetchAllData()
+          : { ideas: await fetchIdeas(), recentlyViewed: [] };
+
+        dispatch(fetchIdeasSuccess(data.ideas));
+        dispatch(setRecentlyViewed(data.recentlyViewed || []));
+
+        // Cache the new data for non-authenticated users
+        if (!isAuthenticated) {
+          localStorage.setItem('ideasData', JSON.stringify(data));
+          localStorage.setItem('lastFetchTime', currentTime.toString());
+        }
+      }
     } catch (error) {
       dispatch(fetchIdeasError(error as string));
       console.error('Error fetching data:', error);
     }
   }, [dispatch, isAuthenticated]);
 
-  const loadMySubmissions = useCallback(async () => {
+  const loadUserIdeas = useCallback(async () => {
     if (isAuthenticated) {
       dispatch(fetchIdeasStart());
       try {
-        const submissions = await fetchMySubmissions();
-        dispatch(setSubmittedIdeas(submissions));
-        dispatch(fetchIdeasSuccess(submissions));
+        const { submittedIdeas, upvotedIdeas } = await fetchUserIdeas();
+        dispatch(setSubmittedIdeas(submittedIdeas));
+        dispatch(setUpvotedIdeas(upvotedIdeas));
+        dispatch(fetchIdeasSuccess([...submittedIdeas, ...upvotedIdeas]));
       } catch (err) {
         dispatch(fetchIdeasError(err as string));
-        console.error('Error fetching my submissions:', err);
-      }
-    }
-  }, [dispatch, isAuthenticated]);
-
-  const loadUpvotedIdeas = useCallback(async () => {
-    if (isAuthenticated) {
-      dispatch(fetchIdeasStart());
-      try {
-        const upvotedIdeasData = await fetchUpvotedIdeas();
-        dispatch(setUpvotedIdeas(upvotedIdeasData));
-        dispatch(fetchIdeasSuccess(upvotedIdeasData));
-      } catch (error) {
-        dispatch(fetchIdeasError(error as string));
-        console.error('Error fetching upvoted ideas:', error);
+        console.error('Error fetching user ideas:', err);
       }
     }
   }, [dispatch, isAuthenticated]);
 
   useEffect(() => {
+    console.log('loaded');
     loadData();
   }, [loadData]);
 
   useEffect(() => {
     if (isAuthenticated) {
-      loadMySubmissions();
+      loadUserIdeas();
     }
-  }, [isAuthenticated, loadMySubmissions]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadUpvotedIdeas();
-    }
-  }, [isAuthenticated, loadUpvotedIdeas]);
+  }, [isAuthenticated, loadUserIdeas]);
 
   const handleUpvote = useCallback(
     async (ideaId: string) => {
@@ -119,7 +126,9 @@ export const useIdeas = () => {
 
   return {
     ideas,
-    loading,
+    isLoadingIdeas,
+    isLoadingSubmissions,
+    isLoadingUpvoted,
     error,
     handleUpvote,
     recentlyViewed,

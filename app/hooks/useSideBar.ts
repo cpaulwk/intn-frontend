@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import {
@@ -17,7 +17,6 @@ export const useSidebar = () => {
   const onGoogleLogin = useCallback(async () => {
     try {
       await handleGoogleLogin();
-      // After redirecting back from Google, we need to check the auth status
       await checkAuthStatus(dispatch);
     } catch (error) {
       console.error('Error during Google login:', error);
@@ -33,10 +32,13 @@ export const useSidebar = () => {
     }
   }, [dispatch]);
 
-  return {
-    isAuthenticated,
-    isSidebarOpen,
-    onGoogleLogin,
-    onLogout,
-  };
+  return useMemo(
+    () => ({
+      isAuthenticated,
+      isSidebarOpen,
+      onGoogleLogin,
+      onLogout,
+    }),
+    [isAuthenticated, isSidebarOpen, onGoogleLogin, onLogout]
+  );
 };
