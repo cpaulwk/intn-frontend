@@ -7,13 +7,17 @@ interface IdeaListProps {
   ideas: Idea[];
   isAuthenticated: boolean;
   handleUpvote: (ideaId: string) => Promise<void>;
+  registerIdeaRef: (id: string, element: HTMLDivElement | null) => void;
 }
 
 const IdeaList: React.FC<IdeaListProps> = ({
   ideas,
   isAuthenticated,
   handleUpvote,
+  registerIdeaRef,
 }) => {
+  console.log('registerIdeaRef in IdeaList:', typeof registerIdeaRef);
+
   const { isSidebarOpen } = useSidebar();
 
   if (ideas.length === 0) return <div>No ideas found.</div>;
@@ -28,6 +32,7 @@ const IdeaList: React.FC<IdeaListProps> = ({
           idea={idea}
           isAuthenticated={isAuthenticated}
           handleUpvote={handleUpvote}
+          registerIdeaRef={registerIdeaRef}
         />
       ))}
     </div>

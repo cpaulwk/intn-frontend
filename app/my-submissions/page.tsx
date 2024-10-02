@@ -6,11 +6,12 @@ import IdeaList from '../components/ideas/IdeaList';
 import PageLayout from '../components/layout/PageLayout';
 import { useIdeas } from '../hooks/useIdeas';
 import { useAuth } from '../hooks/useAuth';
+import { useIdeaScroll } from '../hooks/useIdeaScroll';
 
 const MySubmissions: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const { handleUpvote, submittedIdeas, isLoading, error } = useIdeas();
-
+  const { registerIdeaRef } = useIdeaScroll();
   return (
     <PageLayout>
       <Header />
@@ -30,6 +31,7 @@ const MySubmissions: React.FC = () => {
               ideas={submittedIdeas}
               isAuthenticated={isAuthenticated}
               handleUpvote={handleUpvote}
+              registerIdeaRef={registerIdeaRef}
             />
           ) : (
             <p className="text-center text-gray-600">

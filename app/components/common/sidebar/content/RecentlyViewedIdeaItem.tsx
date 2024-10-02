@@ -3,9 +3,8 @@ import Link from 'next/link';
 import { Ellipsis } from 'lucide-react';
 import ViewedIdeaModal from '../modal/ViewedIdeaModal';
 import { useIdeas } from '../../../../hooks/useIdeas';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../../store';
 import { Idea } from '../../../../types';
+import { useIdeaScroll } from '../../../../hooks/useIdeaScroll';
 
 interface RecentlyViewedIdeaItemProps {
   idea: Idea;
@@ -15,6 +14,7 @@ const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
   idea,
 }) => {
   const { handleUpvote, removeRecentlyViewed } = useIdeas();
+  const { scrollToIdea } = useIdeaScroll();
   const [activeModal, setActiveModal] = useState<boolean>(false);
   const [modalPosition, setModalPosition] = useState<{
     top: number;
@@ -73,7 +73,11 @@ const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
           <Ellipsis size={20} />
         </button>
         <Link
-          href={`/ideas/${idea._id}`}
+          href={`/?scrollTo=${idea._id}`}
+          onClick={(e) => {
+            e.preventDefault();
+            scrollToIdea(idea._id.toString());
+          }}
           className="block overflow-hidden whitespace-nowrap p-2 transition-colors duration-200"
           title={idea.title || 'Untitled Idea'}
         >

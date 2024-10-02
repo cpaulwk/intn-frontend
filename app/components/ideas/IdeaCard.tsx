@@ -12,6 +12,7 @@ interface IdeaCardProps {
   idea: Idea;
   handleUpvote: (ideaId: string) => Promise<void>;
   isAuthenticated: boolean;
+  registerIdeaRef: (id: string, element: HTMLDivElement | null) => void;
 }
 
 const useContentHeight = (
@@ -44,14 +45,20 @@ const isUpvoted = (idea: Idea) => {
 };
 
 const IdeaCard: React.FC<IdeaCardProps> = React.memo(
-  ({ idea, handleUpvote, isAuthenticated }) => {
+  ({ idea, handleUpvote, isAuthenticated, registerIdeaRef }) => {
+    console.log('registerIdeaRef in IdeaCard:', typeof registerIdeaRef);
     const [isExpanded, setIsExpanded] = useState(false);
     const contentRef = useRef<HTMLParagraphElement>(null);
+    const cardRef = useRef<HTMLDivElement>(null);
     const dispatch = useDispatch();
     const { exceedsTwoLines, contentHeight } = useContentHeight(
       contentRef,
       isExpanded
     );
+
+    useEffect(() => {
+      registerIdeaRef(idea._id.toString(), cardRef.current);
+    }, [idea._id, registerIdeaRef]);
 
     const toggleExpand = useCallback(() => {
       setIsExpanded((prev) => !prev);
@@ -65,6 +72,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
 
     return (
       <div
+        ref={cardRef}
         className={`relative mb-4 flex min-w-[230px] max-w-2xl flex-col gap-x-4 gap-y-2 rounded-xl border border-primary-100 bg-bg-100 p-4 text-black shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-[#e1ffff]/80 hover:shadow-lg hover:shadow-[#0085ff]/20 sm:flex-row sm:items-center`}
       >
         <div className="h-full flex-grow justify-start">
