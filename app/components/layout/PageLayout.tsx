@@ -6,6 +6,7 @@ import SidebarModal from '../common/sidebar/SidebarModal';
 import { useScreenSize } from '../../hooks/useScreenSize';
 import { Menu } from 'lucide-react';
 import { useSidebar } from '../../hooks/useSideBar';
+import { useIdeasLoader } from '../../hooks/useIdeasLoader';
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -15,6 +16,8 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   const dispatch = useDispatch();
   const { isSidebarOpen } = useSidebar();
   const isSmallScreen = useScreenSize();
+
+  useIdeasLoader();
 
   return (
     <div className="flex h-screen overflow-hidden bg-gradient-to-br from-[#e0ffff]">

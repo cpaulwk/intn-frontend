@@ -1,4 +1,3 @@
-import { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import {
@@ -23,7 +22,7 @@ export const useIdeas = () => {
     useSelector((state: RootState) => state.ideas);
   const { isAuthenticated } = useAuth();
 
-  const loadIdeas = useCallback(async () => {
+  const loadIdeas = async () => {
     dispatch(fetchIdeasStart());
     try {
       const data = await fetchAllData();
@@ -31,41 +30,31 @@ export const useIdeas = () => {
     } catch (error) {
       dispatch(fetchIdeasError(error as string));
     }
-  }, [dispatch]);
+  };
 
-  useEffect(() => {
-    loadIdeas();
-  }, [loadIdeas]);
+  const handleUpvote = async (ideaId: string) => {
+    if (!isAuthenticated) return;
 
-  const handleUpvote = useCallback(
-    async (ideaId: string) => {
-      if (!isAuthenticated) return;
+    try {
+      const { idea: updatedIdea, isUpvoted } = await toggleUpvoteIdea(ideaId);
+      dispatch(
+        toggleUpvotedIdea({ ideaId: updatedIdea._id.toString(), isUpvoted })
+      );
+      dispatch(addRecentlyViewed(updatedIdea));
+      await addViewedIdea(updatedIdea._id.toString());
+    } catch (error) {
+      console.error('Error toggling upvote:', error);
+    }
+  };
 
-      try {
-        const { idea: updatedIdea, isUpvoted } = await toggleUpvoteIdea(ideaId);
-        dispatch(
-          toggleUpvotedIdea({ ideaId: updatedIdea._id.toString(), isUpvoted })
-        );
-        dispatch(addRecentlyViewed(updatedIdea));
-        await addViewedIdea(updatedIdea._id.toString());
-      } catch (error) {
-        console.error('Error toggling upvote:', error);
-      }
-    },
-    [isAuthenticated, dispatch]
-  );
-
-  const submitIdea = useCallback(
-    async (title: string, username: string) => {
-      try {
-        const newIdea = await createIdea(title, username);
-        dispatch(addIdea(newIdea));
-      } catch (error) {
-        console.error('Error submitting idea:', error);
-      }
-    },
-    [dispatch]
-  );
+  const submitIdea = async (title: string, username: string) => {
+    try {
+      const newIdea = await createIdea(title, username);
+      dispatch(addIdea(newIdea));
+    } catch (error) {
+      console.error('Error submitting idea:', error);
+    }
+  };
 
   return {
     ideas,
@@ -73,6 +62,7 @@ export const useIdeas = () => {
     error,
     handleUpvote,
     submitIdea,
+    loadIdeas,
     recentlyViewed,
     submittedIdeas,
     upvotedIdeas,

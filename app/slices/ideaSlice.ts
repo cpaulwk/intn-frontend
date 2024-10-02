@@ -8,6 +8,7 @@ interface IdeasState {
   upvotedIdeas: Idea[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
+  isLoaded: boolean;
 }
 
 const initialState: IdeasState = {
@@ -17,6 +18,7 @@ const initialState: IdeasState = {
   upvotedIdeas: [],
   status: 'idle',
   error: null,
+  isLoaded: false,
 };
 
 const ideasSlice = createSlice({
@@ -41,6 +43,7 @@ const ideasSlice = createSlice({
       state.submittedIdeas = action.payload.submittedIdeas;
       state.upvotedIdeas = action.payload.upvotedIdeas;
       state.status = 'succeeded';
+      state.isLoaded = true;
     },
     fetchIdeasError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
