@@ -1,13 +1,8 @@
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../../store';
 import { Ellipsis } from 'lucide-react';
 import ViewedIdeaModal from '../modal/ViewedIdeaModal';
 import { useIdeas } from '../../../../hooks/useIdeas';
-import { useAuth } from '../../../../hooks/useAuth';
-import { addRecentlyViewed } from '../../../../slices/recentlyViewedSlice';
-import { addViewedIdea } from '../../../../utils/api';
 import { Idea } from '../../../../types';
 
 interface RecentlyViewedIdeaItemProps {
@@ -17,8 +12,6 @@ interface RecentlyViewedIdeaItemProps {
 const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
   idea,
 }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { isAuthenticated } = useAuth();
   const { handleUpvote } = useIdeas();
   const [activeModal, setActiveModal] = useState<boolean>(false);
   const [modalPosition, setModalPosition] = useState<{
