@@ -14,8 +14,12 @@ import {
   toggleUpvoteIdea,
   fetchAllData,
   fetchUserIdeas,
+  addViewedIdea,
 } from '../utils/api';
-import { setRecentlyViewed } from '../slices/recentlyViewedSlice';
+import {
+  setRecentlyViewed,
+  addRecentlyViewed,
+} from '../slices/recentlyViewedSlice';
 import { useAuth } from './useAuth';
 import { createSelector } from '@reduxjs/toolkit';
 import { useSocket } from './useSocket';
@@ -117,6 +121,8 @@ export const useIdeas = () => {
         dispatch(
           toggleUpvotedIdea({ ideaId: updatedIdea._id.toString(), isUpvoted })
         );
+        dispatch(addRecentlyViewed(updatedIdea));
+        await addViewedIdea(updatedIdea);
       } catch (error) {
         console.error('Error toggling upvote:', error);
       }

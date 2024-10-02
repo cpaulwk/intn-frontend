@@ -63,20 +63,6 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
       }
     }, [dispatch, idea, isAuthenticated]);
 
-    const onUpvote = useCallback(async () => {
-      if (isAuthenticated) {
-        try {
-          await handleUpvote(idea._id.toString());
-          dispatch(addRecentlyViewed(idea));
-          await addViewedIdea(idea);
-        } catch (error) {
-          console.error('Error toggling upvote:', error);
-        }
-      } else {
-        console.log('User must be authenticated to upvote');
-      }
-    }, [handleUpvote, idea, dispatch, isAuthenticated]);
-
     return (
       <div
         className={`relative mb-4 flex min-w-[230px] max-w-2xl flex-col gap-x-4 gap-y-2 rounded-xl border border-primary-100 bg-bg-100 p-4 text-black shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-[#e1ffff]/80 hover:shadow-lg hover:shadow-[#0085ff]/20 sm:flex-row sm:items-center`}
@@ -112,7 +98,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
               {formatUpvoteCount(idea.upvotes)}
             </span>
             <button
-              onClick={onUpvote}
+              onClick={() => handleUpvote(idea._id.toString())}
               className={`group flex h-12 w-12 items-center justify-center rounded-full p-2 ${
                 isAuthenticated
                   ? isUpvoted(idea)
