@@ -16,7 +16,7 @@ import {
   fetchAllDataUnauthenticated,
 } from '../utils/api';
 import { useAuth } from './useAuth';
-
+import { checkAuthStatus } from '../utils/auth';
 export const useIdeas = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { ideas, recentlyViewed, submittedIdeas, upvotedIdeas, status, error } =
@@ -56,6 +56,7 @@ export const useIdeas = () => {
       dispatch(addRecentlyViewed(updatedIdea));
       await addViewedIdea(updatedIdea._id.toString());
     } catch (error) {
+      await checkAuthStatus(dispatch);
       console.error('Error toggling upvote:', error);
     }
   };

@@ -76,6 +76,7 @@ const ideasSlice = createSlice({
         );
         if (submittedIdea) {
           submittedIdea.isUpvoted = isUpvoted;
+          submittedIdea.upvotes += isUpvoted ? 1 : -1;
         }
 
         // Update upvotedIdeas

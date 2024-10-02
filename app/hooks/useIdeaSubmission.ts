@@ -4,6 +4,7 @@ import { AppDispatch } from '../store';
 import { createIdea as createIdeaApi } from '../utils/api';
 import { createIdea } from '../slices/ideaSlice';
 import { useAuth } from './useAuth';
+import { checkAuthStatus } from '../utils/auth';
 
 export const useIdeaSubmission = () => {
   const [input, setInput] = useState('');
@@ -25,6 +26,7 @@ export const useIdeaSubmission = () => {
         dispatch(createIdea(newIdea));
         setInput('');
       } catch (err) {
+        await checkAuthStatus(dispatch);
         console.error('Error creating idea:', err);
         setError('Failed to submit idea. Please try again.');
       } finally {
