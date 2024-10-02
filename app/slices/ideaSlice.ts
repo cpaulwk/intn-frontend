@@ -106,6 +106,12 @@ const ideasSlice = createSlice({
         state.recentlyViewed.pop();
       }
     },
+    removeRecentlyViewed: (state, action: PayloadAction<string>) => {
+      const ideaId = action.payload;
+      state.recentlyViewed = state.recentlyViewed.filter(
+        (idea) => idea._id.toString() !== ideaId
+      );
+    },
     clearRecentlyViewed: (state) => {
       state.recentlyViewed = [];
     },
@@ -125,6 +131,7 @@ export const {
   addRecentlyViewed,
   clearRecentlyViewed,
   createIdea,
+  removeRecentlyViewed,
 } = ideasSlice.actions;
 
 export default ideasSlice.reducer;

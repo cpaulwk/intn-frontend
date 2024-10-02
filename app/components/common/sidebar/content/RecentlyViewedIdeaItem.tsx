@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { Ellipsis } from 'lucide-react';
 import ViewedIdeaModal from '../modal/ViewedIdeaModal';
 import { useIdeas } from '../../../../hooks/useIdeas';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../../store';
 import { Idea } from '../../../../types';
 
 interface RecentlyViewedIdeaItemProps {
@@ -12,7 +14,7 @@ interface RecentlyViewedIdeaItemProps {
 const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
   idea,
 }) => {
-  const { handleUpvote } = useIdeas();
+  const { handleUpvote, removeRecentlyViewed } = useIdeas();
   const [activeModal, setActiveModal] = useState<boolean>(false);
   const [modalPosition, setModalPosition] = useState<{
     top: number;
@@ -50,9 +52,12 @@ const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
     setModalPosition(null);
   };
 
-  const handleDelete = () => {
-    console.log('Delete clicked for idea:', idea._id);
-    // Implement delete logic here
+  const handleDelete = async () => {
+    try {
+      await removeRecentlyViewed(idea._id.toString());
+    } catch (error) {
+      console.error('Error deleting recently viewed idea:', error);
+    }
   };
 
   return (

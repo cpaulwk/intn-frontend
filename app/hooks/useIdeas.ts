@@ -7,6 +7,7 @@ import {
   toggleUpvotedIdea,
   addIdea,
   addRecentlyViewed,
+  removeRecentlyViewed as removeRecentlyViewedAction,
 } from '../slices/ideaSlice';
 import {
   fetchAllDataAuthenticated,
@@ -14,6 +15,7 @@ import {
   addViewedIdea,
   createIdea,
   fetchAllDataUnauthenticated,
+  removeRecentlyViewed as removeRecentlyViewedApi,
 } from '../utils/api';
 import { useAuth } from './useAuth';
 import { checkAuthStatus } from '../utils/auth';
@@ -70,6 +72,15 @@ export const useIdeas = () => {
     }
   };
 
+  const removeRecentlyViewed = async (ideaId: string) => {
+    try {
+      await removeRecentlyViewedApi(ideaId);
+      dispatch(removeRecentlyViewedAction(ideaId));
+    } catch (error) {
+      console.error('Error removing recently viewed idea:', error);
+    }
+  };
+
   return {
     ideas,
     isLoading: status === 'loading',
@@ -80,5 +91,6 @@ export const useIdeas = () => {
     recentlyViewed,
     submittedIdeas,
     upvotedIdeas,
+    removeRecentlyViewed,
   };
 };

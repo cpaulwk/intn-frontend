@@ -100,3 +100,14 @@ export const createIdea = async (
     throw error;
   }
 };
+
+export const removeRecentlyViewed = async (ideaId: string): Promise<void> => {
+  try {
+    await axios.delete(`${API_URL}/ideas/recently-viewed/${ideaId}`, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};
