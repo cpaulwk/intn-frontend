@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import {
@@ -32,13 +32,10 @@ export const useSidebar = () => {
     }
   }, [dispatch]);
 
-  return useMemo(
-    () => ({
-      isAuthenticated,
-      isSidebarOpen,
-      onGoogleLogin,
-      onLogout,
-    }),
-    [isAuthenticated, isSidebarOpen, onGoogleLogin, onLogout]
-  );
+  return {
+    isAuthenticated,
+    isSidebarOpen,
+    onGoogleLogin,
+    onLogout,
+  };
 };
