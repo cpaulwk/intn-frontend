@@ -11,8 +11,14 @@ import { Idea } from '../types';
 
 const MySubmissions: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const { handleUpvote, submittedIdeas, isLoading, error, deleteIdea } =
-    useIdeas();
+  const {
+    handleUpvote,
+    submittedIdeas,
+    isLoading,
+    error,
+    deleteIdea,
+    // editIdea,
+  } = useIdeas();
   const { registerIdeaRef } = useIdeaScroll();
 
   const handleDelete = async (idea: Idea) => {
@@ -20,6 +26,16 @@ const MySubmissions: React.FC = () => {
       await deleteIdea(idea._id.toString());
     } catch (error) {
       console.error('Error deleting idea:', error);
+    }
+  };
+
+  const handleEdit = async (idea: Idea) => {
+    try {
+      // Implement the edit functionality here
+      // For example, you might want to open a modal or navigate to an edit page
+      console.log('Editing idea:', idea);
+    } catch (error) {
+      console.error('Error editing idea:', error);
     }
   };
 
@@ -44,6 +60,7 @@ const MySubmissions: React.FC = () => {
               handleUpvote={handleUpvote}
               registerIdeaRef={registerIdeaRef}
               onDelete={handleDelete}
+              onEdit={handleEdit}
             />
           ) : (
             <p className="text-center text-gray-600">
