@@ -2,7 +2,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Idea } from '../../types';
-import { addRecentlyViewed } from '../../slices/recentlyViewedSlice';
+import { addRecentlyViewed } from '../../slices/ideaSlice';
 import { addViewedIdea } from '../../utils/api';
 import { Rocket } from 'lucide-react';
 import ExpandToggle from './buttons/ExpandToggle';
@@ -57,7 +57,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
       setIsExpanded((prev) => !prev);
       if (isAuthenticated) {
         dispatch(addRecentlyViewed(idea));
-        addViewedIdea(idea).catch((error) =>
+        addViewedIdea(idea._id.toString()).catch((error) =>
           console.error('Error adding viewed idea:', error)
         );
       }

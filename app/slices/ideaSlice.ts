@@ -3,21 +3,19 @@ import { Idea } from '../types';
 
 interface IdeasState {
   ideas: Idea[];
+  recentlyViewed: Idea[];
   submittedIdeas: Idea[];
   upvotedIdeas: Idea[];
-  isLoadingIdeas: boolean;
-  isLoadingSubmissions: boolean;
-  isLoadingUpvoted: boolean;
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
 const initialState: IdeasState = {
   ideas: [],
+  recentlyViewed: [],
   submittedIdeas: [],
   upvotedIdeas: [],
-  isLoadingIdeas: false,
-  isLoadingSubmissions: false,
-  isLoadingUpvoted: false,
+  status: 'idle',
   error: null,
 };
 
@@ -26,95 +24,86 @@ const ideasSlice = createSlice({
   initialState,
   reducers: {
     fetchIdeasStart: (state) => {
-      state.isLoadingIdeas = true;
+      state.status = 'loading';
       state.error = null;
     },
-    fetchIdeasSuccess: (state, action: PayloadAction<Idea[]>) => {
-      state.ideas = action.payload;
-      state.isLoadingIdeas = false;
+    fetchIdeasSuccess: (
+      state,
+      action: PayloadAction<{
+        ideas: Idea[];
+        recentlyViewed: Idea[];
+        submittedIdeas: Idea[];
+        upvotedIdeas: Idea[];
+      }>
+    ) => {
+      state.ideas = action.payload.ideas;
+      state.recentlyViewed = action.payload.recentlyViewed;
+      state.submittedIdeas = action.payload.submittedIdeas;
+      state.upvotedIdeas = action.payload.upvotedIdeas;
+      state.status = 'succeeded';
     },
     fetchIdeasError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
-      state.isLoadingIdeas = false;
-    },
-    fetchSubmissionsStart: (state) => {
-      state.isLoadingSubmissions = true;
-      state.error = null;
-    },
-    fetchSubmissionsSuccess: (state, action: PayloadAction<Idea[]>) => {
-      state.submittedIdeas = action.payload;
-      state.isLoadingSubmissions = false;
-    },
-    fetchSubmissionsError: (state, action: PayloadAction<string>) => {
-      state.error = action.payload;
-      state.isLoadingSubmissions = false;
-    },
-    fetchUpvotedStart: (state) => {
-      state.isLoadingUpvoted = true;
-      state.error = null;
-    },
-    fetchUpvotedSuccess: (state, action: PayloadAction<Idea[]>) => {
-      state.upvotedIdeas = action.payload;
-      state.isLoadingUpvoted = false;
-    },
-    fetchUpvotedError: (state, action: PayloadAction<string>) => {
-      state.error = action.payload;
-      state.isLoadingUpvoted = false;
-    },
-    createIdea: (state, action: PayloadAction<Idea>) => {
-      state.ideas.push(action.payload);
-      state.submittedIdeas.push(action.payload);
-    },
-    updateIdea: (state, action: PayloadAction<Idea>) => {
-      const updateIdeaInArray = (array: Idea[]) => {
-        const index = array.findIndex(
-          (idea) => idea._id === action.payload._id
-        );
-        if (index !== -1) {
-          array[index] = action.payload;
-        }
-      };
-      updateIdeaInArray(state.ideas);
-      updateIdeaInArray(state.submittedIdeas);
-      updateIdeaInArray(state.upvotedIdeas);
-    },
-    deleteIdea: (state, action: PayloadAction<string>) => {
-      const removeIdeaFromArray = (array: Idea[]) =>
-        array.filter((idea) => idea._id !== action.payload);
-      state.ideas = removeIdeaFromArray(state.ideas);
-      state.submittedIdeas = removeIdeaFromArray(state.submittedIdeas);
-      state.upvotedIdeas = removeIdeaFromArray(state.upvotedIdeas);
-    },
-    setSubmittedIdeas: (state, action: PayloadAction<Idea[]>) => {
-      state.submittedIdeas = action.payload;
-    },
-    setUpvotedIdeas: (state, action: PayloadAction<Idea[]>) => {
-      state.upvotedIdeas = action.payload;
+      state.status = 'failed';
     },
     toggleUpvotedIdea: (
       state,
       action: PayloadAction<{ ideaId: string; isUpvoted: boolean }>
     ) => {
-      const { ideaId, isUpvoted } = action.payload;
-      const updateUpvoteStatus = (array: Idea[]) => {
-        const idea = array.find((i) => i._id === ideaId);
-        if (idea) {
-          idea.isUpvoted = isUpvoted;
-          idea.upvotes += isUpvoted ? 1 : -1;
-        }
-      };
-      updateUpvoteStatus(state.ideas);
-      updateUpvoteStatus(state.submittedIdeas);
-      updateUpvoteStatus(state.upvotedIdeas);
+      const ideaId = action.payload.ideaId;
+      const isUpvoted = action.payload.isUpvoted;
 
-      if (isUpvoted) {
-        const ideaToAdd = state.ideas.find((i) => i._id === ideaId);
-        if (ideaToAdd && !state.upvotedIdeas.some((i) => i._id === ideaId)) {
-          state.upvotedIdeas.push(ideaToAdd);
+      // Update the idea in the main ideas array
+      const idea = state.ideas.find((i) => i._id.toString() === ideaId);
+      if (idea) {
+        idea.isUpvoted = isUpvoted;
+        idea.upvotes += isUpvoted ? 1 : -1;
+
+        // Update recentlyViewed if the idea is in that list
+        const recentlyViewedIdea = state.recentlyViewed.find(
+          (i) => i._id.toString() === ideaId
+        );
+        if (recentlyViewedIdea) {
+          recentlyViewedIdea.isUpvoted = isUpvoted;
         }
-      } else {
-        state.upvotedIdeas = state.upvotedIdeas.filter((i) => i._id !== ideaId);
+
+        // Update submittedIdeas if the idea is in that list
+        const submittedIdea = state.submittedIdeas.find(
+          (i) => i._id.toString() === ideaId
+        );
+        if (submittedIdea) {
+          submittedIdea.isUpvoted = isUpvoted;
+        }
+
+        // Update upvotedIdeas
+        if (isUpvoted) {
+          if (!state.upvotedIdeas.some((i) => i._id.toString() === ideaId)) {
+            state.upvotedIdeas.push({ ...idea, isUpvoted: true });
+          }
+        } else {
+          state.upvotedIdeas = state.upvotedIdeas.filter(
+            (i) => i._id.toString() !== ideaId
+          );
+        }
       }
+    },
+    addIdea: (state, action: PayloadAction<Idea>) => {
+      state.recentlyViewed.unshift(action.payload);
+    },
+    addRecentlyViewed: (state, action: PayloadAction<Idea>) => {
+      const existingIndex = state.recentlyViewed.findIndex(
+        (idea) => idea._id === action.payload._id
+      );
+      if (existingIndex !== -1) {
+        state.recentlyViewed.splice(existingIndex, 1);
+      }
+      state.recentlyViewed.unshift(action.payload);
+      if (state.recentlyViewed.length > 50) {
+        state.recentlyViewed.pop();
+      }
+    },
+    clearRecentlyViewed: (state) => {
+      state.recentlyViewed = [];
     },
   },
 });
@@ -123,12 +112,10 @@ export const {
   fetchIdeasStart,
   fetchIdeasSuccess,
   fetchIdeasError,
-  createIdea,
-  updateIdea,
-  deleteIdea,
-  setSubmittedIdeas,
-  setUpvotedIdeas,
   toggleUpvotedIdea,
+  addIdea,
+  addRecentlyViewed,
+  clearRecentlyViewed,
 } = ideasSlice.actions;
 
 export default ideasSlice.reducer;

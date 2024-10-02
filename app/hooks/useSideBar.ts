@@ -6,7 +6,7 @@ import {
   handleLogout,
   checkAuthStatus,
 } from '../utils/auth';
-import { clearRecentlyViewed } from '../slices/recentlyViewedSlice';
+import { clearRecentlyViewed } from '../slices/ideaSlice';
 import { useAuth } from './useAuth';
 
 export const useSidebar = () => {

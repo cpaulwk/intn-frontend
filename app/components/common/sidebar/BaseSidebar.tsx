@@ -5,10 +5,9 @@ import { AppDispatch } from '../../../store';
 import { toggleSidebar } from '../../../slices/sidebarSlice';
 import { useSidebar } from '../../../hooks/useSideBar';
 import { Menu, LogOut } from 'lucide-react';
-import { useIdeas } from '../../../hooks/useIdeas';
 import { useAuth } from '../../../hooks/useAuth';
 import RecentlyViewedIdeaItem from './content/RecentlyViewedIdeaItem';
-
+import { useIdeas } from '../../../hooks/useIdeas';
 interface BaseSidebarProps {
   isOpen: boolean;
   isModal?: boolean;

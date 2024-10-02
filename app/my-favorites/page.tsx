@@ -9,14 +9,14 @@ import { useAuth } from '../hooks/useAuth';
 
 const MyFavorites: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const { handleUpvote, upvotedIdeas, isLoadingUpvoted, error } = useIdeas();
+  const { handleUpvote, upvotedIdeas, isLoading, error } = useIdeas();
 
   return (
     <PageLayout>
       <Header />
       <h2 className="mb-6 mt-4 text-center text-2xl font-bold">My Favorites</h2>
       {isAuthenticated ? (
-        isLoadingUpvoted ? (
+        isLoading ? (
           <p className="text-center text-gray-600">
             Loading your favorite ideas...
           </p>

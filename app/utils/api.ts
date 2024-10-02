@@ -1,7 +1,5 @@
 import axios, { AxiosError } from 'axios';
 import { Idea } from '../types';
-import { store } from '../store';
-import { addRecentlyViewed } from '../slices/recentlyViewedSlice';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -22,26 +20,19 @@ const handleApiError = (error: unknown) => {
   }
 };
 
-export const fetchIdeas = async (): Promise<Idea[]> => {
+export const fetchAllData = async (): Promise<{
+  ideas: Idea[];
+  recentlyViewed: Idea[];
+  submittedIdeas: Idea[];
+  upvotedIdeas: Idea[];
+}> => {
   try {
-    const response = await axios.get<Idea[]>(`${API_URL}/ideas`);
-    return response.data;
-  } catch (error) {
-    handleApiError(error);
-    throw error;
-  }
-};
-
-export const createIdea = async (
-  title: string,
-  username: string
-): Promise<Idea> => {
-  try {
-    const response = await axios.post<Idea>(
-      `${API_URL}/ideas`,
-      { title, username },
-      { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-    );
+    const response = await axios.get<{
+      ideas: Idea[];
+      recentlyViewed: Idea[];
+      submittedIdeas: Idea[];
+      upvotedIdeas: Idea[];
+    }>(`${API_URL}/ideas/all-data`, { withCredentials: true });
     return response.data;
   } catch (error) {
     handleApiError(error);
@@ -58,6 +49,7 @@ export const toggleUpvoteIdea = async (
       {},
       { withCredentials: true }
     );
+    console.log('response.data: ', response.data);
     return response.data;
   } catch (error) {
     handleApiError(error);
@@ -65,58 +57,29 @@ export const toggleUpvoteIdea = async (
   }
 };
 
-export const addViewedIdea = async (idea: Idea): Promise<void> => {
+export const addViewedIdea = async (ideaId: string): Promise<void> => {
   try {
     await axios.post(
       `${API_URL}/ideas/viewed`,
-      { ideaId: idea._id },
+      { ideaId },
       { withCredentials: true }
     );
-    store.dispatch(addRecentlyViewed(idea));
   } catch (error) {
     handleApiError(error);
     throw error;
   }
 };
 
-export const fetchAuthenticatedIdeas = async (): Promise<Idea[]> => {
+export const createIdea = async (
+  title: string,
+  username: string
+): Promise<Idea> => {
   try {
-    const response = await axios.get<Idea[]>(`${API_URL}/ideas/authenticated`, {
-      withCredentials: true,
-    });
-    return response.data;
-  } catch (error) {
-    handleApiError(error);
-    throw error;
-  }
-};
-
-export const fetchAllData = async (): Promise<{
-  ideas: Idea[];
-  recentlyViewed: Idea[];
-}> => {
-  try {
-    const response = await axios.get<{ ideas: Idea[]; recentlyViewed: Idea[] }>(
-      `${API_URL}/ideas/all-data`,
-      { withCredentials: true }
+    const response = await axios.post<Idea>(
+      `${API_URL}/ideas`,
+      { title, username },
+      { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
     );
-    return response.data;
-  } catch (error) {
-    handleApiError(error);
-    throw error;
-  }
-};
-
-export const fetchUserIdeas = async (): Promise<{
-  submittedIdeas: Idea[];
-  upvotedIdeas: Idea[];
-}> => {
-  try {
-    const response = await axios.get<{
-      submittedIdeas: Idea[];
-      upvotedIdeas: Idea[];
-    }>(`${API_URL}/ideas/user-ideas`, { withCredentials: true });
-    console.log('response.data: ', response.data);
     return response.data;
   } catch (error) {
     handleApiError(error);

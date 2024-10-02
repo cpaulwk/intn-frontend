@@ -1,6 +1,6 @@
 import { AppDispatch, RootState } from '../store';
 import { setUser, clearUser, setAuthenticated } from '../slices/authSlice';
-import { clearRecentlyViewed } from '../slices/recentlyViewedSlice';
+import { clearRecentlyViewed } from '../slices/ideaSlice';
 import axios from 'axios';
 import { createSelector } from '@reduxjs/toolkit';
 

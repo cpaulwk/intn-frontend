@@ -9,8 +9,7 @@ import { useAuth } from '../hooks/useAuth';
 
 const MySubmissions: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const { handleUpvote, submittedIdeas, isLoadingSubmissions, error } =
-    useIdeas();
+  const { handleUpvote, submittedIdeas, isLoading, error } = useIdeas();
 
   return (
     <PageLayout>
@@ -20,7 +19,7 @@ const MySubmissions: React.FC = () => {
       </h2>
       <div className="w-full flex-1 justify-center">
         {isAuthenticated ? (
-          isLoadingSubmissions ? (
+          isLoading ? (
             <p className="text-center text-gray-600">
               Loading your submissions...
             </p>

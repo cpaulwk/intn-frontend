@@ -9,13 +9,13 @@ import { useIdeas } from './hooks/useIdeas';
 import { useAuth } from './hooks/useAuth';
 
 export default function Home() {
-  const { ideas, isLoadingIdeas, error, handleUpvote } = useIdeas();
+  const { ideas, isLoading, error, handleUpvote } = useIdeas();
   const { isAuthenticated } = useAuth();
 
   return (
     <PageLayout>
       <Header />
-      {isLoadingIdeas ? (
+      {isLoading ? (
         <div>Loading...</div>
       ) : error ? (
         <div>{error}</div>

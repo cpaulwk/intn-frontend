@@ -13,7 +13,6 @@ import storage from 'redux-persist/lib/storage';
 import authReducer from './slices/authSlice';
 import ideasReducer from './slices/ideaSlice';
 import sidebarReducer from './slices/sidebarSlice';
-import recentlyViewedReducer from './slices/recentlyViewedSlice';
 
 const authPersistConfig = {
   key: 'auth',
@@ -21,24 +20,13 @@ const authPersistConfig = {
   storage,
 };
 
-const recentlyViewedPersistConfig = {
-  key: 'recentlyViewed',
-  version: 1,
-  storage,
-};
-
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
-const persistedRecentlyViewedReducer = persistReducer(
-  recentlyViewedPersistConfig,
-  recentlyViewedReducer
-);
 
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
     ideas: ideasReducer,
     sidebar: sidebarReducer,
-    recentlyViewed: persistedRecentlyViewedReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
