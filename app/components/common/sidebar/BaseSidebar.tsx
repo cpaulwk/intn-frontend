@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../store';
 import { toggleSidebar } from '../../../slices/sidebarSlice';
 import { useSidebar } from '../../../hooks/useSideBar';
-import { Menu, LogOut, Ellipsis, Rocket, Trash2 } from 'lucide-react';
+import { Menu, LogOut } from 'lucide-react';
 import { useIdeas } from '../../../hooks/useIdeas';
 import { useAuth } from '../../../hooks/useAuth';
 import RecentlyViewedIdeaItem from './content/RecentlyViewedIdeaItem';
