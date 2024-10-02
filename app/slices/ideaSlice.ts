@@ -108,6 +108,10 @@ const ideasSlice = createSlice({
     clearRecentlyViewed: (state) => {
       state.recentlyViewed = [];
     },
+    createIdea: (state, action: PayloadAction<Idea>) => {
+      state.ideas.push(action.payload);
+      state.submittedIdeas.push(action.payload);
+    },
   },
 });
 
@@ -119,6 +123,7 @@ export const {
   addIdea,
   addRecentlyViewed,
   clearRecentlyViewed,
+  createIdea,
 } = ideasSlice.actions;
 
 export default ideasSlice.reducer;
