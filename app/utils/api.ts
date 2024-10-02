@@ -122,3 +122,21 @@ export const deleteIdea = async (ideaId: string): Promise<void> => {
     throw error;
   }
 };
+
+export const updateIdea = async (
+  ideaId: string,
+  updates: Partial<Idea>
+): Promise<Idea> => {
+  console.log('updates: ', updates);
+  try {
+    const response = await axios.put<Idea>(
+      `${API_URL}/ideas/${ideaId}`,
+      updates,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};

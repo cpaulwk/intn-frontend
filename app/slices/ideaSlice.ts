@@ -134,6 +134,21 @@ const ideasSlice = createSlice({
         (idea) => idea._id.toString() !== ideaId
       );
     },
+    updateIdea: (state, action: PayloadAction<Idea>) => {
+      console.log('action.payload: ', action.payload);
+      const index = state.ideas.findIndex(
+        (idea) => idea._id.toString() === action.payload._id.toString()
+      );
+      if (index !== -1) {
+        state.ideas[index] = action.payload;
+      }
+      const submittedIndex = state.submittedIdeas.findIndex(
+        (idea) => idea._id.toString() === action.payload._id.toString()
+      );
+      if (submittedIndex !== -1) {
+        state.submittedIdeas[submittedIndex] = action.payload;
+      }
+    },
   },
 });
 
@@ -148,6 +163,7 @@ export const {
   createIdea,
   removeRecentlyViewed,
   removeIdea,
+  updateIdea,
 } = ideasSlice.actions;
 
 export default ideasSlice.reducer;

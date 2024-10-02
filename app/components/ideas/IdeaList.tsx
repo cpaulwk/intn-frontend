@@ -9,6 +9,7 @@ interface IdeaListProps {
   handleUpvote: (ideaId: string) => Promise<void>;
   registerIdeaRef: (id: string, element: HTMLDivElement | null) => void;
   onDelete?: (idea: Idea) => Promise<void>;
+  onEdit?: (idea: Idea) => Promise<void>;
 }
 
 const IdeaList: React.FC<IdeaListProps> = ({
@@ -17,6 +18,7 @@ const IdeaList: React.FC<IdeaListProps> = ({
   handleUpvote,
   registerIdeaRef,
   onDelete,
+  onEdit,
 }) => {
   console.log('registerIdeaRef in IdeaList:', typeof registerIdeaRef);
 
@@ -36,6 +38,7 @@ const IdeaList: React.FC<IdeaListProps> = ({
           handleUpvote={handleUpvote}
           registerIdeaRef={registerIdeaRef}
           onDelete={onDelete}
+          onEdit={onEdit}
         />
       ))}
     </div>

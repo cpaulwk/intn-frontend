@@ -2,27 +2,27 @@ import React, { useState } from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
 import Modal from '../../common/modal/Modal';
 import ConfirmationModal from '../../common/modal/ConfirmationModal';
+import { useRouter } from 'next/navigation';
 
 interface IdeaModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDelete: () => void;
-  onEdit: () => void;
+  ideaId: string;
   position: { top: number; left: number } | null;
   triggerRef: React.RefObject<HTMLButtonElement> | undefined;
-  ideaId: string;
 }
 
 const IdeaModal: React.FC<IdeaModalProps> = ({
   isOpen,
   onClose,
   onDelete,
-  onEdit,
+  ideaId,
   position,
   triggerRef,
-  ideaId,
 }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const router = useRouter();
 
   const handleDelete = () => {
     setShowConfirmation(true);
@@ -31,6 +31,11 @@ const IdeaModal: React.FC<IdeaModalProps> = ({
   const confirmDelete = () => {
     onDelete();
     setShowConfirmation(false);
+    onClose();
+  };
+
+  const handleEdit = () => {
+    router.push(`/edit-idea?id=${ideaId}`);
     onClose();
   };
 
@@ -45,10 +50,7 @@ const IdeaModal: React.FC<IdeaModalProps> = ({
         <div className="w-32 px-2 py-3">
           <button
             className="flex w-full items-center rounded-md px-4 py-2 text-sm text-gray-700 hover:bg-[#0078e6]/20"
-            onClick={() => {
-              onEdit();
-              onClose();
-            }}
+            onClick={handleEdit}
           >
             <Edit2 size={16} className="mr-2" />
             Edit

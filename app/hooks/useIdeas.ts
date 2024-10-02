@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
+import { Idea } from '../types';
 import {
   fetchIdeasStart,
   fetchIdeasSuccess,
@@ -21,6 +22,8 @@ import {
 import { useAuth } from './useAuth';
 import { checkAuthStatus } from '../utils/auth';
 import { removeIdea } from '../slices/ideaSlice';
+import { updateIdea as updateIdeaApi } from '../utils/api';
+import { updateIdea as updateIdeaAction } from '../slices/ideaSlice';
 
 export const useIdeas = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -94,6 +97,20 @@ export const useIdeas = () => {
     }
   };
 
+  const updateIdea = async (ideaId: string, updates: Partial<Idea>) => {
+    try {
+      const updatedIdea = await updateIdeaApi(ideaId, updates);
+      dispatch(updateIdeaAction(updatedIdea));
+    } catch (error) {
+      console.error('Error updating idea:', error);
+      throw error;
+    }
+  };
+
+  const getIdeaById = (ideaId: string) => {
+    return ideas.find((idea) => idea._id.toString() === ideaId);
+  };
+
   return {
     ideas,
     isLoading: status === 'loading',
@@ -106,5 +123,7 @@ export const useIdeas = () => {
     upvotedIdeas,
     removeRecentlyViewed,
     deleteIdea,
+    updateIdea,
+    getIdeaById,
   };
 };
