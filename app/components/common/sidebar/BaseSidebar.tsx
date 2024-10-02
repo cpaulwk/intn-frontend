@@ -72,14 +72,16 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
       </nav>
       <section className="flex-1 overflow-y-hidden px-4">
         <h2 className="mb-4 text-xl font-bold">Recently Viewed</h2>
-        {recentlyViewed.length > 0 ? (
+        {recentlyViewed?.length > 0 ? (
           <ul className="h-full overflow-y-auto">
             {recentlyViewed.map((idea) => (
               <RecentlyViewedIdeaItem key={idea._id.toString()} idea={idea} />
             ))}
           </ul>
-        ) : (
+        ) : isAuthenticated ? (
           <p className="text-gray-600">No recently viewed ideas</p>
+        ) : (
+          <p className="text-gray-600">Please log in to view your history</p>
         )}
       </section>
       <div className="p-4">

@@ -20,7 +20,7 @@ const handleApiError = (error: unknown) => {
   }
 };
 
-export const fetchAllData = async (): Promise<{
+export const fetchAllDataAuthenticated = async (): Promise<{
   ideas: Idea[];
   recentlyViewed: Idea[];
   submittedIdeas: Idea[];
@@ -32,7 +32,21 @@ export const fetchAllData = async (): Promise<{
       recentlyViewed: Idea[];
       submittedIdeas: Idea[];
       upvotedIdeas: Idea[];
-    }>(`${API_URL}/ideas/all-data`, { withCredentials: true });
+    }>(`${API_URL}/ideas/all-data-authenticated`, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};
+
+export const fetchAllDataUnauthenticated = async (): Promise<{
+  ideas: Idea[];
+}> => {
+  try {
+    const response = await axios.get<{
+      ideas: Idea[];
+    }>(`${API_URL}/ideas/all-data-unauthenticated`);
     return response.data;
   } catch (error) {
     handleApiError(error);

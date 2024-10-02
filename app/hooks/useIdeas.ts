@@ -9,10 +9,11 @@ import {
   addRecentlyViewed,
 } from '../slices/ideaSlice';
 import {
-  fetchAllData,
+  fetchAllDataAuthenticated,
   toggleUpvoteIdea,
   addViewedIdea,
   createIdea,
+  fetchAllDataUnauthenticated,
 } from '../utils/api';
 import { useAuth } from './useAuth';
 
@@ -25,8 +26,20 @@ export const useIdeas = () => {
   const loadIdeas = async () => {
     dispatch(fetchIdeasStart());
     try {
-      const data = await fetchAllData();
-      dispatch(fetchIdeasSuccess(data));
+      if (isAuthenticated) {
+        const data = await fetchAllDataAuthenticated();
+        dispatch(fetchIdeasSuccess(data));
+      } else {
+        const data = await fetchAllDataUnauthenticated();
+        dispatch(
+          fetchIdeasSuccess({
+            ideas: data.ideas,
+            recentlyViewed: [],
+            submittedIdeas: [],
+            upvotedIdeas: [],
+          })
+        );
+      }
     } catch (error) {
       dispatch(fetchIdeasError(error as string));
     }
