@@ -6,10 +6,11 @@ import IdeaList from '../components/ideas/IdeaList';
 import PageLayout from '../components/layout/PageLayout';
 import { useIdeas } from '../hooks/useIdeas';
 import { useAuth } from '../hooks/useAuth';
-
+import { useIdeaScroll } from '../hooks/useIdeaScroll';
 const MyFavorites: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const { handleUpvote, upvotedIdeas, isLoading, error } = useIdeas();
+  const { registerIdeaRef } = useIdeaScroll();
 
   return (
     <PageLayout>
@@ -27,6 +28,7 @@ const MyFavorites: React.FC = () => {
             ideas={upvotedIdeas}
             isAuthenticated={isAuthenticated}
             handleUpvote={handleUpvote}
+            registerIdeaRef={registerIdeaRef}
           />
         ) : (
           <p className="text-center text-gray-600">

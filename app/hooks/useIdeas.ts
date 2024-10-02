@@ -16,9 +16,12 @@ import {
   createIdea,
   fetchAllDataUnauthenticated,
   removeRecentlyViewed as removeRecentlyViewedApi,
+  deleteIdea as deleteIdeaApi,
 } from '../utils/api';
 import { useAuth } from './useAuth';
 import { checkAuthStatus } from '../utils/auth';
+import { removeIdea } from '../slices/ideaSlice';
+
 export const useIdeas = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { ideas, recentlyViewed, submittedIdeas, upvotedIdeas, status, error } =
@@ -81,6 +84,16 @@ export const useIdeas = () => {
     }
   };
 
+  const deleteIdea = async (ideaId: string) => {
+    try {
+      await deleteIdeaApi(ideaId);
+      dispatch(removeIdea(ideaId));
+    } catch (error) {
+      console.error('Error deleting idea:', error);
+      throw error;
+    }
+  };
+
   return {
     ideas,
     isLoading: status === 'loading',
@@ -92,5 +105,6 @@ export const useIdeas = () => {
     submittedIdeas,
     upvotedIdeas,
     removeRecentlyViewed,
+    deleteIdea,
   };
 };

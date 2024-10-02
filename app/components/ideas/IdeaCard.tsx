@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { Idea } from '../../types';
 import { addRecentlyViewed } from '../../slices/ideaSlice';
 import { addViewedIdea } from '../../utils/api';
-import { Rocket } from 'lucide-react';
+import { Rocket, Trash2, Check, X } from 'lucide-react';
 import ExpandToggle from './buttons/ExpandToggle';
 import { formatUpvoteCount } from '../../utils/formatUtils';
 
@@ -13,6 +13,7 @@ interface IdeaCardProps {
   handleUpvote: (ideaId: string) => Promise<void>;
   isAuthenticated: boolean;
   registerIdeaRef: (id: string, element: HTMLDivElement | null) => void;
+  onDelete?: (idea: Idea) => void;
 }
 
 const useContentHeight = (
@@ -45,9 +46,11 @@ const isUpvoted = (idea: Idea) => {
 };
 
 const IdeaCard: React.FC<IdeaCardProps> = React.memo(
-  ({ idea, handleUpvote, isAuthenticated, registerIdeaRef }) => {
-    console.log('registerIdeaRef in IdeaCard:', typeof registerIdeaRef);
+  ({ idea, handleUpvote, isAuthenticated, registerIdeaRef, onDelete }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+    const [deleteProgress, setDeleteProgress] = useState(0);
+    const deleteTimerRef = useRef<NodeJS.Timeout | null>(null);
     const contentRef = useRef<HTMLParagraphElement>(null);
     const cardRef = useRef<HTMLDivElement>(null);
     const dispatch = useDispatch();
@@ -69,6 +72,38 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
         );
       }
     }, [dispatch, idea, isAuthenticated]);
+
+    const handleDeleteClick = () => {
+      setDeleteConfirmation(true);
+    };
+
+    const cancelDelete = () => {
+      setDeleteConfirmation(false);
+      setDeleteProgress(0);
+      if (deleteTimerRef.current) {
+        clearInterval(deleteTimerRef.current);
+      }
+    };
+
+    const startDelete = () => {
+      deleteTimerRef.current = setInterval(() => {
+        setDeleteProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(deleteTimerRef.current!);
+            onDelete && onDelete(idea);
+            return 0;
+          }
+          return prev + 2;
+        });
+      }, 20);
+    };
+
+    const stopDelete = () => {
+      if (deleteTimerRef.current) {
+        clearInterval(deleteTimerRef.current);
+        setDeleteProgress(0);
+      }
+    };
 
     return (
       <div
@@ -120,6 +155,53 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
                 className={`h-6 w-6 transform ${isUpvoted(idea) ? '-rotate-45' : ''} transition-transform duration-300`}
               />
             </button>
+            {onDelete && (
+              <div className="relative">
+                {!deleteConfirmation ? (
+                  <button
+                    onClick={handleDeleteClick}
+                    className="ml-2 rounded-full bg-red-500 p-2 text-white transition-all duration-300 hover:bg-red-600"
+                    aria-label="Delete idea"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                ) : (
+                  <div className="flex items-center">
+                    <button
+                      onMouseDown={startDelete}
+                      onMouseUp={stopDelete}
+                      onMouseLeave={stopDelete}
+                      onTouchStart={startDelete}
+                      onTouchEnd={stopDelete}
+                      className="ml-2 rounded-l-full bg-green-500 p-2 text-white transition-all duration-300 hover:bg-green-600"
+                      aria-label="Confirm delete"
+                      style={{
+                        transform: `scale(${1 + deleteProgress / 100})`,
+                        transformOrigin: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          animation:
+                            deleteProgress > 0
+                              ? 'vibrate 0.1s linear infinite'
+                              : 'none',
+                        }}
+                      >
+                        <Check size={16} />
+                      </div>
+                    </button>
+                    <button
+                      onClick={cancelDelete}
+                      className="rounded-r-full bg-red-500 p-2 text-white transition-all duration-300 hover:bg-red-600"
+                      aria-label="Cancel delete"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

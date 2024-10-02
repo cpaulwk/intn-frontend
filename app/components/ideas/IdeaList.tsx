@@ -8,6 +8,7 @@ interface IdeaListProps {
   isAuthenticated: boolean;
   handleUpvote: (ideaId: string) => Promise<void>;
   registerIdeaRef: (id: string, element: HTMLDivElement | null) => void;
+  onDelete?: (ideaId: string) => Promise<void>;
 }
 
 const IdeaList: React.FC<IdeaListProps> = ({
@@ -15,6 +16,7 @@ const IdeaList: React.FC<IdeaListProps> = ({
   isAuthenticated,
   handleUpvote,
   registerIdeaRef,
+  onDelete,
 }) => {
   console.log('registerIdeaRef in IdeaList:', typeof registerIdeaRef);
 
@@ -33,6 +35,7 @@ const IdeaList: React.FC<IdeaListProps> = ({
           isAuthenticated={isAuthenticated}
           handleUpvote={handleUpvote}
           registerIdeaRef={registerIdeaRef}
+          onDelete={onDelete}
         />
       ))}
     </div>

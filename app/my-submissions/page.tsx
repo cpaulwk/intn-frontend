@@ -7,11 +7,22 @@ import PageLayout from '../components/layout/PageLayout';
 import { useIdeas } from '../hooks/useIdeas';
 import { useAuth } from '../hooks/useAuth';
 import { useIdeaScroll } from '../hooks/useIdeaScroll';
+import { Idea } from '../types';
 
 const MySubmissions: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const { handleUpvote, submittedIdeas, isLoading, error } = useIdeas();
+  const { handleUpvote, submittedIdeas, isLoading, error, deleteIdea } =
+    useIdeas();
   const { registerIdeaRef } = useIdeaScroll();
+
+  const handleDelete = async (idea: Idea) => {
+    try {
+      await deleteIdea(idea._id.toString());
+    } catch (error) {
+      console.error('Error deleting idea:', error);
+    }
+  };
+
   return (
     <PageLayout>
       <Header />
@@ -32,6 +43,7 @@ const MySubmissions: React.FC = () => {
               isAuthenticated={isAuthenticated}
               handleUpvote={handleUpvote}
               registerIdeaRef={registerIdeaRef}
+              onDelete={handleDelete}
             />
           ) : (
             <p className="text-center text-gray-600">

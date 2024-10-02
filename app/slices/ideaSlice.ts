@@ -119,6 +119,21 @@ const ideasSlice = createSlice({
       state.ideas.push(action.payload);
       state.submittedIdeas.push(action.payload);
     },
+    removeIdea: (state, action: PayloadAction<string>) => {
+      const ideaId = action.payload;
+      state.ideas = state.ideas.filter(
+        (idea) => idea._id.toString() !== ideaId
+      );
+      state.submittedIdeas = state.submittedIdeas.filter(
+        (idea) => idea._id.toString() !== ideaId
+      );
+      state.recentlyViewed = state.recentlyViewed.filter(
+        (idea) => idea._id.toString() !== ideaId
+      );
+      state.upvotedIdeas = state.upvotedIdeas.filter(
+        (idea) => idea._id.toString() !== ideaId
+      );
+    },
   },
 });
 
@@ -132,6 +147,7 @@ export const {
   clearRecentlyViewed,
   createIdea,
   removeRecentlyViewed,
+  removeIdea,
 } = ideasSlice.actions;
 
 export default ideasSlice.reducer;
