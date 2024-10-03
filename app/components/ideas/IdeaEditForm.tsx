@@ -59,12 +59,11 @@ const IdeaEditForm: React.FC<IdeaEditFormProps> = ({ idea }) => {
   };
 
   return (
-    <div className="mx-auto mt-8 max-w-2xl rounded-lg bg-white p-6 shadow-md">
-      <h2 className="mb-4 text-2xl font-bold">Edit Idea</h2>
+    <div className="mx-auto mt-8 max-w-2xl rounded-xl bg-white p-6 shadow-md">
       <div className="mb-4">
         <label
           htmlFor="title"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-xl font-medium text-gray-700"
         >
           Title
         </label>
@@ -74,21 +73,28 @@ const IdeaEditForm: React.FC<IdeaEditFormProps> = ({ idea }) => {
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 block w-full rounded-md border-gray-300 px-4 py-2 focus:outline-none"
           />
-          <button
-            onClick={handleEnhanceTitle}
-            disabled={isEnhancing}
-            className="ml-2 rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600 disabled:opacity-50"
-          >
-            <Sparkles size={20} />
-          </button>
+          <div className="group relative ml-2">
+            <button
+              onClick={handleEnhanceTitle}
+              disabled={isEnhancing}
+              className="rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600 disabled:opacity-50"
+            >
+              <Sparkles size={20} />
+            </button>
+            <div className="absolute bottom-full left-1/2 mb-2 hidden -translate-x-1/2 group-hover:block">
+              <div className="whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white">
+                Enhance text with AI
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div className="mb-4">
         <label
           htmlFor="description"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-xl font-medium text-gray-700"
         >
           Description
         </label>
@@ -96,17 +102,29 @@ const IdeaEditForm: React.FC<IdeaEditFormProps> = ({ idea }) => {
           <textarea
             id="description"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={4}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            onChange={(e) => {
+              setDescription(e.target.value);
+              e.target.style.height = '144px'; // 6 rows initial height
+              e.target.style.height = `${Math.min(Math.max(e.target.scrollHeight, 144), 216)}px`;
+            }}
+            rows={6}
+            className="mt-1 block w-full overflow-y-auto rounded-md border-gray-300 px-4 py-2 focus:outline-none"
+            style={{ minHeight: '144px', maxHeight: '216px', resize: 'none' }}
           />
-          <button
-            onClick={handleEnhanceDescription}
-            disabled={isEnhancing}
-            className="ml-2 rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600 disabled:opacity-50"
-          >
-            <Sparkles size={20} />
-          </button>
+          <div className="group relative ml-2">
+            <button
+              onClick={handleEnhanceDescription}
+              disabled={isEnhancing}
+              className="rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600 disabled:opacity-50"
+            >
+              <Sparkles size={20} />
+            </button>
+            <div className="absolute bottom-full left-1/2 mb-2 hidden -translate-x-1/2 group-hover:block">
+              <div className="whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white">
+                Enhance text with AI
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div className="flex justify-between">
