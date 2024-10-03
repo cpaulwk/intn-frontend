@@ -24,12 +24,16 @@ const IdeaEditForm: React.FC<IdeaEditFormProps> = ({ idea }) => {
   }, [title, description, idea]);
 
   const handleSave = async () => {
-    try {
-      await updateIdea(idea._id.toString(), { title, description });
-      router.push('/my-submissions');
-    } catch (error) {
-      console.error('Error updating idea:', error);
+    if (isModified) {
+      try {
+        await updateIdea(idea._id.toString(), { title, description });
+      } catch (error) {
+        console.error('Error updating idea:', error);
+        // You might want to show an error message to the user here
+        return;
+      }
     }
+    router.back();
   };
 
   const handleGoBack = () => {
@@ -137,7 +141,6 @@ const IdeaEditForm: React.FC<IdeaEditFormProps> = ({ idea }) => {
         <button
           onClick={handleSave}
           className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          disabled={!isModified}
         >
           Save Changes
         </button>

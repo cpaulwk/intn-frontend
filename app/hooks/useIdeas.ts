@@ -107,8 +107,23 @@ export const useIdeas = () => {
     }
   };
 
-  const getIdeaById = (ideaId: string) => {
-    return ideas.find((idea) => idea._id.toString() === ideaId);
+  const fetchIdeaById = async (ideaId: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/ideas/${ideaId}`,
+        {
+          credentials: 'include',
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch idea');
+      }
+      const idea = await response.json();
+      return idea;
+    } catch (error) {
+      console.error('Error fetching idea:', error);
+      throw error;
+    }
   };
 
   return {
@@ -124,6 +139,6 @@ export const useIdeas = () => {
     removeRecentlyViewed,
     deleteIdea,
     updateIdea,
-    getIdeaById,
+    fetchIdeaById, // Keep this
   };
 };

@@ -1,19 +1,54 @@
 'use client';
 
-import React from 'react';
-import { useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import IdeaEditForm from '../../components/ideas/IdeaEditForm';
 import PageLayout from '../../components/layout/PageLayout';
 import { useIdeas } from '../../hooks/useIdeas';
 import { useAuth } from '../../hooks/useAuth';
+import { Idea } from '../../types';
+
 const EditIdeaPage: React.FC = () => {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
-  const { getIdeaById, isLoading, error } = useIdeas();
-  const idea = id ? getIdeaById(id) : null;
+  const { fetchIdeaById, isLoading, error } = useIdeas();
+  const [idea, setIdea] = useState<Idea | null>(null);
   const { isAuthenticated } = useAuth();
-  if (!idea) {
-    return <div>Idea not found</div>;
+  const [canEdit, setCanEdit] = useState(false);
+
+  useEffect(() => {
+    const checkEditPermission = async () => {
+      if (!isAuthenticated || !id || idea) return;
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/ideas/${id}/edit`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Not authorized to edit');
+        }
+
+        setCanEdit(true);
+
+        const fetchedIdea = await fetchIdeaById(id);
+        setIdea(fetchedIdea);
+      } catch (error) {
+        console.error('Error checking edit permission:', error);
+        router.push('/my-submissions');
+      }
+    };
+
+    checkEditPermission();
+  }, [isAuthenticated, id, router, fetchIdeaById, idea]);
+
+  if (!idea || !canEdit) {
+    return null;
   }
 
   return (

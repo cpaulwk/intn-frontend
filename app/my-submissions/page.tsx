@@ -24,8 +24,26 @@ const MySubmissions: React.FC = () => {
     }
   };
 
-  const handleEdit = (idea: Idea) => {
-    router.push(`/edit-idea/${idea._id}`);
+  const handleEdit = async (idea: Idea) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/ideas/${idea._id}/edit`,
+        {
+          method: 'GET',
+          credentials: 'include',
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to get edit permission');
+      }
+
+      const data = await response.json();
+      router.push(data.redirectUrl);
+    } catch (error) {
+      console.error('Error navigating to edit page:', error);
+      // You might want to show an error message to the user here
+    }
   };
 
   return (
