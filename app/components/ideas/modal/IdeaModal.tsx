@@ -11,6 +11,7 @@ interface IdeaModalProps {
   ideaId: string;
   position: { top: number; left: number } | null;
   triggerRef: React.RefObject<HTMLButtonElement> | undefined;
+  onEdit: () => void;
 }
 
 const IdeaModal: React.FC<IdeaModalProps> = ({
@@ -34,8 +35,12 @@ const IdeaModal: React.FC<IdeaModalProps> = ({
     onClose();
   };
 
-  const handleEdit = () => {
-    router.push(`/edit-idea?id=${ideaId}`);
+  const handleEdit = async () => {
+    try {
+      router.push(`/edit-idea/${ideaId}`);
+    } catch (error) {
+      console.error('Error navigating to edit page:', error);
+    }
     onClose();
   };
 

@@ -23,21 +23,15 @@ export default function Home() {
   }, [searchParams, scrollToIdea]);
 
   return (
-    <PageLayout>
+    <PageLayout isLoading={isLoading} error={error} isAuthenticated={true}>
       <div className="flex h-full flex-col">
         <div className="flex-1 overflow-y-auto">
-          {isLoading ? (
-            <p className="text-center text-gray-600">Loading...</p>
-          ) : error ? (
-            <p className="text-center text-red-600">{error}</p>
-          ) : (
-            <IdeaList
-              ideas={ideas}
-              isAuthenticated={isAuthenticated}
-              handleUpvote={handleUpvote}
-              registerIdeaRef={registerIdeaRef}
-            />
-          )}
+          <IdeaList
+            ideas={ideas}
+            isAuthenticated={isAuthenticated}
+            handleUpvote={handleUpvote}
+            registerIdeaRef={registerIdeaRef}
+          />
         </div>
         <IdeaSubmissionForm />
       </div>

@@ -1,12 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useIdeaSubmission } from '../../hooks/useIdeaSubmission';
 import { ArrowUp, Loader2 } from 'lucide-react';
-import { useSidebar } from '../../hooks/useSideBar';
 
 const IdeaSubmissionForm: React.FC = () => {
   const { input, setInput, isLoading, error, isAuthenticated, handleSubmit } =
     useIdeaSubmission();
-  const { isSidebarOpen } = useSidebar();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 

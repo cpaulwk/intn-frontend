@@ -7,12 +7,14 @@ import { useIdeas } from '../hooks/useIdeas';
 import { useAuth } from '../hooks/useAuth';
 import { useIdeaScroll } from '../hooks/useIdeaScroll';
 import { Idea } from '../types';
+import { useRouter } from 'next/navigation';
 
 const MySubmissions: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const { handleUpvote, submittedIdeas, isLoading, error, deleteIdea } =
     useIdeas();
   const { registerIdeaRef } = useIdeaScroll();
+  const router = useRouter();
 
   const handleDelete = async (idea: Idea) => {
     try {
@@ -22,40 +24,31 @@ const MySubmissions: React.FC = () => {
     }
   };
 
-  const handleEdit = async (idea: Idea) => {
-    try {
-      console.log('Editing idea:', idea);
-    } catch (error) {
-      console.error('Error editing idea:', error);
-    }
+  const handleEdit = (idea: Idea) => {
+    router.push(`/edit-idea/${idea._id}`);
   };
 
   return (
-    <PageLayout title="My Submissions">
-      <div className="h-full overflow-y-auto">
-        {isAuthenticated ? (
-          isLoading ? (
-            <p className="text-center text-gray-600">Loading...</p>
-          ) : error ? (
-            <p className="text-center text-red-600">{error}</p>
-          ) : submittedIdeas.length > 0 ? (
-            <IdeaList
-              ideas={submittedIdeas}
-              isAuthenticated={isAuthenticated}
-              handleUpvote={handleUpvote}
-              registerIdeaRef={registerIdeaRef}
-              onDelete={handleDelete}
-              onEdit={handleEdit}
-            />
-          ) : (
-            <p className="text-center text-gray-600">No ideas found.</p>
-          )
-        ) : (
-          <p className="text-center text-gray-600">
-            Please log in to view your submissions.
-          </p>
-        )}
-      </div>
+    <PageLayout
+      title="My Submissions"
+      isLoading={isLoading}
+      error={error}
+      isAuthenticated={isAuthenticated}
+    >
+      {submittedIdeas.length > 0 ? (
+        <IdeaList
+          ideas={submittedIdeas}
+          isAuthenticated={isAuthenticated}
+          handleUpvote={handleUpvote}
+          registerIdeaRef={registerIdeaRef}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
+        />
+      ) : (
+        <p className="text-center text-gray-600">
+          You haven't submitted any ideas yet.
+        </p>
+      )}
     </PageLayout>
   );
 };

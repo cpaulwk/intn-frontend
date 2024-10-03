@@ -7,7 +7,6 @@ export const useIdeaScroll = () => {
 
   const registerIdeaRef = useCallback(
     (id: string, element: HTMLDivElement | null) => {
-      console.log('Registering idea ref:', id, element);
       ideaRefs.current[id] = element;
     },
     []
