@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useIdeaSubmission } from '../../hooks/useIdeaSubmission';
 import { ArrowUp, Loader2 } from 'lucide-react';
 import { useSidebar } from '../../hooks/useSideBar';
@@ -7,25 +7,58 @@ const IdeaSubmissionForm: React.FC = () => {
   const { input, setInput, isLoading, error, isAuthenticated, handleSubmit } =
     useIdeaSubmission();
   const { isSidebarOpen } = useSidebar();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const LINE_HEIGHT = 24;
+  const MAX_ROWS = 9;
+  const MAX_HEIGHT = LINE_HEIGHT * MAX_ROWS;
+
+  const adjustTextareaHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      const newHeight = Math.min(MAX_HEIGHT, textarea.scrollHeight);
+      textarea.style.height = `${newHeight}px`;
+      setIsExpanded(newHeight > LINE_HEIGHT);
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [input]);
+
+  const onSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    handleSubmit();
+  };
 
   return (
-    <div
-      className={`${isSidebarOpen ? 'px-10' : 'px-16'} flex flex-col items-center`}
-    >
-      <form onSubmit={handleSubmit} className="w-full max-w-4xl">
-        <div className="relative">
-          <input
+    <div>
+      <div
+        className={`mx-auto max-w-4xl flex-1 flex-grow flex-col px-4 pb-8 transition-all duration-300`}
+      >
+        <div
+          className={`flex w-full items-end rounded-3xl border border-[#5aa8ff] bg-[#ffffff] p-1.5`}
+        >
+          <textarea
+            ref={textareaRef}
             id="idea-submission-input"
-            type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Submit a product that you want to be built"
-            className="w-full rounded-full border border-[#5aa8ff] bg-[#ffffff] p-3 pl-4 pr-12 text-text-100 focus:outline-none"
+            className="flex-grow resize-none overflow-y-auto bg-transparent px-4 py-1 text-text-100 focus:outline-none"
             disabled={isLoading || !isAuthenticated}
+            rows={1}
+            style={{
+              minHeight: `${LINE_HEIGHT}px`,
+              maxHeight: `${MAX_HEIGHT}px`,
+              lineHeight: `${LINE_HEIGHT}px`,
+            }}
           />
           <button
-            type="submit"
-            className={`absolute right-2 top-1/2 -translate-y-1/2 transform rounded-full p-2 text-bg-100 ${
+            onClick={onSubmit}
+            className={`ml-2 flex-shrink-0 rounded-full p-2 text-bg-100 ${
               isAuthenticated && input.trim()
                 ? 'bg-primary-100 hover:bg-primary-200'
                 : 'cursor-not-allowed bg-bg-300'
@@ -45,7 +78,7 @@ const IdeaSubmissionForm: React.FC = () => {
             Please log in to submit an idea.
           </p>
         )}
-      </form>
+      </div>
     </div>
   );
 };

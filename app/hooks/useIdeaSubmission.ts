@@ -13,28 +13,24 @@ export const useIdeaSubmission = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated, user } = useAuth();
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (!input.trim() || !isAuthenticated || !user) return;
+  const handleSubmit = async () => {
+    if (!input.trim() || !isAuthenticated) return;
 
-      setIsLoading(true);
-      setError(null);
+    setIsLoading(true);
+    setError(null);
 
-      try {
-        const newIdea = await createIdeaApi(input.trim(), user.email);
-        dispatch(createIdea(newIdea));
-        setInput('');
-      } catch (err) {
-        await checkAuthStatus(dispatch);
-        console.error('Error creating idea:', err);
-        setError('Failed to submit idea. Please try again.');
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [input, isAuthenticated, user, dispatch]
-  );
+    try {
+      const newIdea = await createIdeaApi(input.trim(), user.email);
+      dispatch(createIdea(newIdea));
+      setInput('');
+    } catch (error) {
+      await checkAuthStatus(dispatch);
+      console.error('Error creating idea:', error);
+      setError('Failed to submit idea. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     input,

@@ -7,12 +7,14 @@ import { useScreenSize } from '../../hooks/useScreenSize';
 import { Menu } from 'lucide-react';
 import { useSidebar } from '../../hooks/useSideBar';
 import { useIdeasLoader } from '../../hooks/useIdeasLoader';
+import Header from '../common/Header';
 
 interface PageLayoutProps {
   children: ReactNode;
+  title?: string;
 }
 
-const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
+const PageLayout: React.FC<PageLayoutProps> = ({ children, title }) => {
   const dispatch = useDispatch();
   const { isSidebarOpen } = useSidebar();
   const isSmallScreen = useScreenSize();
@@ -33,7 +35,15 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
         >
           <Menu size={24} />
         </button>
-        <div className={`flex-1 flex-col items-center`}>{children}</div>
+        <div className="flex h-full flex-col">
+          <Header />
+          {title && (
+            <h2 className="mb-4 mt-2 text-center text-2xl font-bold">
+              {title}
+            </h2>
+          )}
+          <div className="flex-1 overflow-y-auto">{children}</div>
+        </div>
       </div>
     </div>
   );

@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
-import Header from '../components/common/Header';
 import IdeaEditForm from '../components/ideas/IdeaEditForm';
 import PageLayout from '../components/layout/PageLayout';
 import { useIdeas } from '../hooks/useIdeas';
@@ -18,8 +17,7 @@ const EditIdeaPage: React.FC = () => {
   }
 
   return (
-    <PageLayout>
-      <Header />
+    <PageLayout title="Edit Idea">
       <IdeaEditForm idea={idea} />
     </PageLayout>
   );

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Header from '../components/common/Header';
 import IdeaList from '../components/ideas/IdeaList';
 import PageLayout from '../components/layout/PageLayout';
 import { useIdeas } from '../hooks/useIdeas';
@@ -11,14 +10,8 @@ import { Idea } from '../types';
 
 const MySubmissions: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const {
-    handleUpvote,
-    submittedIdeas,
-    isLoading,
-    error,
-    deleteIdea,
-    // editIdea,
-  } = useIdeas();
+  const { handleUpvote, submittedIdeas, isLoading, error, deleteIdea } =
+    useIdeas();
   const { registerIdeaRef } = useIdeaScroll();
 
   const handleDelete = async (idea: Idea) => {
@@ -31,8 +24,6 @@ const MySubmissions: React.FC = () => {
 
   const handleEdit = async (idea: Idea) => {
     try {
-      // Implement the edit functionality here
-      // For example, you might want to open a modal or navigate to an edit page
       console.log('Editing idea:', idea);
     } catch (error) {
       console.error('Error editing idea:', error);
@@ -40,17 +31,11 @@ const MySubmissions: React.FC = () => {
   };
 
   return (
-    <PageLayout>
-      <Header />
-      <h2 className="mb-6 mt-4 text-center text-2xl font-bold">
-        My Submissions
-      </h2>
-      <div className="w-full flex-1 justify-center">
+    <PageLayout title="My Submissions">
+      <div className="h-full overflow-y-auto">
         {isAuthenticated ? (
           isLoading ? (
-            <p className="text-center text-gray-600">
-              Loading your submissions...
-            </p>
+            <p className="text-center text-gray-600">Loading...</p>
           ) : error ? (
             <p className="text-center text-red-600">{error}</p>
           ) : submittedIdeas.length > 0 ? (
@@ -63,9 +48,7 @@ const MySubmissions: React.FC = () => {
               onEdit={handleEdit}
             />
           ) : (
-            <p className="text-center text-gray-600">
-              You haven't submitted any ideas yet.
-            </p>
+            <p className="text-center text-gray-600">No ideas found.</p>
           )
         ) : (
           <p className="text-center text-gray-600">

@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useEffect, useCallback } from 'react';
-import Header from './components/common/Header';
+import React, { useEffect } from 'react';
 import IdeaList from './components/ideas/IdeaList';
 import IdeaSubmissionForm from './components/ideas/IdeaSubmissionForm';
 import PageLayout from './components/layout/PageLayout';
@@ -13,19 +12,8 @@ import { useSearchParams } from 'next/navigation';
 export default function Home() {
   const { ideas, isLoading, error, handleUpvote } = useIdeas();
   const { isAuthenticated } = useAuth();
-  const { registerIdeaRef: originalRegisterIdeaRef, scrollToIdea } =
-    useIdeaScroll();
+  const { registerIdeaRef, scrollToIdea } = useIdeaScroll();
   const searchParams = useSearchParams();
-
-  console.log('registerIdeaRef in Home:', typeof originalRegisterIdeaRef);
-
-  const memoizedRegisterIdeaRef = useCallback(
-    (id: string, element: HTMLDivElement | null) => {
-      console.log('Memoized registerIdeaRef called:', id, element);
-      originalRegisterIdeaRef(id, element);
-    },
-    [originalRegisterIdeaRef]
-  );
 
   useEffect(() => {
     const scrollToId = searchParams.get('scrollTo');
@@ -36,20 +24,23 @@ export default function Home() {
 
   return (
     <PageLayout>
-      <Header />
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : error ? (
-        <div>{error}</div>
-      ) : (
-        <IdeaList
-          ideas={ideas}
-          isAuthenticated={isAuthenticated}
-          handleUpvote={handleUpvote}
-          registerIdeaRef={memoizedRegisterIdeaRef}
-        />
-      )}
-      <IdeaSubmissionForm />
+      <div className="flex h-full flex-col">
+        <div className="flex-1 overflow-y-auto">
+          {isLoading ? (
+            <p className="text-center text-gray-600">Loading...</p>
+          ) : error ? (
+            <p className="text-center text-red-600">{error}</p>
+          ) : (
+            <IdeaList
+              ideas={ideas}
+              isAuthenticated={isAuthenticated}
+              handleUpvote={handleUpvote}
+              registerIdeaRef={registerIdeaRef}
+            />
+          )}
+        </div>
+        <IdeaSubmissionForm />
+      </div>
     </PageLayout>
   );
 }
