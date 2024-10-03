@@ -118,7 +118,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
     return (
       <div
         ref={cardRef}
-        className={`relative mb-4 flex min-w-[230px] max-w-2xl flex-col gap-x-4 gap-y-2 rounded-xl border border-primary-100 bg-bg-100 p-4 text-black shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-[#e1ffff]/80 hover:shadow-lg hover:shadow-[#0085ff]/20 sm:flex-row sm:items-center`}
+        className={`relative flex min-w-[230px] max-w-2xl flex-col gap-x-4 gap-y-2 rounded-xl border border-primary-100 bg-bg-100 p-4 text-black shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-[#e1ffff]/80 hover:shadow-lg hover:shadow-[#0085ff]/20 sm:flex-row sm:items-center`}
       >
         <div className="h-full flex-grow justify-start">
           <h3 className="mb-2 text-xl font-bold">{idea.title}</h3>
