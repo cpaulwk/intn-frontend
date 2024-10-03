@@ -3,6 +3,8 @@ import { useRouter } from 'next/navigation';
 import { Idea } from '../../types';
 import { useIdeas } from '../../hooks/useIdeas';
 import ConfirmationModal from '../common/modal/ConfirmationModal';
+import { useAIEnhancement } from '../../hooks/useAIEnhancement';
+import { Sparkles } from 'lucide-react';
 
 interface IdeaEditFormProps {
   idea: Idea;
@@ -15,6 +17,7 @@ const IdeaEditForm: React.FC<IdeaEditFormProps> = ({ idea }) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const router = useRouter();
   const { updateIdea } = useIdeas();
+  const { enhanceText, isEnhancing } = useAIEnhancement();
 
   useEffect(() => {
     setIsModified(title !== idea.title || description !== idea.description);
@@ -37,6 +40,24 @@ const IdeaEditForm: React.FC<IdeaEditFormProps> = ({ idea }) => {
     }
   };
 
+  const handleEnhanceTitle = async () => {
+    const enhancedTitle = await enhanceText('title', title, description);
+    if (enhancedTitle) {
+      setTitle(enhancedTitle);
+    }
+  };
+
+  const handleEnhanceDescription = async () => {
+    const enhancedDescription = await enhanceText(
+      'description',
+      title,
+      description
+    );
+    if (enhancedDescription) {
+      setDescription(enhancedDescription);
+    }
+  };
+
   return (
     <div className="mx-auto mt-8 max-w-2xl rounded-lg bg-white p-6 shadow-md">
       <h2 className="mb-4 text-2xl font-bold">Edit Idea</h2>
@@ -47,13 +68,22 @@ const IdeaEditForm: React.FC<IdeaEditFormProps> = ({ idea }) => {
         >
           Title
         </label>
-        <input
-          type="text"
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
+        <div className="flex items-center">
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+          <button
+            onClick={handleEnhanceTitle}
+            disabled={isEnhancing}
+            className="ml-2 rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600 disabled:opacity-50"
+          >
+            <Sparkles size={20} />
+          </button>
+        </div>
       </div>
       <div className="mb-4">
         <label
@@ -62,13 +92,22 @@ const IdeaEditForm: React.FC<IdeaEditFormProps> = ({ idea }) => {
         >
           Description
         </label>
-        <textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={4}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
+        <div className="flex items-start">
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={4}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+          <button
+            onClick={handleEnhanceDescription}
+            disabled={isEnhancing}
+            className="ml-2 rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600 disabled:opacity-50"
+          >
+            <Sparkles size={20} />
+          </button>
+        </div>
       </div>
       <div className="flex justify-between">
         <button
