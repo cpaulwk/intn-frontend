@@ -64,26 +64,24 @@ const RecentlyViewedIdeaItem: React.FC<RecentlyViewedIdeaItemProps> = ({
     <div className="group relative overflow-hidden rounded-md">
       <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-l from-[#e9f9fa] via-[#e9f9fa] via-5% to-transparent to-25% transition-colors duration-200 group-hover:bg-gradient-to-l group-hover:from-[#e9f9fa] group-hover:via-[#e9f9fa] group-hover:via-15% group-hover:to-transparent group-hover:to-35%"></div>
       <div className="pointer-events-none absolute inset-0 z-20 transition-colors duration-200 group-hover:bg-[#0078e6]/20"></div>
-      <li className="relative">
-        <button
-          ref={ellipsisRef}
-          onClick={toggleModal}
-          className="absolute inset-y-0 right-0 z-30 flex items-center justify-end p-2 opacity-0 duration-100 group-hover:opacity-100"
-        >
-          <Ellipsis size={20} />
-        </button>
-        <Link
-          href={`/?scrollTo=${idea._id}`}
-          onClick={(e) => {
-            e.preventDefault();
-            scrollToIdea(idea._id.toString());
-          }}
-          className="block overflow-hidden whitespace-nowrap p-2 transition-colors duration-200"
-          title={idea.title || 'Untitled Idea'}
-        >
-          {idea.title || 'Untitled Idea'}
-        </Link>
-      </li>
+      <button
+        ref={ellipsisRef}
+        onClick={toggleModal}
+        className="absolute inset-y-0 right-0 z-30 flex items-center justify-end p-2 opacity-0 duration-100 group-hover:opacity-100"
+      >
+        <Ellipsis size={20} />
+      </button>
+      <Link
+        href={`/?scrollTo=${idea._id}`}
+        onClick={(e) => {
+          e.preventDefault();
+          scrollToIdea(idea._id.toString());
+        }}
+        className="block overflow-hidden whitespace-nowrap p-2 transition-colors duration-200"
+        title={idea.title || 'Untitled Idea'}
+      >
+        {idea.title || 'Untitled Idea'}
+      </Link>
       <ViewedIdeaModal
         isOpen={activeModal}
         onClose={closeModal}
