@@ -24,6 +24,10 @@ import { checkAuthStatus } from '../utils/auth';
 import { removeIdea } from '../slices/ideaSlice';
 import { updateIdea as updateIdeaApi } from '../utils/api';
 import { updateIdea as updateIdeaAction } from '../slices/ideaSlice';
+import {
+  fetchIdeaById as fetchIdeaByIdApi,
+  getEditPermission,
+} from '../utils/api';
 
 export const useIdeas = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -116,17 +120,7 @@ export const useIdeas = () => {
 
   const fetchIdeaById = async (ideaId: string) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/ideas/${ideaId}`,
-        {
-          credentials: 'include',
-        }
-      );
-      if (!response.ok) {
-        throw new Error('Failed to fetch idea');
-      }
-      const idea = await response.json();
-      return idea;
+      return await fetchIdeaByIdApi(ideaId);
     } catch (error) {
       console.error('Error fetching idea:', error);
       throw error;
@@ -145,20 +139,7 @@ export const useIdeas = () => {
 
   const handleEdit = async (idea: Idea) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/ideas/${idea._id}/edit`,
-        {
-          method: 'GET',
-          credentials: 'include',
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to get edit permission');
-      }
-
-      const data = await response.json();
-      return data.redirectUrl;
+      return await getEditPermission(idea._id.toString());
     } catch (error) {
       console.error('Error getting edit permission:', error);
       throw error;

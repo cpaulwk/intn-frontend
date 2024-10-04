@@ -63,7 +63,6 @@ export const toggleUpvoteIdea = async (
       {},
       { withCredentials: true }
     );
-    console.log('response.data: ', response.data);
     return response.data;
   } catch (error) {
     handleApiError(error);
@@ -137,6 +136,36 @@ export const updateIdea = async (
     return response.data;
   } catch (error) {
     handleApiError(error);
+    throw error;
+  }
+};
+
+export const fetchIdeaById = async (ideaId: string) => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/ideas/${ideaId}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching idea:', error);
+    throw error;
+  }
+};
+
+export const getEditPermission = async (ideaId: string) => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/ideas/${ideaId}/edit`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data.redirectUrl;
+  } catch (error) {
+    console.error('Error getting edit permission:', error);
     throw error;
   }
 };
