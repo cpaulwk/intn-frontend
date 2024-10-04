@@ -43,10 +43,6 @@ const useContentHeight = (
   return { exceedsTwoLines, contentHeight };
 };
 
-const isUpvoted = (idea: Idea) => {
-  return idea.isUpvoted;
-};
-
 const IdeaCard: React.FC<IdeaCardProps> = React.memo(
   ({
     idea,
@@ -154,7 +150,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
               onClick={() => handleUpvote(idea._id.toString())}
               className={`group flex h-12 w-12 items-center justify-center rounded-full p-2 ${
                 isAuthenticated
-                  ? isUpvoted(idea)
+                  ? idea.isUpvoted
                     ? 'bg-[#0085ff] text-[#FFFFFF]'
                     : 'border border-[#0085ff] bg-[#FFFFFF] text-[#0085ff] transition-all duration-300 hover:bg-[#e1ffff]'
                   : 'bg-gray-300 text-gray-500'
@@ -162,7 +158,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
               disabled={!isAuthenticated}
             >
               <Rocket
-                className={`h-6 w-6 transform ${isUpvoted(idea) ? '-rotate-45' : ''} transition-transform duration-300`}
+                className={`h-6 w-6 transform ${idea.isUpvoted ? '-rotate-45' : ''} transition-transform duration-300`}
               />
             </button>
             {(onDelete || onEdit) && (
