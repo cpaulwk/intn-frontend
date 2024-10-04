@@ -126,6 +126,38 @@ export const useIdeas = () => {
     }
   };
 
+  const handleDelete = async (idea: Idea) => {
+    try {
+      await deleteIdea(idea._id.toString());
+      // You might want to update the state or trigger a re-fetch here
+    } catch (error) {
+      console.error('Error deleting idea:', error);
+      throw error;
+    }
+  };
+
+  const handleEdit = async (idea: Idea) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/ideas/${idea._id}/edit`,
+        {
+          method: 'GET',
+          credentials: 'include',
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to get edit permission');
+      }
+
+      const data = await response.json();
+      return data.redirectUrl;
+    } catch (error) {
+      console.error('Error getting edit permission:', error);
+      throw error;
+    }
+  };
+
   return {
     ideas,
     isLoading: status === 'loading',
@@ -140,5 +172,7 @@ export const useIdeas = () => {
     deleteIdea,
     updateIdea,
     fetchIdeaById, // Keep this
+    handleDelete,
+    handleEdit,
   };
 };

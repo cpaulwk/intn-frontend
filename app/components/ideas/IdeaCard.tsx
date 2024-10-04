@@ -8,14 +8,14 @@ import { Rocket, MoreHorizontal } from 'lucide-react';
 import ExpandToggle from './buttons/ExpandToggle';
 import { formatUpvoteCount } from '../../utils/formatUtils';
 import IdeaModal from './modal/IdeaModal';
+import Button from './buttons/Button';
 
 interface IdeaCardProps {
+  type?: string;
   idea: Idea;
   handleUpvote: (ideaId: string) => Promise<void>;
   isAuthenticated: boolean;
   registerIdeaRef: (id: string, element: HTMLDivElement | null) => void;
-  onDelete?: (idea: Idea) => void;
-  onEdit?: (idea: Idea) => void;
 }
 
 const useContentHeight = (
@@ -44,14 +44,7 @@ const useContentHeight = (
 };
 
 const IdeaCard: React.FC<IdeaCardProps> = React.memo(
-  ({
-    idea,
-    handleUpvote,
-    isAuthenticated,
-    registerIdeaRef,
-    onDelete,
-    onEdit,
-  }) => {
+  ({ type, idea, handleUpvote, isAuthenticated, registerIdeaRef }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [activeModal, setActiveModal] = useState<boolean>(false);
     const [modalPosition, setModalPosition] = useState<{
@@ -66,7 +59,6 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
       contentRef,
       isExpanded
     );
-
     useEffect(() => {
       registerIdeaRef(idea._id.toString(), cardRef.current);
     }, [idea._id, registerIdeaRef]);
@@ -161,11 +153,11 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
                 className={`h-6 w-6 transform ${idea.isUpvoted ? '-rotate-45' : ''} transition-transform duration-300`}
               />
             </button>
-            {(onDelete || onEdit) && (
+            {type === 'submissions' && (
               <button
                 ref={ellipsisRef}
                 onClick={toggleModal}
-                className="rounded-full p-2 text-gray-500 transition-colors duration-200 hover:bg-[#0078e6]/20"
+                className="rounded-full p-2 text-gray-500 transition-colors duration-200 hover:bg-[#0078e6]/20 sm:hidden"
               >
                 <MoreHorizontal size={20} />
               </button>
@@ -175,17 +167,19 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
         <IdeaModal
           isOpen={activeModal}
           onClose={closeModal}
-          ideaId={idea._id.toString()}
-          onDelete={() => onDelete && onDelete(idea)}
-          onEdit={() => onEdit && onEdit(idea)}
+          idea={idea}
           position={modalPosition}
           triggerRef={ellipsisRef}
         />
+        {type === 'submissions' && (
+          <div className="mb-2 flex flex-col justify-center gap-2 max-sm:hidden">
+            <Button type="Edit" idea={idea} />
+            <Button type="Delete" idea={idea} />
+          </div>
+        )}
       </div>
     );
   }
 );
-
-IdeaCard.displayName = 'IdeaCard';
 
 export default IdeaCard;

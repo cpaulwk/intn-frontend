@@ -6,45 +6,11 @@ import PageLayout from '../components/layout/PageLayout';
 import { useIdeas } from '../hooks/useIdeas';
 import { useAuth } from '../hooks/useAuth';
 import { useIdeaScroll } from '../hooks/useIdeaScroll';
-import { Idea } from '../types';
-import { useRouter } from 'next/navigation';
 
 const MySubmissions: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const { handleUpvote, submittedIdeas, isLoading, error, deleteIdea } =
-    useIdeas();
+  const { handleUpvote, submittedIdeas, isLoading, error } = useIdeas();
   const { registerIdeaRef } = useIdeaScroll();
-  const router = useRouter();
-
-  const handleDelete = async (idea: Idea) => {
-    try {
-      await deleteIdea(idea._id.toString());
-    } catch (error) {
-      console.error('Error deleting idea:', error);
-    }
-  };
-
-  const handleEdit = async (idea: Idea) => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/ideas/${idea._id}/edit`,
-        {
-          method: 'GET',
-          credentials: 'include',
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to get edit permission');
-      }
-
-      const data = await response.json();
-      router.push(data.redirectUrl);
-    } catch (error) {
-      console.error('Error navigating to edit page:', error);
-      // You might want to show an error message to the user here
-    }
-  };
 
   return (
     <PageLayout
@@ -55,12 +21,11 @@ const MySubmissions: React.FC = () => {
     >
       {submittedIdeas.length > 0 ? (
         <IdeaList
+          type="submissions"
           ideas={submittedIdeas}
           isAuthenticated={isAuthenticated}
           handleUpvote={handleUpvote}
           registerIdeaRef={registerIdeaRef}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
         />
       ) : (
         <p className="text-center text-gray-600">
