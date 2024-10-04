@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Idea } from '../types';
 import { RootState } from '../store';
+import { createSelector } from '@reduxjs/toolkit';
 
 interface IdeasState {
   ideas: Idea[];
@@ -11,6 +12,7 @@ interface IdeasState {
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
   isLoaded: boolean;
+  isUpvotedIdeasLoaded: boolean;
 }
 
 const initialState: IdeasState = {
@@ -22,6 +24,7 @@ const initialState: IdeasState = {
   status: 'idle',
   error: null,
   isLoaded: false,
+  isUpvotedIdeasLoaded: false,
 };
 
 const ideasSlice = createSlice({
@@ -50,6 +53,7 @@ const ideasSlice = createSlice({
         },
         {} as { [key: string]: boolean }
       );
+      state.isUpvotedIdeasLoaded = true;
       // Update recentlyViewed structure
       state.recentlyViewed = action.payload.recentlyViewed.map((idea) =>
         idea._id.toString()
@@ -215,8 +219,13 @@ export const {
 } = ideasSlice.actions;
 
 // Selectors
-export const selectIsIdeaUpvoted = (state: RootState, ideaId: string) =>
-  !!state.ideas.upvotedIdeas[ideaId];
+export const selectUpvotedIdeas = (state: RootState) =>
+  state.ideas.upvotedIdeas;
+
+export const selectIsIdeaUpvoted = createSelector(
+  [selectUpvotedIdeas, (state, ideaId: string) => ideaId],
+  (upvotedIdeas, ideaId) => !!upvotedIdeas[ideaId]
+);
 
 export const selectRecentlyViewedIdeas = (state: RootState) =>
   state.ideas.recentlyViewed.map((id) => state.ideas.recentlyViewedMap[id]);
