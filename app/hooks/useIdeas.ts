@@ -36,7 +36,14 @@ export const useIdeas = () => {
     try {
       if (isAuthenticated) {
         const data = await fetchAllDataAuthenticated();
-        dispatch(fetchIdeasSuccess(data));
+        dispatch(
+          fetchIdeasSuccess({
+            ideas: data.ideas,
+            recentlyViewed: data.recentlyViewed,
+            submittedIdeas: data.submittedIdeas,
+            upvotedIdeas: data.upvotedIdeas.map((idea) => idea._id.toString()),
+          })
+        );
       } else {
         const data = await fetchAllDataUnauthenticated();
         dispatch(
