@@ -1,14 +1,15 @@
 // app/components/IdeaCard.tsx
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
 import { Idea } from '../../types';
-import { addRecentlyViewed } from '../../slices/ideaSlice';
+import { addRecentlyViewed, selectIsIdeaUpvoted } from '../../slices/ideaSlice';
 import { addViewedIdea } from '../../utils/api';
 import { Rocket, MoreHorizontal } from 'lucide-react';
 import ExpandToggle from './buttons/ExpandToggle';
 import { formatUpvoteCount } from '../../utils/formatUtils';
 import IdeaModal from './modal/IdeaModal';
-import Button from './buttons/Button';
+import Button from './buttons/IdeaActionButton';
 
 interface IdeaCardProps {
   type?: string;
@@ -59,6 +60,10 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
       contentRef,
       isExpanded
     );
+    const isUpvoted = useSelector((state: RootState) =>
+      selectIsIdeaUpvoted(state, idea._id.toString())
+    );
+
     useEffect(() => {
       registerIdeaRef(idea._id.toString(), cardRef.current);
     }, [idea._id, registerIdeaRef]);
@@ -142,7 +147,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
               onClick={() => handleUpvote(idea._id.toString())}
               className={`group flex h-12 w-12 items-center justify-center rounded-full p-2 ${
                 isAuthenticated
-                  ? idea.isUpvoted
+                  ? isUpvoted
                     ? 'bg-[#0085ff] text-[#FFFFFF]'
                     : 'border border-[#0085ff] bg-[#FFFFFF] text-[#0085ff] transition-all duration-300 hover:bg-[#e1ffff]'
                   : 'bg-gray-300 text-gray-500'
@@ -150,7 +155,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
               disabled={!isAuthenticated}
             >
               <Rocket
-                className={`h-6 w-6 transform ${idea.isUpvoted ? '-rotate-45' : ''} transition-transform duration-300`}
+                className={`h-6 w-6 transform ${isUpvoted ? '-rotate-45' : ''} transition-transform duration-300`}
               />
             </button>
             {type === 'submissions' && (

@@ -3,12 +3,12 @@ import { Idea } from '../../../types';
 import { useIdeas } from '../../../hooks/useIdeas';
 import { useRouter } from 'next/navigation';
 
-interface ButtonProps {
+interface IdeaActionButtonProps {
   type: 'Edit' | 'Delete';
   idea: Idea;
 }
 
-const Button: React.FC<ButtonProps> = ({ type, idea }) => {
+const IdeaActionButton: React.FC<IdeaActionButtonProps> = ({ type, idea }) => {
   const { handleEdit, handleDelete } = useIdeas();
   const router = useRouter();
 
@@ -35,15 +35,17 @@ const Button: React.FC<ButtonProps> = ({ type, idea }) => {
   return (
     <button
       onClick={onClick}
-      className={`rounded-md px-4 py-2 text-white transition-colors duration-200 ${
+      className={`rounded-full px-6 py-2 text-sm font-medium shadow-md transition-all duration-300 ease-in-out hover:shadow-lg ${
         type === 'Edit'
-          ? 'bg-blue-500 hover:bg-blue-600'
-          : 'bg-red-500 hover:bg-red-600'
-      }`}
+          ? 'bg-blue-500 text-white hover:bg-blue-600'
+          : 'bg-red-500 text-white hover:bg-red-600'
+      } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+        type === 'Edit' ? 'focus:ring-blue-400' : 'focus:ring-red-400'
+      } `}
     >
       {type}
     </button>
   );
 };
 
-export default Button;
+export default IdeaActionButton;
