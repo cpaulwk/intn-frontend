@@ -222,12 +222,24 @@ export const {
 export const selectUpvotedIdeas = (state: RootState) =>
   state.ideas.upvotedIdeas;
 
+export const selectIdeasState = (state: RootState) => state.ideas;
+
+// Memoized selector for isIdeaUpvoted
 export const selectIsIdeaUpvoted = createSelector(
   [selectUpvotedIdeas, (state, ideaId: string) => ideaId],
   (upvotedIdeas, ideaId) => !!upvotedIdeas[ideaId]
 );
 
-export const selectRecentlyViewedIdeas = (state: RootState) =>
-  state.ideas.recentlyViewed.map((id) => state.ideas.recentlyViewedMap[id]);
+// Memoized selector for recentlyViewedMap
+export const selectRecentlyViewedMap = createSelector(
+  [selectIdeasState],
+  (ideasState) => ideasState.recentlyViewedMap
+);
+
+// Memoized selector for recentlyViewedIdeas
+export const selectRecentlyViewedIdeas = createSelector(
+  [selectRecentlyViewedMap],
+  (recentlyViewedMap) => Object.values(recentlyViewedMap)
+);
 
 export default ideasSlice.reducer;
