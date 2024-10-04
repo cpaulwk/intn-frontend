@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../store';
 import { toggleSidebar } from '../../../slices/sidebarSlice';
 import { useSidebar } from '../../../hooks/useSideBar';
@@ -8,6 +8,8 @@ import { Menu, LogOut } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import RecentlyViewedIdeaItem from './content/RecentlyViewedIdeaItem';
 import { useIdeas } from '../../../hooks/useIdeas';
+import { selectRecentlyViewedIdeas } from '../../../slices/ideaSlice';
+
 interface BaseSidebarProps {
   isOpen: boolean;
   isModal?: boolean;
@@ -22,6 +24,7 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
   const { onGoogleLogin, onLogout } = useSidebar();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const { recentlyViewed } = useIdeas();
+  const recentlyViewedIdeas = useSelector(selectRecentlyViewedIdeas);
 
   return (
     <div
@@ -72,17 +75,12 @@ const BaseSidebar: React.FC<BaseSidebarProps> = ({
       </nav>
       <section className="flex-1 overflow-y-hidden px-4">
         <h2 className="mb-4 text-xl font-bold">Recently Viewed</h2>
-        {recentlyViewed?.length > 0 ? (
-          <ul className="h-full overflow-y-auto">
-            {recentlyViewed.map((idea) => (
-              <RecentlyViewedIdeaItem key={idea._id.toString()} idea={idea} />
-            ))}
-          </ul>
-        ) : isAuthenticated ? (
-          <p className="text-gray-600">No recently viewed ideas</p>
-        ) : (
-          <p className="text-gray-600">Please log in to view your history</p>
-        )}
+        {recentlyViewedIdeas.map((idea) => {
+          console.log('idea: ', idea);
+          return (
+            <RecentlyViewedIdeaItem key={idea._id.toString()} idea={idea} />
+          );
+        })}
       </section>
       <div className="p-4">
         <div className="flex items-center justify-center">
