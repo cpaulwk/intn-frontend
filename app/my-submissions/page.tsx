@@ -29,7 +29,7 @@ const MySubmissions: React.FC = () => {
         />
       ) : (
         <p className="text-center text-gray-600">
-          You haven't submitted any ideas yet.
+          You haven&apos;t submitted any ideas yet.
         </p>
       )}
     </PageLayout>

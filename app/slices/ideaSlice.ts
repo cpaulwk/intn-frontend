@@ -219,14 +219,20 @@ export const {
 } = ideasSlice.actions;
 
 // Selectors
-export const selectUpvotedIdeas = (state: RootState) =>
+export const selectUpvotedIdeasMap = (state: RootState) =>
   state.ideas.upvotedIdeas;
+
+export const selectUpvotedIdeas = createSelector(
+  [selectUpvotedIdeasMap, (state: RootState) => state.ideas.ideas],
+  (upvotedIdeasMap, ideas) =>
+    ideas.filter((idea) => upvotedIdeasMap[idea._id.toString()])
+);
 
 export const selectIdeasState = (state: RootState) => state.ideas;
 
 // Memoized selector for isIdeaUpvoted
 export const selectIsIdeaUpvoted = createSelector(
-  [selectUpvotedIdeas, (state, ideaId: string) => ideaId],
+  [selectUpvotedIdeasMap, (state, ideaId: string) => ideaId],
   (upvotedIdeas, ideaId) => !!upvotedIdeas[ideaId]
 );
 

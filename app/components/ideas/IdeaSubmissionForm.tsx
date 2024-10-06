@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useIdeaSubmission } from '../../hooks/useIdeaSubmission';
 import { ArrowUp, Loader2 } from 'lucide-react';
 
@@ -12,7 +12,7 @@ const IdeaSubmissionForm: React.FC = () => {
   const MAX_ROWS = 9;
   const MAX_HEIGHT = LINE_HEIGHT * MAX_ROWS;
 
-  const adjustTextareaHeight = () => {
+  const adjustTextareaHeight = useCallback(() => {
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = 'auto';
@@ -20,11 +20,11 @@ const IdeaSubmissionForm: React.FC = () => {
       textarea.style.height = `${newHeight}px`;
       setIsExpanded(newHeight > LINE_HEIGHT);
     }
-  };
+  }, [input]);
 
   useEffect(() => {
     adjustTextareaHeight();
-  }, [input]);
+  }, [adjustTextareaHeight]);
 
   const onSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
