@@ -5,6 +5,8 @@ import { useIdeas } from '../../hooks/useIdeas';
 import ConfirmationModal from '../common/modal/ConfirmationModal';
 import { useAIEnhancement } from '../../hooks/useAIEnhancement';
 import { Sparkles } from 'lucide-react';
+import IdeaFormButton from '../common/buttons/TextButton';
+import { ArrowLeft, Save } from 'lucide-react'; // Import icons
 
 interface IdeaEditFormProps {
   idea: Idea;
@@ -132,18 +134,16 @@ const IdeaEditForm: React.FC<IdeaEditFormProps> = ({ idea }) => {
         </div>
       </div>
       <div className="flex justify-between">
-        <button
-          onClick={handleGoBack}
-          className="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
-        >
+        <IdeaFormButton onClick={handleGoBack} variant="secondary">
           Go Back
-        </button>
-        <button
+        </IdeaFormButton>
+        <IdeaFormButton
           onClick={handleSave}
-          className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          variant="primary"
+          disabled={!isModified}
         >
           Save Changes
-        </button>
+        </IdeaFormButton>
       </div>
       <ConfirmationModal
         isOpen={showConfirmModal}

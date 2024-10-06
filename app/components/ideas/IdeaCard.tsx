@@ -1,15 +1,17 @@
 // app/components/IdeaCard.tsx
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/navigation';
 import { RootState } from '../../store';
 import { Idea } from '../../types';
 import { addRecentlyViewed, selectIsIdeaUpvoted } from '../../slices/ideaSlice';
 import { addViewedIdea } from '../../utils/api';
-import { Rocket, MoreHorizontal } from 'lucide-react';
+import { Rocket, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
 import ExpandToggle from './buttons/ExpandToggle';
 import { formatUpvoteCount } from '../../utils/formatUtils';
 import IdeaModal from './modal/IdeaModal';
-import Button from './buttons/IdeaActionButton';
+import IdeaFormButton from '../common/buttons/TextButton';
+import { useIdeas } from '../../hooks/useIdeas';
 
 interface IdeaCardProps {
   type?: string;
@@ -46,6 +48,7 @@ const useContentHeight = (
 
 const IdeaCard: React.FC<IdeaCardProps> = React.memo(
   ({ type, idea, handleUpvote, isAuthenticated, registerIdeaRef }) => {
+    const router = useRouter();
     const [isExpanded, setIsExpanded] = useState(false);
     const [activeModal, setActiveModal] = useState<boolean>(false);
     const [modalPosition, setModalPosition] = useState<{
@@ -63,6 +66,7 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
     const isUpvoted = useSelector((state: RootState) =>
       selectIsIdeaUpvoted(state, idea._id.toString())
     );
+    const { handleEdit, handleDelete } = useIdeas();
 
     useEffect(() => {
       registerIdeaRef(idea._id.toString(), cardRef.current);
@@ -106,6 +110,26 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
     const closeModal = () => {
       setActiveModal(false);
       setModalPosition(null);
+    };
+
+    const onEdit = async () => {
+      try {
+        const redirectUrl = await handleEdit(idea);
+        router.push(redirectUrl);
+      } catch (error) {
+        console.error('Error editing idea:', error);
+        // Handle error (e.g., show error message to user)
+      }
+    };
+
+    const onDelete = async () => {
+      try {
+        await handleDelete(idea);
+        // Optionally, you can add some feedback here, like showing a success message
+      } catch (error) {
+        console.error('Error deleting idea:', error);
+        // Handle error (e.g., show error message to user)
+      }
     };
 
     return (
@@ -180,8 +204,12 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
         />
         {type === 'submissions' && (
           <div className="mb-2 flex flex-col justify-center gap-2 max-sm:hidden">
-            <Button type="Edit" idea={idea} />
-            <Button type="Delete" idea={idea} />
+            <IdeaFormButton onClick={onEdit} variant="primary">
+              Edit
+            </IdeaFormButton>
+            <IdeaFormButton onClick={onDelete} variant="danger">
+              Delete
+            </IdeaFormButton>
           </div>
         )}
       </div>

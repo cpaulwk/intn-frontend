@@ -47,8 +47,6 @@ const IdeaModal: React.FC<IdeaModalProps> = ({
     onClose();
   };
 
-  // ... rest of the component (return statement)
-
   return (
     <>
       <Modal
