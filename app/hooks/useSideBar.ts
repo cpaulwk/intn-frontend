@@ -1,13 +1,14 @@
 import { useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../store';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { clearRecentlyViewed } from '../slices/ideaSlice';
+import { AppDispatch, RootState } from '../store';
+import { useAuth } from './useAuth';
 import {
+  checkAuthStatus,
   handleGoogleLogin,
   handleLogout,
-  checkAuthStatus,
 } from '../utils/auth';
-import { clearRecentlyViewed } from '../slices/ideaSlice';
-import { useAuth } from './useAuth';
 
 export const useSidebar = () => {
   const dispatch = useDispatch<AppDispatch>();

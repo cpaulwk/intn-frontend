@@ -16,6 +16,7 @@ const IdeaSubmissionForm: React.FC = () => {
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = 'auto';
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       const newHeight = Math.min(MAX_HEIGHT, textarea.scrollHeight);
       textarea.style.height = `${newHeight}px`;
       setIsExpanded(newHeight > LINE_HEIGHT);

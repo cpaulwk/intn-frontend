@@ -1,6 +1,7 @@
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRouter, useSearchParams } from 'next/navigation';
+
 import { AppDispatch, RootState } from '../store';
 import { checkAuthStatus } from '../utils/auth';
 

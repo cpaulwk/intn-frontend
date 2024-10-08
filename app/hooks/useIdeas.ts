@@ -1,33 +1,32 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../store';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { AppDispatch, RootState } from '../store';
 import { Idea } from '../types';
+import { useAuth } from './useAuth';
 import {
-  fetchIdeasStart,
-  fetchIdeasSuccess,
-  fetchIdeasError,
-  toggleUpvotedIdea,
   addIdea,
   addRecentlyViewed,
+  fetchIdeasError,
+  fetchIdeasStart,
+  fetchIdeasSuccess,
+  removeIdea,
   removeRecentlyViewed as removeRecentlyViewedAction,
+  toggleUpvotedIdea,
+  updateIdea as updateIdeaAction,
 } from '../slices/ideaSlice';
 import {
-  fetchAllDataAuthenticated,
-  toggleUpvoteIdea,
   addViewedIdea,
   createIdea,
-  fetchAllDataUnauthenticated,
-  removeRecentlyViewed as removeRecentlyViewedApi,
   deleteIdea as deleteIdeaApi,
-} from '../utils/api';
-import { useAuth } from './useAuth';
-import { checkAuthStatus } from '../utils/auth';
-import { removeIdea } from '../slices/ideaSlice';
-import { updateIdea as updateIdeaApi } from '../utils/api';
-import { updateIdea as updateIdeaAction } from '../slices/ideaSlice';
-import {
+  fetchAllDataAuthenticated,
+  fetchAllDataUnauthenticated,
   fetchIdeaById as fetchIdeaByIdApi,
   getEditPermission,
+  removeRecentlyViewed as removeRecentlyViewedApi,
+  toggleUpvoteIdea,
+  updateIdea as updateIdeaApi,
 } from '../utils/api';
+import { checkAuthStatus } from '../utils/auth';
 
 export const useIdeas = () => {
   const dispatch = useDispatch<AppDispatch>();

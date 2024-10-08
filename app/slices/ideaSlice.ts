@@ -1,7 +1,7 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Idea } from '../types';
+import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
+
 import { RootState } from '../store';
-import { createSelector } from '@reduxjs/toolkit';
+import { Idea } from '../types';
 
 interface IdeasState {
   ideas: Idea[];

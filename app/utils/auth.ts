@@ -1,8 +1,9 @@
-import { AppDispatch, RootState } from '../store';
-import { setUser, clearUser, setAuthenticated } from '../slices/authSlice';
-import { clearRecentlyViewed } from '../slices/ideaSlice';
-import axios from 'axios';
 import { createSelector } from '@reduxjs/toolkit';
+import axios from 'axios';
+
+import { clearUser, setAuthenticated, setUser } from '../slices/authSlice';
+import { clearRecentlyViewed } from '../slices/ideaSlice';
+import { AppDispatch, RootState } from '../store';
 
 const selectAuthState = (state: RootState) => state.auth;
 
@@ -26,33 +27,35 @@ export const checkAuthStatus = async (
     return authCheckPromise;
   }
 
-  authCheckPromise = new Promise(async (resolve) => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/google/check`,
-        { withCredentials: true }
-      );
+  authCheckPromise = new Promise((resolve) => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/google/check`,
+          { withCredentials: true }
+        );
 
-      if (response.data.isAuthenticated) {
-        dispatch(setAuthenticated(true));
-        dispatch(setUser(response.data.user));
-        scheduleNextRefresh(dispatch);
-        resolve(true);
-      } else {
+        if (response.data.isAuthenticated) {
+          dispatch(setAuthenticated(true));
+          dispatch(setUser(response.data.user));
+          scheduleNextRefresh(dispatch);
+          resolve(true);
+        } else {
+          dispatch(setAuthenticated(false));
+          dispatch(clearUser());
+          dispatch(clearRecentlyViewed());
+          resolve(false);
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
         dispatch(setAuthenticated(false));
         dispatch(clearUser());
         dispatch(clearRecentlyViewed());
         resolve(false);
       }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      dispatch(setAuthenticated(false));
-      dispatch(clearUser());
-      dispatch(clearRecentlyViewed());
-      resolve(false);
-    } finally {
-      authCheckPromise = null;
-    }
+    };
+
+    checkAuth();
   });
 
   return authCheckPromise;

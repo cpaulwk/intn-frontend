@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../store';
+import { io as socketIO } from 'socket.io-client';
+
 import { updateIdea } from '../slices/ideaSlice';
-import io from 'socket.io-client';
+import { AppDispatch } from '../store';
 
 export const useSocket = () => {
   const [socket, setSocket] = useState<any>(null);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    const newSocket = io(process.env.NEXT_PUBLIC_API_URL as string, {
+    const newSocket = socketIO(process.env.NEXT_PUBLIC_API_URL as string, {
       withCredentials: true,
     });
     setSocket(newSocket);

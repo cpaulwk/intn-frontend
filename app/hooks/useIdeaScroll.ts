@@ -1,5 +1,5 @@
-import { useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useCallback, useRef } from 'react';
 
 export const useIdeaScroll = () => {
   const ideaRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});

@@ -1,6 +1,6 @@
 // app/hooks/useAIEnhancement.ts
-import { useState } from 'react';
 import axios from 'axios';
+import { useState } from 'react';
 
 export const useAIEnhancement = () => {
   const [isEnhancing, setIsEnhancing] = useState(false);

@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint \"{app,pages,components,utils,slices,hooks,types,styles,assets,public}/**/*.ts\" --fix"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.7",
@@ -25,6 +25,11 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.14",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^3.6.3",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "postcss": "^8",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.6",

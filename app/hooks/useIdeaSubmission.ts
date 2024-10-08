@@ -1,9 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../store';
-import { createIdea as createIdeaApi } from '../utils/api';
+
 import { createIdea } from '../slices/ideaSlice';
+import { AppDispatch } from '../store';
 import { useAuth } from './useAuth';
+import { createIdea as createIdeaApi } from '../utils/api';
 import { checkAuthStatus } from '../utils/auth';
 
 export const useIdeaSubmission = () => {

@@ -217,4 +217,5 @@ const IdeaCard: React.FC<IdeaCardProps> = React.memo(
   }
 );
 
+IdeaCard.displayName = 'IdeaCard';
 export default IdeaCard;
