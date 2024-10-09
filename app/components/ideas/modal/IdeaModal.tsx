@@ -1,10 +1,11 @@
-import React from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
-import Modal from '../../common/modal/Modal';
-import ConfirmationModal from '../../common/modal/ConfirmationModal';
-import { useIdeas } from '../../../hooks/useIdeas';
 import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+
+import { useIdeas } from '../../../hooks/useIdeas';
 import { Idea } from '../../../types';
+import ConfirmationModal from '../../common/modal/ConfirmationModal';
+import Modal from '../../common/modal/Modal';
 
 interface IdeaModalProps {
   isOpen: boolean;
@@ -22,7 +23,7 @@ const IdeaModal: React.FC<IdeaModalProps> = ({
   triggerRef,
 }) => {
   const { handleDelete, handleEdit } = useIdeas();
-  const [showConfirmation, setShowConfirmation] = React.useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const router = useRouter();
 
   const onDelete = async () => {

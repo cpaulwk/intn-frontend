@@ -1,13 +1,14 @@
+import { Menu } from 'lucide-react';
 import React, { ReactNode } from 'react';
 import { useDispatch } from 'react-redux';
+
+import { useIdeasLoader } from '../../hooks/useIdeasLoader';
+import { useScreenSize } from '../../hooks/useScreenSize';
+import { useSidebar } from '../../hooks/useSideBar';
 import { toggleSidebar } from '../../slices/sidebarSlice';
+import Header from '../common/Header';
 import Sidebar from '../common/sidebar/Sidebar';
 import SidebarModal from '../common/sidebar/SidebarModal';
-import { useScreenSize } from '../../hooks/useScreenSize';
-import { Menu } from 'lucide-react';
-import { useSidebar } from '../../hooks/useSideBar';
-import { useIdeasLoader } from '../../hooks/useIdeasLoader';
-import Header from '../common/Header';
 
 interface PageLayoutProps {
   children: ReactNode;

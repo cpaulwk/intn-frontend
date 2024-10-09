@@ -1,5 +1,6 @@
-import React from 'react';
 import { Rocket, Trash2 } from 'lucide-react';
+import React from 'react';
+
 import Modal from '../../modal/Modal';
 
 interface ViewedIdeaModalProps {

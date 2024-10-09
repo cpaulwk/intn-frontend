@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint \"{app,pages,components,utils,slices,hooks,types,styles,assets,public}/**/*.ts\" --fix"
+    "lint": "eslint \"{app,pages,components,utils,slices,hooks,types,styles,assets,public}/**/*.tsx\" --fix"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.7",

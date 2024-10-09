@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+
 import IdeaEditForm from '../../components/ideas/IdeaEditForm';
 import PageLayout from '../../components/layout/PageLayout';
-import { useIdeas } from '../../hooks/useIdeas';
 import { useAuth } from '../../hooks/useAuth';
+import { useIdeas } from '../../hooks/useIdeas';
 import { Idea } from '../../types';
 
 const EditIdeaPage: React.FC = () => {

@@ -1,6 +1,7 @@
 // app/layout.tsx
 import './globals.css';
 import React from 'react';
+
 import { Providers } from './Providers';
 
 export const metadata = {

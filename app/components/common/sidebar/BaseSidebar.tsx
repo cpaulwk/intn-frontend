@@ -1,13 +1,14 @@
-import React, { useRef } from 'react';
+import { LogOut, Menu } from 'lucide-react';
 import Link from 'next/link';
+import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../../../store';
-import { toggleSidebar } from '../../../slices/sidebarSlice';
-import { useSidebar } from '../../../hooks/useSideBar';
-import { Menu, LogOut } from 'lucide-react';
-import { useAuth } from '../../../hooks/useAuth';
+
 import RecentlyViewedIdeaItem from './content/RecentlyViewedIdeaItem';
+import { useAuth } from '../../../hooks/useAuth';
+import { useSidebar } from '../../../hooks/useSideBar';
 import { selectRecentlyViewedIdeas } from '../../../slices/ideaSlice';
+import { toggleSidebar } from '../../../slices/sidebarSlice';
+import { AppDispatch } from '../../../store';
 import TextButton from '../buttons/TextButton';
 
 interface BaseSidebarProps {

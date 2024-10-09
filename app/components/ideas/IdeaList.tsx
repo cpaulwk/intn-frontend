@@ -1,4 +1,5 @@
 import React from 'react';
+
 import IdeaCard from './IdeaCard';
 import { Idea } from '../../types';
 

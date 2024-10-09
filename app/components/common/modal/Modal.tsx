@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ModalProps {
   isOpen: boolean;
@@ -42,7 +42,7 @@ const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen || !position) return null;
 
-  return ReactDOM.createPortal(
+  return createPortal(
     <div
       ref={modalRef}
       className="fixed z-50 rounded-2xl bg-white shadow-lg"

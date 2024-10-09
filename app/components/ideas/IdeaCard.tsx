@@ -1,17 +1,18 @@
 // app/components/IdeaCard.tsx
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { MoreHorizontal, Rocket } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { addRecentlyViewed, selectIsIdeaUpvoted } from '../../slices/ideaSlice';
 import { RootState } from '../../store';
 import { Idea } from '../../types';
-import { addRecentlyViewed, selectIsIdeaUpvoted } from '../../slices/ideaSlice';
-import { addViewedIdea } from '../../utils/api';
-import { Rocket, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
 import ExpandToggle from './buttons/ExpandToggle';
-import { formatUpvoteCount } from '../../utils/formatUtils';
 import IdeaModal from './modal/IdeaModal';
-import IdeaFormButton from '../common/buttons/TextButton';
 import { useIdeas } from '../../hooks/useIdeas';
+import { addViewedIdea } from '../../utils/api';
+import { formatUpvoteCount } from '../../utils/formatUtils';
+import IdeaFormButton from '../common/buttons/TextButton';
 
 interface IdeaCardProps {
   type?: string;
@@ -34,7 +35,6 @@ const useContentHeight = (
         window.getComputedStyle(contentRef.current).lineHeight
       );
       const scrollHeight = contentRef.current.scrollHeight;
-      const clientHeight = contentRef.current.clientHeight;
 
       setExceedsTwoLines(scrollHeight > lineHeight * 2);
       setContentHeight(
@@ -46,7 +46,7 @@ const useContentHeight = (
   return { exceedsTwoLines, contentHeight };
 };
 
-const IdeaCard: React.FC<IdeaCardProps> = React.memo(
+const IdeaCard: React.FC<IdeaCardProps> = memo(
   ({ type, idea, handleUpvote, isAuthenticated, registerIdeaRef }) => {
     const router = useRouter();
     const [isExpanded, setIsExpanded] = useState(false);

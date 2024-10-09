@@ -1,10 +1,11 @@
-import React, { useState, useRef } from 'react';
-import Link from 'next/link';
 import { Ellipsis } from 'lucide-react';
-import ViewedIdeaModal from '../modal/ViewedIdeaModal';
+import Link from 'next/link';
+import React, { useRef, useState } from 'react';
+
 import { useIdeas } from '../../../../hooks/useIdeas';
-import { Idea } from '../../../../types';
 import { useIdeaScroll } from '../../../../hooks/useIdeaScroll';
+import { Idea } from '../../../../types';
+import ViewedIdeaModal from '../modal/ViewedIdeaModal';
 
 interface RecentlyViewedIdeaItemProps {
   idea: Idea;

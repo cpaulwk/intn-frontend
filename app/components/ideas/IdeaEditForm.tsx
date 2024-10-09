@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Idea } from '../../types';
-import { useIdeas } from '../../hooks/useIdeas';
-import ConfirmationModal from '../common/modal/ConfirmationModal';
-import { useAIEnhancement } from '../../hooks/useAIEnhancement';
 import { Sparkles } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+
+import { useAIEnhancement } from '../../hooks/useAIEnhancement';
+import { useIdeas } from '../../hooks/useIdeas';
+import { Idea } from '../../types';
 import IdeaFormButton from '../common/buttons/TextButton';
-import { ArrowLeft, Save } from 'lucide-react'; // Import icons
+import ConfirmationModal from '../common/modal/ConfirmationModal';
 
 interface IdeaEditFormProps {
   idea: Idea;

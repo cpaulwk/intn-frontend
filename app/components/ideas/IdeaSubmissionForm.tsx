@@ -1,6 +1,7 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { useIdeaSubmission } from '../../hooks/useIdeaSubmission';
 import { ArrowUp, Loader2 } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
+import { useIdeaSubmission } from '../../hooks/useIdeaSubmission';
 
 const IdeaSubmissionForm: React.FC = () => {
   const { input, setInput, isLoading, error, isAuthenticated, handleSubmit } =
