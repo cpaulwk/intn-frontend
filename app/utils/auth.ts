@@ -35,6 +35,7 @@ export const checkAuthStatus = async (
           { withCredentials: true }
         );
 
+        console.log('response.data', response.data);
         if (response.data.isAuthenticated) {
           dispatch(setAuthenticated(true));
           dispatch(setUser(response.data.user));
