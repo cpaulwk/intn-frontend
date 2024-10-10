@@ -74,7 +74,7 @@ const scheduleNextRefresh = (dispatch: AppDispatch) => {
 
 export const handleGoogleLogin = () => {
   if (typeof window !== 'undefined') {
-    window.location.href = `${process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL}`;
+    window.location.assign(`${process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL}`);
   }
 };
 
