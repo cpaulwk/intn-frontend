@@ -22,9 +22,5 @@ export const useAuth = () => {
     }
   }, [searchParams, router, dispatch]);
 
-  useEffect(() => {
-    checkAuthStatus(dispatch);
-  }, [dispatch]);
-
   return { isAuthenticated, user };
 };
